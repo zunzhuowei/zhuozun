@@ -1,4 +1,4 @@
-package com.qs.game.lambda;
+package com.qs.game.lambda.test01;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,7 @@ import java.util.List;
  * http://www.runoob.com/java/java8-new-features.html
  *
  */
-public class Java8Tester {
+public class Java8Tester01 {
 
     public static void main(String args[]) {
         List<String> names1 = new ArrayList<String>();
@@ -28,7 +28,7 @@ public class Java8Tester {
         names2.add("Taobao ");
         names2.add("Baidu ");
         names2.add("Sina ");
-        Java8Tester tester = new Java8Tester();
+        Java8Tester01 tester = new Java8Tester01();
         System.out.println("使用 Java 7 语法: ");
         tester.sortUsingJava7(names1);
         System.out.println(names1);
