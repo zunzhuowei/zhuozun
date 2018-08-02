@@ -1,10 +1,10 @@
 package qs.game.utils;
 
-import org.apache.commons.codec.binary.Base64;
 
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,11 +60,13 @@ public class RSAUtils {
     private static final String PRIVATE_KEY = "RSAPrivateKey";
 
     public static byte[] decryptBASE64(String key) {
-        return Base64.decodeBase64(key);
+        return Base64.getDecoder().decode(key);
+        //return Base64.decodeBase64(key);
     }
 
     public static String encryptBASE64(byte[] bytes) {
-        return Base64.encodeBase64String(bytes);
+        return Base64.getEncoder().encodeToString(bytes);
+        //return Base64.encodeBase64String(bytes);
     }
 
     /**
