@@ -93,6 +93,18 @@
                 <artifactId>java-jwt</artifactId>
                 <version>3.4.0</version>
             </dependency>
+            <!-- memcached -->
+            <dependency>
+                <groupId>com.googlecode.xmemcached</groupId>
+                <artifactId>xmemcached</artifactId>
+                <version>2.4.5</version>
+            </dependency>
+            <!-- memcached 2 -->
+            <dependency>
+                <groupId>com.whalin</groupId>
+                <artifactId>Memcached-Java-Client</artifactId>
+                <version>3.0.2</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>

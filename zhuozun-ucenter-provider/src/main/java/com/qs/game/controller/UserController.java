@@ -5,7 +5,11 @@ import com.qs.game.cache.RedisService;
 import com.qs.game.enum0.DateEnum;
 import com.qs.game.model.User;
 import com.qs.game.service.IUserService;
+import com.whalin.MemCached.MemCachedClient;
 import io.swagger.annotations.*;
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by zun.wei on 2018/8/3.
@@ -40,6 +45,12 @@ public class UserController {
     @Resource
     private RedisService redisService;
 
+    @Resource
+    private MemCachedClient memCachedClient;
+
+    @Resource
+    private MemcachedClient memcachedClient;
+
     @GetMapping("/list/{page}/{size}/{q}")
     @ApiOperation(value="分页查找用户列表",notes="页码必须为数字，页面大小也不需要为数字，关键字随便填")
     @ApiImplicitParams({//, paramType = "form",
@@ -54,11 +65,21 @@ public class UserController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对"),
             @ApiResponse(code = 0, message = "请求成功", response = User.class)
     })
-    public Object getUserByList(@PathVariable Integer page, @PathVariable Integer size, @PathVariable String q) {
+    public Object getUserByList(@PathVariable Integer page, @PathVariable Integer size, @PathVariable String q) throws InterruptedException, MemcachedException, TimeoutException {
         List<User> users = userService.queryListAll(new HashMap<>());
         for (User user : users) {
             System.out.println("user = " + user.getUsername());
+            boolean b = memCachedClient.set(user.getUsername(), user);
+            logger.warn("b = {}", b);
+            Object obj = memCachedClient.get(user.getUsername());
+            logger.warn("obj = {}", obj);
+
+            boolean bb = memcachedClient.set(user.getUsername() + "1",0, user);
+            Object objj = memcachedClient.get(user.getUsername() + "1");
+            logger.warn("bb = {}", bb);
+            logger.warn("objj = {}", objj);
         }
+
         return BaseResult.getBuilder().setCode(Code.ERROR_0).setSuccess(true)
                 .setMessage("success 1 ").setContent(users).build();
     }

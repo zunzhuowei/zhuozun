@@ -1,10 +1,12 @@
 package com.qs.game.model;
 
+import com.alibaba.fastjson.JSON;
 import com.qs.game.enum0.Code;
 import com.qs.game.enum0.LoggerEnum;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2018/8/3 11:19.
@@ -69,8 +71,9 @@ public class BaseResult<T> implements Serializable {
 
         //构建对象
         public BaseResult build() {
-            LoggerEnum.BaseResultLog.logger.info("BaseResult-----------::success:{},code:{},message:{},\ncontent:{}",
-                    baseResult.success, baseResult.code, baseResult.message, baseResult.content);
+            String content = Objects.isNull(baseResult.content) ? null : JSON.toJSONString(baseResult.content,true);
+            LoggerEnum.BaseResultLog.logger.info("BaseResult-----------::success:{},code:{},message:{},\ncontent:\n{}",
+                    baseResult.success, baseResult.code, baseResult.message, content);
             return baseResult;
         }
 

@@ -1,5 +1,6 @@
 package com.qs.game.utils;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
@@ -19,9 +20,9 @@ public class IntUtils {
      * @param strInt String value
      * @return Integer from String value
      */
-    public static Integer str2Int(String strInt) {
-        if (StringUtils.isBlank(strInt))
-            return null;
+    public static Integer str2Int(@NonNull String strInt) {
+        //if (StringUtils.isBlank(strInt))
+        //    return null;
         return Integer.parseInt(strInt);
     }
 
@@ -31,9 +32,9 @@ public class IntUtils {
      * @param objInt Object value
      * @return Integer from Object value
      */
-    public static Integer obj2Int(Object objInt) {
-        if (Objects.isNull(objInt))
-            return null;
+    public static Integer obj2Int(@NonNull Object objInt) {
+        //if (Objects.isNull(objInt))
+        //    return null;
         return Integer.parseInt(objInt + StringUtils.EMPTY);
     }
 
