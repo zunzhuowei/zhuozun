@@ -8,22 +8,32 @@ mybatis:
   - classpath:mybatis/mapper/**/*.xml                       # mapper映射文件
 
 spring:
-   application:
-    name: user-center
-   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
-    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
-    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
-    username: dev
-    password: dev
-    dbcp2:
-      min-idle: 5                                           # 数据库连接池的最小维持连接数
-      initial-size: 5                                       # 初始化连接数
-      max-total: 5                                          # 最大连接数
-      max-wait-millis: 200                                # 等待连接获取的最大超时时间
-      validation-query: select 1
-      validation-query-timeout: 5000
-      test-while-idle: false
+    redis:
+      database: 15
+      host: 192.168.1.128
+      port: 6379
+      password:
+      jedis:
+        pool:
+          max-active: 8
+          min-idle: 8
+          max-idle: 0
+    application:
+      name: user-center
+    datasource:
+      type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+      driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+      url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+      username: dev
+      password: dev
+      dbcp2:
+        min-idle: 5                                           # 数据库连接池的最小维持连接数
+        initial-size: 5                                       # 初始化连接数
+        max-total: 5                                          # 最大连接数
+        max-wait-millis: 200                                # 等待连接获取的最大超时时间
+        validation-query: select 1
+        validation-query-timeout: 5000
+        test-while-idle: false
 
 #eureka:
 #  client:

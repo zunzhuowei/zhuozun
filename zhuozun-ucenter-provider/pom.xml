@@ -18,6 +18,10 @@
             <artifactId>zhuozun-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
         <!-- actuator监控信息完善 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

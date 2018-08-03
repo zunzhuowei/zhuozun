@@ -1,5 +1,7 @@
 package com.qs.game.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.qs.game.cache.RedisService;
 import com.qs.game.enum0.DateEnum;
 import com.qs.game.model.User;
 import com.qs.game.service.IUserService;
@@ -34,6 +36,9 @@ public class UserController {
 
     @Resource
     private IUserService userService;
+
+    @Resource
+    private RedisService redisService;
 
     @GetMapping("/list/{page}/{size}/{q}")
     @ApiOperation(value="分页查找用户列表",notes="页码必须为数字，页面大小也不需要为数字，关键字随便填")
@@ -70,6 +75,7 @@ public class UserController {
 
         Date nowDate = new Date();
         user.setCreateTime(nowDate).setDelStatus(false);
+        redisService.set("user", JSON.toJSONString(user));
         return userService.insertSelective(user);
     }
 
