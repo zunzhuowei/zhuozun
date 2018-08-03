@@ -16,55 +16,15 @@ import java.util.Map;
  * 用户业务模块
  */
 @Service
-public class UserService implements IUserService {
+public class UserService extends AbstractBaseService<User,Long> implements IUserService {
 
 
     @Resource
     private UserMapper userMapper;
 
-
-    @Override
-    public int insert(User record) {
-        return userMapper.insert(record);
+    @Resource
+    public void setMapper(IBaseMapper<User, Long> mapper) {
+        super.mapper = mapper;
     }
 
-    @Override
-    public int insertSelective(User record) {
-        return userMapper.insertSelective(record);
-    }
-
-    @Override
-    public int updateByPrimaryKeySelective(User record) {
-        return userMapper.updateByPrimaryKeySelective(record);
-    }
-
-    @Override
-    public int updateByPrimaryKey(User record) {
-        return userMapper.updateByPrimaryKey(record);
-    }
-
-    @Override
-    public int deleteByPrimaryKey(Long id) {
-        return userMapper.deleteByPrimaryKey(id);
-    }
-
-    @Override
-    public User selectByPrimaryKey(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<User> queryListAll(Map<String, Object> parameter) {
-        return userMapper.queryListAll(parameter);
-    }
-
-    @Override
-    public List<User> queryListByPage(Map<String, Object> parameter) {
-        return null;
-    }
-
-    @Override
-    public int count(Map<String, Object> parameter) {
-        return 0;
-    }
 }

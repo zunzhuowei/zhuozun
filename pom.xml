@@ -23,6 +23,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <swagger2.version>2.8.0</swagger2.version>
+        <!--<swagger2.version>2.6.1</swagger2.version>-->
     </properties>
 
     <parent>
@@ -73,16 +75,21 @@
                 <artifactId>pagehelper</artifactId>
                 <version>4.1.0</version>
             </dependency>
-            <!--<dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>1.4.4.RELEASE</version>
-            </dependency>-->
-           <!-- <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>1.4.4.RELEASE</version>
-            </dependency>-->
+
+            <!-- swagger生成接口API -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger2.version}</version>
+            </dependency>
+
+            <!-- 接口API生成html文档 -->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger2.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

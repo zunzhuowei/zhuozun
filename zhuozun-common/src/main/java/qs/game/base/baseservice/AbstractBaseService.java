@@ -15,9 +15,7 @@ public abstract class AbstractBaseService<T,PK> implements IBaseService<T,PK> {
 
     protected IBaseMapper<T,PK> mapper;
 
-    public void setService(IBaseMapper<T, PK> mapper) {
-        this.mapper = mapper;
-    }
+    public abstract void setMapper(IBaseMapper<T, PK> mapper);
 
     @Override
     public int insert(T record) {
