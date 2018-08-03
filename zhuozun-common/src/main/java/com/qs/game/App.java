@@ -1,4 +1,4 @@
-package qs.game;
+package com.qs.game;
 
 /**
  * Hello world!

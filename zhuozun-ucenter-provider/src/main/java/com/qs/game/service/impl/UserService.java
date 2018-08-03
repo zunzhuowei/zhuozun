@@ -4,13 +4,10 @@ import com.qs.game.mapper.UserMapper;
 import com.qs.game.model.User;
 import com.qs.game.service.IUserService;
 import org.springframework.stereotype.Service;
-import qs.game.base.basemapper.IBaseMapper;
-import qs.game.base.baseservice.AbstractBaseService;
-import qs.game.base.baseservice.IBaseService;
+import com.qs.game.base.basemapper.IBaseMapper;
+import com.qs.game.base.baseservice.AbstractBaseService;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 用户业务模块

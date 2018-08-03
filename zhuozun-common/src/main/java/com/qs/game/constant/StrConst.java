@@ -1,4 +1,4 @@
-package qs.game.constant;
+package com.qs.game.constant;
 
 /**
  * Created by zun.wei on 2018/8/3 14:49.

@@ -1,4 +1,4 @@
-package qs.game.utils;
+package com.qs.game.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

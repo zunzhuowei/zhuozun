@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
-import qs.game.constant.StrConst;
+import com.qs.game.constant.StrConst;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,10 +19,10 @@ public class User implements Serializable {
     @ApiModelProperty(value = "用户id")
     private Long id;
 
-    @ApiModelProperty(value = "用户名，不允许重复，要求应用层不允许重复",required = true)
+    @ApiModelProperty(value = "用户名，不允许重复，要求应用层不允许重复", required = true)
     private String username;
 
-    @ApiModelProperty(value = "用户密码",required = true)
+    @ApiModelProperty(value = "用户密码", required = true)
     private String password;
 
     @ApiModelProperty(value = "用户状态")
@@ -52,85 +52,5 @@ public class User implements Serializable {
     @ApiModelProperty(value = "删除状态")
     private Boolean delStatus;
 
-    /*private static final long serialVersionUID = 1L;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username == null ? null : username.trim();
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password == null ? null : password.trim();
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public String getRegLoginIp() {
-        return regLoginIp;
-    }
-
-    public void setRegLoginIp(String regLoginIp) {
-        this.regLoginIp = regLoginIp == null ? null : regLoginIp.trim();
-    }
-
-    public String getLastLoginIp() {
-        return lastLoginIp;
-    }
-
-    public void setLastLoginIp(String lastLoginIp) {
-        this.lastLoginIp = lastLoginIp == null ? null : lastLoginIp.trim();
-    }
-
-    public Date getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(Date lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Boolean getDelStatus() {
-        return delStatus;
-    }
-
-    public void setDelStatus(Boolean delStatus) {
-        this.delStatus = delStatus;
-    }*/
 }

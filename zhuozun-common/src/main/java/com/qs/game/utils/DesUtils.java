@@ -1,4 +1,4 @@
-package qs.game.utils;
+package com.qs.game.utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

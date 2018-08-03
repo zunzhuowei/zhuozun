@@ -1,14 +1,14 @@
-package qs.game.base.baseservice;
+package com.qs.game.base.basemapper;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by zun.wei on 2018/8/3.
+ * Created by zun.wei on 2018/8/2.
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
  */
-public interface IBaseService<R, PK> {
+public interface IBaseMapper<R, PK> {
 
     int insert(R record);
 

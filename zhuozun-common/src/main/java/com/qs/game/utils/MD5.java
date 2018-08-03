@@ -1,4 +1,4 @@
-package qs.game.utils;
+package com.qs.game.utils;
 
 /**
  * Created by zun.wei on 2018/7/31.

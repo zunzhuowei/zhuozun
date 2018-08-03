@@ -1,4 +1,4 @@
-package qs.game.base.basecontroller;
+package com.qs.game.base.basecontroller;
 
 /**
  * Created by zun.wei on 2018/8/3.

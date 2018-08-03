@@ -1,4 +1,4 @@
-package qs.game.utils;
+package com.qs.game.utils;
 
 
 import java.security.*;

@@ -1,7 +1,7 @@
-package qs.game.enum0;
+package com.qs.game.enum0;
 
 import org.apache.commons.lang3.time.FastDateFormat;
-import qs.game.constant.StrConst;
+import com.qs.game.constant.StrConst;
 
 /**
  * Created by zun.wei on 2018/8/3 14:29.

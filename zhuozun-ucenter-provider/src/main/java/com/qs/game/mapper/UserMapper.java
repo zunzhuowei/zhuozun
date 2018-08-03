@@ -2,7 +2,7 @@ package com.qs.game.mapper;
 
 import com.qs.game.model.User;
 import org.apache.ibatis.annotations.Mapper;
-import qs.game.base.basemapper.IBaseMapper;
+import com.qs.game.base.basemapper.IBaseMapper;
 
 @Mapper
 public interface UserMapper extends IBaseMapper {

@@ -1,8 +1,8 @@
-package qs.game.enum0;
+package com.qs.game.enum0;
 
 /**
  * Created by zun.wei on 2018/8/3 11:33.
- * Description:
+ * Description: 错代码
  */
 public enum Code {
 

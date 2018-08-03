@@ -1,6 +1,6 @@
-package qs.game.base.baseservice;
+package com.qs.game.base.baseservice;
 
-import qs.game.base.basemapper.IBaseMapper;
+import com.qs.game.base.basemapper.IBaseMapper;
 
 import java.util.List;
 import java.util.Map;

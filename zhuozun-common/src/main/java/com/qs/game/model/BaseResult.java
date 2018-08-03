@@ -1,8 +1,8 @@
-package qs.game.model;
+package com.qs.game.model;
 
+import com.qs.game.enum0.Code;
+import com.qs.game.enum0.LoggerEnum;
 import org.apache.commons.lang3.StringUtils;
-import qs.game.enum0.Code;
-import qs.game.enum0.LogEnum;
 
 import java.io.Serializable;
 
@@ -69,7 +69,7 @@ public class BaseResult<T> implements Serializable {
 
         //构建对象
         public BaseResult build() {
-            LogEnum.BaseResultLog.logger.info("-----------::success:{},\ncode:{},\nmessage{},\ncontent{}",
+            LoggerEnum.BaseResultLog.logger.info("BaseResult-----------::success:{},code:{},message:{},\ncontent:{}",
                     baseResult.success, baseResult.code, baseResult.message, baseResult.content);
             return baseResult;
         }

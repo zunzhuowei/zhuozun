@@ -1,4 +1,4 @@
-package qs.game;
+package com.qs.game;
 
 import static org.junit.Assert.assertTrue;
 

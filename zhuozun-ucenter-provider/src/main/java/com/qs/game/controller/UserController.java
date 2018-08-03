@@ -1,13 +1,15 @@
 package com.qs.game.controller;
 
+import com.qs.game.enum0.DateEnum;
 import com.qs.game.model.User;
 import com.qs.game.service.IUserService;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import qs.game.model.BaseResult;
-import qs.game.enum0.Code;
+import com.qs.game.model.BaseResult;
+import com.qs.game.enum0.Code;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -19,9 +21,10 @@ import java.util.Objects;
  * Created by zun.wei on 2018/8/3.
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
+ *  用户控制器
  */
 @RestController
-@Api(value = "/user",tags = {"user center controller"})
+@Api(value = "/user",tags = {"用户中心控制器"})
 @RequestMapping("/user")
 public class UserController {
 

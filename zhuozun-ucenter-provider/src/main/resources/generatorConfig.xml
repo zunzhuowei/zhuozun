@@ -108,7 +108,7 @@
         <javaClientGenerator type="XMLMAPPER"
                              targetPackage="com.qs.game.mapper" targetProject="src/main/java">
             <property name="enableSubPackages" value="true"/>
-            <property name="rootInterface" value="qs.game.base.basemapper.IBaseMapper"/>
+            <property name="rootInterface" value="com.qs.game.base.basemapper.IBaseMapper"/>
         </javaClientGenerator>
 
         <!-- 选择一个table来生成相关文件，可以有一个或多个table，必须要有table元素
