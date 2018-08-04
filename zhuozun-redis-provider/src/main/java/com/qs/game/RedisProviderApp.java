@@ -17,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableFeignClients
 @SpringBootApplication
 @EnableEurekaClient
+@EnableHystrix
 @EnableDiscoveryClient //暴露自己给eureka ,给其他服务调用
 public class RedisProviderApp {
 

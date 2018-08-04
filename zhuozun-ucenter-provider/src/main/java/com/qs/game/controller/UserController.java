@@ -1,6 +1,7 @@
 package com.qs.game.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.qs.game.api.RedisApi;
 import com.qs.game.config.RedisService;
 import com.qs.game.model.User;
 import com.qs.game.service.IUserService;
@@ -15,10 +16,7 @@ import com.qs.game.model.BaseResult;
 import com.qs.game.enum0.Code;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -47,6 +45,9 @@ public class UserController {
 
     @Resource
     private MemcachedClient memcachedClient;
+
+    @Resource
+    private RedisApi redisApi;
 
     @GetMapping("/list/{page}/{size}/{q}")
     @ApiOperation(value="分页查找用户列表",notes="页码必须为数字，页面大小也不需要为数字，关键字随便填")
@@ -95,6 +96,22 @@ public class UserController {
         user.setCreateTime(nowDate).setDelStatus(false);
         redisService.set("user", JSON.toJSONString(user));
         return userService.insertSelective(user);
+    }
+
+    /**
+     *  根据id 获取用户信息
+     * @param id user id
+     * @return BaseResult
+     */
+    @GetMapping("get/{id}")
+    public BaseResult getUserById(@PathVariable Long id) {
+        return redisApi.getUserById(id);
+    }
+
+
+    @PostMapping("set/json")
+    public BaseResult saveUserByJson(User user) {
+        return redisApi.saveUserByJson(JSON.toJSONString(user));
     }
 
 }

@@ -7,8 +7,8 @@ package com.qs.game.enum0;
 public enum Code {
 
     ERROR_0(0, "success"),
-    ERROR_1(-1, ""),
-    ERROR_2(-2, ""),
+    ERROR_1(-1, "user id is null"),
+    ERROR_2(-2, "not a json text"),
     ERROR_3(-3, ""),
     ERROR_4(-4, ""),
     ERROR_5(-5, ""),
@@ -206,7 +206,7 @@ public enum Code {
     ERROR_197(-197, ""),
     ERROR_198(-198, ""),
     ERROR_199(-199, ""),
-    ERROR_200(-200, ""),;
+    ERROR_200(-200, "server busy"),;
 
     public int err;
     public String msg;

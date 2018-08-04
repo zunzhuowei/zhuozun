@@ -11,16 +11,16 @@ package com.qs.game.constant;
 public interface ServiceName {
 
     // 用户中心提供者
-    String user_center_provider = "USER-CENTER-PROVIDER";
+    String USER_CENTER_PROVIDER = "USER-CENTER-PROVIDER";
 
     //产品中心 提供者
-    String product_center_provider = "PRODUCT-CENTER-PROVIDER";
+    String PRODUCT_CENTER_PROVIDER = "PRODUCT-CENTER-PROVIDER";
 
     //memcahed 提供者
-    String memcached_provider = "MEMCACHED-PROVIDER";
+    String MEMCACHED_PROVIDER = "MEMCACHED-PROVIDER";
 
     //redis 提供者
-    String redis_provider = "REDIS-PROVIDER";
+    String REDIS_PROVIDER = "REDIS-PROVIDER";
 
 
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -38,9 +39,9 @@ public class RedisService {
     }
 
     /**
-     * @param key
-     * @param value
-     * @param liveTime
+     * @param key 缓存key
+     * @param value 缓存value
+     * @param liveTime 保存的时间（秒）
      */
     public void set(final byte[] key, final byte[] value, final long liveTime) {
         redisTemplate.execute(new RedisCallback() {
@@ -87,7 +88,7 @@ public class RedisService {
         return (String) redisTemplate.execute(new RedisCallback() {
             public String doInRedis(RedisConnection connection) throws DataAccessException {
                 try {
-                    return new String(connection.get(key.getBytes()), redisCode);
+                    return new String(Objects.requireNonNull(connection.get(key.getBytes())), redisCode);
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

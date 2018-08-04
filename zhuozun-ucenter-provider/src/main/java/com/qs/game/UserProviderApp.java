@@ -17,11 +17,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableFeignClients
 @SpringBootApplication
 @EnableEurekaClient
+@EnableHystrix
 @EnableDiscoveryClient //暴露自己给eureka ,给其他服务调用
-public class UserProvierApp {
+public class UserProviderApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserProvierApp.class, args);
+        SpringApplication.run(UserProviderApp.class, args);
     }
 
 }
