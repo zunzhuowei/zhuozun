@@ -13,6 +13,8 @@
         <module>zhuozun-common</module>
         <module>zhuozun-java8</module>
         <module>zhuozun-ucenter-provider</module>
+        <module>zhuozun-redis-provider</module>
+        <module>zhuozun-memcached-provider</module>
     </modules>
 
 

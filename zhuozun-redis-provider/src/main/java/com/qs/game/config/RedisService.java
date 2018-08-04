@@ -1,4 +1,4 @@
-package com.qs.game.cache;
+package com.qs.game.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
