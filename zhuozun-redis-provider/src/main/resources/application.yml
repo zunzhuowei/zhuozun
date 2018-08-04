@@ -1,0 +1,40 @@
+server:
+  port: 7100
+  app-name: redis-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
+spring:
+  application:
+    name: ${server.app-name}
+  redis:
+    database: 14
+    #host: 192.168.1.128
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+  build.artifactId: "@project.artifactId@"
+  build.version: "@project.version@"
+  spring-boot-version: "@project.parent.version@"

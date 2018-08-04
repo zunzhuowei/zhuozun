@@ -15,6 +15,7 @@
         <module>zhuozun-ucenter-provider</module>
         <module>zhuozun-redis-provider</module>
         <module>zhuozun-memcached-provider</module>
+        <module>zhuozun-discoverer</module>
     </modules>
 
 
@@ -26,6 +27,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <swagger2.version>2.8.0</swagger2.version>
+        <spring.cloud.version>1.4.5.RELEASE</spring.cloud.version>
     </properties>
 
     <parent>
@@ -42,6 +44,25 @@
                 <version>Finchley.RC1</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- eureka import -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-eureka-server</artifactId>
+                <version>${spring.cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-eureka</artifactId>
+                <version>${spring.cloud.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-feign</artifactId>
+                <version>${spring.cloud.version}</version>
             </dependency>
 
             <dependency>

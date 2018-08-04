@@ -1,5 +1,10 @@
 server:
-  port: 8001
+  port: 8000
+  app-name: user-center-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
 
 mybatis:
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
@@ -20,7 +25,7 @@ spring:
           min-idle: 8
           max-idle: 0
     application:
-      name: user-center
+      name: ${server.app-name}
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
       driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
@@ -55,20 +60,21 @@ memcache:
   connectionPoolSize: 1
   connectTimeout: 60000
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://eureka7001:7001/eureka/,http://eureka7002:7002/eureka/,http://eureka7003:7003/eureka/
-#  instance:
-#    instance-id: dept-provider8001
-#    prefer-ip-address: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
 
 logging:
   level:
-    root: debug
+    root: info
 
 info:
-  app.name: user-center
+  app.name: ${server.app-name}
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"

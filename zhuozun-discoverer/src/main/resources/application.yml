@@ -1,0 +1,18 @@
+server:
+  port: 7000
+  app-name: discover-server
+  discover:
+    hostname: 192.168.1.104
+    port: ${server.port}
+
+eureka:
+  instance:
+    hostname: ${server.discover.hostname}
+  client:
+    register-with-eureka: false # 是否要注册到服务器端，因为此处为Eureka Server，所以设定为false
+    fetch-registry: false # 是否从服务器端取得注册信息，因为此处为Eureka Server，所以设定为false
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+spring:
+  application:
+    name: ${server.app-name}

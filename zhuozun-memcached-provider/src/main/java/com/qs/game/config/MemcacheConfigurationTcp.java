@@ -1,5 +1,6 @@
 package com.qs.game.config;
 
+import com.qs.game.constant.StrConst;
 import com.qs.game.utils.IntUtils;
 import lombok.Data;
 import net.rubyeye.xmemcached.MemcachedClient;
@@ -41,7 +42,7 @@ public class MemcacheConfigurationTcp {
     public MemcachedClient getMemcachedClient() throws IOException {
         List<InetSocketAddress> inetSocketAddresses = new ArrayList<>();
         for (int i = 0; i < servers.length; i++) {
-            String[] hostPort = servers[i].split(":");
+            String[] hostPort = servers[i].split(StrConst.COLON);
             String host = hostPort[0].trim();
             int port = IntUtils.str2Int(hostPort[1].trim());
             InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);

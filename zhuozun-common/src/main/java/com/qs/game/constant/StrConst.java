@@ -17,4 +17,7 @@ public interface StrConst {
     String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     String GMT8 = "GMT+8";
+
+    String COLON = ":";
+
 }

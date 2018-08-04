@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Created by zun.wei on 2018/8/3.
+ * Created by zun.wei on 2018/8/4.
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
  */
@@ -18,10 +18,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableDiscoveryClient //暴露自己给eureka ,给其他服务调用
-public class UserProvierApp {
+public class MemcachedProviderApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(UserProvierApp.class, args);
+        SpringApplication.run(MemcachedProviderApp.class, args);
     }
 
 }
