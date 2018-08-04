@@ -16,11 +16,9 @@ public interface ServiceName {
     //产品中心 提供者
     String PRODUCT_CENTER_PROVIDER = "PRODUCT-CENTER-PROVIDER";
 
-    //memcahed 提供者
-    String MEMCACHED_PROVIDER = "MEMCACHED-PROVIDER";
 
-    //redis 提供者
-    String REDIS_PROVIDER = "REDIS-PROVIDER";
+    //cache 缓存提供者
+    String CACHE_PROVIDER = "CACHE-PROVIDER";
 
 
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
  */
-@FeignClient(name = ServiceName.REDIS_PROVIDER, fallbackFactory = RedisFallbackFactory.class)//服务降级
+@FeignClient(name = ServiceName.CACHE_PROVIDER, fallbackFactory = RedisFallbackFactory.class)//服务降级
 public interface RedisApi {
 
     @GetMapping("/redis/get/user/{id}")

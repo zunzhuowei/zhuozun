@@ -13,10 +13,11 @@
         <module>zhuozun-common</module>
         <module>zhuozun-product-provider</module>
         <module>zhuozun-ucenter-provider</module>
-        <module>zhuozun-redis-provider</module>
-        <module>zhuozun-memcached-provider</module>
+        <module>zhuozun-redis</module>
+        <module>zhuozun-memcached</module>
         <module>zhuozun-discoverer</module>
         <module>zhuozun-cache-api</module>
+        <module>zhuozun-cache-provider</module>
     </modules>
 
 

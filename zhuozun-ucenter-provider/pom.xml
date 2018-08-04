@@ -20,12 +20,12 @@
         </dependency>
         <dependency>
             <groupId>qs.game</groupId>
-            <artifactId>zhuozun-memcached-provider</artifactId>
+            <artifactId>zhuozun-memcached</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>qs.game</groupId>
-            <artifactId>zhuozun-redis-provider</artifactId>
+            <artifactId>zhuozun-redis</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
