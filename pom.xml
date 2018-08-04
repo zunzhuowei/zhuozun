@@ -11,7 +11,7 @@
 
     <modules>
         <module>zhuozun-common</module>
-        <module>zhuozun-java8</module>
+        <module>zhuozun-product-provider</module>
         <module>zhuozun-ucenter-provider</module>
         <module>zhuozun-redis-provider</module>
         <module>zhuozun-memcached-provider</module>
