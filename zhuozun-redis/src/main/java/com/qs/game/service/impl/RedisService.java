@@ -1,5 +1,6 @@
 package com.qs.game.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.qs.game.constant.StrConst;
 import com.qs.game.service.IRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,18 @@ public class RedisService implements IRedisService {
         };
         return (long) redisTemplate.execute(redisCallback);
 
+    }
+
+    @Override
+    public boolean set(String key, Object value) {
+        String strValue = JSON.toJSONString(value);
+        return this.set(key, strValue);
+    }
+
+    @Override
+    public boolean set(String key, Object value, long liveTime) {
+        String strValue = JSON.toJSONString(value);
+        return this.set(key, strValue, liveTime);
     }
 
     @Override

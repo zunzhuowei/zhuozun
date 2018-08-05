@@ -20,6 +20,10 @@ public interface IRedisService {
      */
     long del(final String... keys);
 
+    boolean set(final String key, Object value);
+
+    boolean set(final String key, Object value, long liveTime);
+
     /**
      * @param key 缓存key
      * @param value 缓存value
