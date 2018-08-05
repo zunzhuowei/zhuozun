@@ -1,6 +1,6 @@
 package com.qs.game.service;
 
-import com.qs.game.model.User;
+import com.qs.game.model.user.User;
 import com.qs.game.base.baseservice.IBaseService;
 
 /**

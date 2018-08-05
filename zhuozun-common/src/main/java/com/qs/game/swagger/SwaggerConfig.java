@@ -33,7 +33,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("api文档")
-                .description("restful 风格接口")
+                .description("zhuozun restful 风格接口")
                 //服务条款网址
                 .termsOfServiceUrl("https://www.baidu.com")
                 .version("1.0")

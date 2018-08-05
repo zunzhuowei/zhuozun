@@ -2,8 +2,8 @@ package com.qs.game.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.qs.game.api.RedisApi;
-import com.qs.game.config.RedisService;
-import com.qs.game.model.User;
+import com.qs.game.request.RedisService;
+import com.qs.game.model.user.User;
 import com.qs.game.service.IUserService;
 import com.whalin.MemCached.MemCachedClient;
 import io.swagger.annotations.*;
@@ -12,7 +12,7 @@ import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import com.qs.game.model.BaseResult;
+import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.enum0.Code;
 
 import javax.annotation.Resource;

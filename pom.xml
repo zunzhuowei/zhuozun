@@ -18,6 +18,8 @@
         <module>zhuozun-discoverer</module>
         <module>zhuozun-cache-api</module>
         <module>zhuozun-cache-provider</module>
+        <module>zhuozun-dao</module>
+        <module>zhuozun-api</module>
     </modules>
 
 

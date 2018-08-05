@@ -20,6 +20,11 @@
         </dependency>
         <dependency>
             <groupId>qs.game</groupId>
+            <artifactId>zhuozun-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>qs.game</groupId>
             <artifactId>zhuozun-memcached</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -42,10 +47,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-       <!-- <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>

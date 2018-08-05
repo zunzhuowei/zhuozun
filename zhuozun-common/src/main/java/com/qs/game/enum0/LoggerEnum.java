@@ -2,7 +2,7 @@ package com.qs.game.enum0;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.qs.game.model.BaseResult;
+import com.qs.game.base.baseentity.BaseResult;
 
 /**
  * Created by zun.wei on 2018/8/3 15:49.

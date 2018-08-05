@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.enum0.Code;
-import com.qs.game.model.BaseResult;
+import com.qs.game.base.baseentity.BaseResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;

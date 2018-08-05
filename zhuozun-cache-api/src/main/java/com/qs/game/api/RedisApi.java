@@ -2,7 +2,7 @@ package com.qs.game.api;
 
 import com.qs.game.api.fallback.RedisFallbackFactory;
 import com.qs.game.constant.ServiceName;
-import com.qs.game.model.BaseResult;
+import com.qs.game.base.baseentity.BaseResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

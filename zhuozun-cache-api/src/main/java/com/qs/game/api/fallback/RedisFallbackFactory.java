@@ -2,7 +2,7 @@ package com.qs.game.api.fallback;
 
 import com.qs.game.api.RedisApi;
 import com.qs.game.enum0.Code;
-import com.qs.game.model.BaseResult;
+import com.qs.game.base.baseentity.BaseResult;
 import feign.hystrix.FallbackFactory;
 import org.springframework.stereotype.Component;
 
