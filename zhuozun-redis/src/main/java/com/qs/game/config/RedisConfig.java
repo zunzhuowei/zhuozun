@@ -1,4 +1,4 @@
-package com.qs.game.request;
+package com.qs.game.config;
 
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;

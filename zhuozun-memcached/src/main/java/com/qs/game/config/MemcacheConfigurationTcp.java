@@ -1,4 +1,4 @@
-package com.qs.game.request;
+package com.qs.game.config;
 
 import com.qs.game.constant.StrConst;
 import com.qs.game.utils.IntUtils;

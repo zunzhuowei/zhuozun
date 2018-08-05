@@ -1,4 +1,4 @@
-package com.qs.game.request;
+package com.qs.game.config;
 
 import com.whalin.MemCached.MemCachedClient;
 import com.whalin.MemCached.SockIOPool;

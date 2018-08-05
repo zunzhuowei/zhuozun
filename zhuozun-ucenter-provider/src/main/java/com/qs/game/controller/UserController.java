@@ -2,7 +2,7 @@ package com.qs.game.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.qs.game.api.RedisApi;
-import com.qs.game.request.RedisService;
+import com.qs.game.service.impl.RedisService;
 import com.qs.game.model.user.User;
 import com.qs.game.service.IUserService;
 import com.whalin.MemCached.MemCachedClient;

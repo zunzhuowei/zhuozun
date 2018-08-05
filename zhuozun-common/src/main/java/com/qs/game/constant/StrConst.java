@@ -20,4 +20,8 @@ public interface StrConst {
 
     String COLON = ":";
 
+    String UTF_8 = "UTF-8";
+
+    String EMPTY_STR = "";
+
 }
