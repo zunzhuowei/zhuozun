@@ -6,6 +6,8 @@ import lombok.Data;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
+import net.rubyeye.xmemcached.command.KestrelCommandFactory;
+import net.rubyeye.xmemcached.command.TextCommandFactory;
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +52,9 @@ public class MemcacheConfigurationTcp {
         XMemcachedClientBuilder memcachedClientBuilder = new XMemcachedClientBuilder(inetSocketAddresses);
         memcachedClientBuilder.setConnectionPoolSize(connectionPoolSize);
         memcachedClientBuilder.setConnectTimeout(connectTimeout);
-        memcachedClientBuilder.setCommandFactory(new BinaryCommandFactory());
+//        memcachedClientBuilder.setCommandFactory(new BinaryCommandFactory());
+        memcachedClientBuilder.setCommandFactory(new TextCommandFactory());
+        //memcachedClientBuilder.setCommandFactory(new KestrelCommandFactory());
         memcachedClientBuilder.setTranscoder(new SerializingTranscoder());
         return memcachedClientBuilder.build();
     }

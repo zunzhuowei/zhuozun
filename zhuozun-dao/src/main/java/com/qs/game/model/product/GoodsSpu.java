@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @Accessors(chain = true)//链式的操作方式
-@ApiModel(description= "用户实体类，用户基本信息")
+@ApiModel(description= "SPU(Standard Product Unit)：标准化产品单元")
 public class GoodsSpu implements Serializable {
     private Long id;
 

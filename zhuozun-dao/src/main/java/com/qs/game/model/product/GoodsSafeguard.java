@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @Accessors(chain = true)//链式的操作方式
-@ApiModel(description= "用户实体类，用户基本信息")
+@ApiModel(description= "增值保障表")
 public class GoodsSafeguard implements Serializable {
     private Long id;
 

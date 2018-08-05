@@ -1,5 +1,7 @@
-package com.qs.game.lambda.test02;
+package com.qs.game;
 
+import com.qs.game.lambda.test02.GreetingService;
+import com.qs.game.lambda.test02.MathOperation;
 import org.junit.Test;
 
 /**

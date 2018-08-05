@@ -74,6 +74,11 @@ eureka:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
 
+# 服务降级熔断
+feign:
+  hystrix:
+    enabled: true
+
 logging:
   level:
     root: info

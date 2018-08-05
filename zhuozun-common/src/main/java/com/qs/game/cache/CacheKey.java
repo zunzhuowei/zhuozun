@@ -7,9 +7,11 @@ package com.qs.game.cache;
  */
 public interface CacheKey {
 
+    String getUserById = "getUserById:";
+    String getGoodsBrandById = "getGoodsBrandById:";
 
     enum Redis{
-        USER_CENTER_GET_USER_BY_ID("getUserById:","用户中心根据id获取用户"),
+        USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
         ;
 
         public String KEY;
@@ -21,7 +23,8 @@ public interface CacheKey {
     }
 
     enum Memcached{
-        USER_CENTER_GET_USER_BY_ID("getUserById:","用户中心根据id获取用户"),
+        USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
+        PRODUCT_CENTER_GET_GOODS_BRAND_BY_ID(getGoodsBrandById, "产品中心根据id获取品牌"),
         ;
 
         public String KEY;

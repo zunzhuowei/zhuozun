@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 @Data
 @Accessors(chain = true)//链式的操作方式
-@ApiModel(description= "用户实体类，用户基本信息")
+@ApiModel(description= "Stock Keeping Unit（库存量单位）")
 public class GoodsSku implements Serializable {
     private Long id;
 

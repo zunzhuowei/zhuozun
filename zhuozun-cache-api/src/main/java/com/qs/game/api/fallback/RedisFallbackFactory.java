@@ -17,9 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class RedisFallbackFactory implements FallbackFactory<RedisApi> {
 
-    public RedisFallbackFactory() {
-        System.out.println("1111111111111111111111111111111 = " + 99999999999999999L);
-    }
 
     @Override
     public RedisApi create(Throwable throwable) {

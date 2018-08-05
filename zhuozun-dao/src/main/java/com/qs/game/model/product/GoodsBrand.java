@@ -1,54 +1,34 @@
 package com.qs.game.model.product;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qs.game.constant.StrConst;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
 @Data
 @Accessors(chain = true)//链式的操作方式
-@ApiModel(description= "用户实体类，用户基本信息")
+@ApiModel(description= "品牌表")
 public class GoodsBrand implements Serializable {
+
+    @ApiModelProperty(value = "品牌id")
     private Long id;
 
+    @ApiModelProperty(value = "品牌名称")
     private String brandName;
 
+    @ApiModelProperty(value = "用户创建日期，系统时间")
+    @JsonFormat(pattern = StrConst.YYYY_MM_DD_HH_MM_SS, timezone = StrConst.GMT8)
+    @DateTimeFormat(pattern = StrConst.YYYY_MM_DD_HH_MM_SS)
     private Date gmtCreate;
 
+    @ApiModelProperty(value = "最后修改日期，系统时间")
+    @JsonFormat(pattern = StrConst.YYYY_MM_DD_HH_MM_SS, timezone = StrConst.GMT8)
+    @DateTimeFormat(pattern = StrConst.YYYY_MM_DD_HH_MM_SS)
     private Date gmtUpdate;
 
-    private static final long serialVersionUID = 1L;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getBrandName() {
-        return brandName;
-    }
-
-    public void setBrandName(String brandName) {
-        this.brandName = brandName == null ? null : brandName.trim();
-    }
-
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtUpdate() {
-        return gmtUpdate;
-    }
-
-    public void setGmtUpdate(Date gmtUpdate) {
-        this.gmtUpdate = gmtUpdate;
-    }
 }

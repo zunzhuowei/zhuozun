@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public abstract class BaseRquest  implements Serializable {
+public abstract class BaseRequest implements Serializable {
 
     private String sessionKey;
 
