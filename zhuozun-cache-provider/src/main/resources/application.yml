@@ -66,6 +66,20 @@ eureka:
   instance:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
 
 # 服务降级熔断
 feign:
@@ -81,4 +95,5 @@ info:
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-boot-version: "@project.parent.version@"
+  spring-boot-version: "@springboot.verion@"
+  spring-cloud-version: "@spring.cloud.version@"

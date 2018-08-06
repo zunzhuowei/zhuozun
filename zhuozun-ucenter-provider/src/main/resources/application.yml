@@ -5,14 +5,16 @@ server:
 #    hostname: 192.168.1.104
     hostname: 192.168.1.204
     port: 7000
-
+  eureka:
+    user:
+      name: zhangsan
+      password: 123
 
 mybatis:
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
   type-aliases-package: com.qs.game.model    # 所有Entity别名类所在包
   mapper-locations:
   - classpath:mybatis/mapper/**/*.xml                       # mapper映射文件
-
 spring:
     redis:
       database: 14
@@ -67,6 +69,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+#      defaultZone: http://${server.eureka.user.name}:${server.eureka.user.password}@${server.discover.hostname}:${server.discover.port}/eureka/
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 5
@@ -75,6 +78,18 @@ eureka:
   instance:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 # 服务降级熔断
 feign:
@@ -90,4 +105,5 @@ info:
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-boot-version: "@project.parent.version@"
+  spring-boot-version: "@springboot.verion@"
+  spring-cloud-version: "@spring.cloud.version@"

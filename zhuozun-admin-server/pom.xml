@@ -5,13 +5,18 @@
     <parent>
         <artifactId>zhuozun</artifactId>
         <groupId>qs.game</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${zhuozun.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>zhuozun-admin-server</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-server</artifactId>
@@ -39,5 +44,27 @@
             <artifactId>jolokia-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.qs.game.AdminServerApp</mainClass>
+                    <addResources>false</addResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

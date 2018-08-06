@@ -1,5 +1,5 @@
 server:
-  port: 8100
+  port: 8200
   app-name: product-center-provider
   discover:
 #    hostname: 192.168.1.104
@@ -30,8 +30,8 @@ spring:
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
       driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
-      #url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
-      url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+      url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+#      url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
       username: dev
       password: dev
       dbcp2:
@@ -74,6 +74,18 @@ eureka:
   instance:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
 
 # 服务降级熔断
 feign:
@@ -89,4 +101,5 @@ info:
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-boot-version: "@project.parent.version@"
+  spring-boot-version: "@springboot.verion@"
+  spring-cloud-version: "@spring.cloud.version@"

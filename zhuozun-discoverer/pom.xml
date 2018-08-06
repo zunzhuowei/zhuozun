@@ -5,7 +5,7 @@
     <parent>
         <artifactId>zhuozun</artifactId>
         <groupId>qs.game</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${zhuozun.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,6 +17,10 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka-server</artifactId>
         </dependency>
+       <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>-->
     </dependencies>
 
 </project>
