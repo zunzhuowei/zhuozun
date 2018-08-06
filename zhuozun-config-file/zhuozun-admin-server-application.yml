@@ -16,7 +16,7 @@ server:
 spring:
   profiles: dev
   application:
-    name: ${server.app-name}-dev
+    name: ${server.app-name}
     admin:
       enabled: true
 
@@ -89,7 +89,7 @@ server:
 spring:
   profiles: local
   application:
-    name: ${server.app-name}-local
+    name: ${server.app-name}
     admin:
       enabled: true
 
@@ -134,8 +134,8 @@ info:
   name: ${spring.application.name}
   description: 应用监控中心
   version : V1.0
-  spring-boot-version: "@springboot.verion@"
-  spring-cloud-version: "@spring.cloud.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
 
 ---
 
@@ -160,7 +160,7 @@ server:
 spring:
   profiles: test
   application:
-    name: ${server.app-name}-test
+    name: ${server.app-name}
     admin:
       enabled: true
 
@@ -205,8 +205,8 @@ info:
   name: ${spring.application.name}
   description: 应用监控中心
   version : V1.0
-  spring-boot-version: "@springboot.verion@"
-  spring-cloud-version: "@spring.cloud.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
 
 ---
 
@@ -226,7 +226,7 @@ server:
 spring:
   profiles: prod
   application:
-    name: ${server.app-name}-prod
+    name: ${server.app-name}
     admin:
       enabled: true
 
@@ -271,5 +271,5 @@ info:
   name: ${spring.application.name}
   description: 应用监控中心
   version : V1.0
-  spring-boot-version: "@springboot.verion@"
-  spring-cloud-version: "@spring.cloud.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"

@@ -1,3 +1,6 @@
+
+# 如果不把bootstrap.yml里面的配置中心的配置注释掉，这个配置文件的配置就不起任何作用。
+
 server:
   port: 7100
   app-name: zhuozun-admin-server
