@@ -23,4 +23,9 @@
             <version>${spring.cloud.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+
 </project>

@@ -30,4 +30,9 @@
         </dependency>
         <!-- 其他api往下加 -->
     </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+
 </project>

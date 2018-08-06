@@ -27,7 +27,7 @@ eureka:
       defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
     register-with-eureka: true
     fetch-registry: true
-    registry-fetch-interval-seconds: 10
+    registry-fetch-interval-seconds: 5
   instance:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
