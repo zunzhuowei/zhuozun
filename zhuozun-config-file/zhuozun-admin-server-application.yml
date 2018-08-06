@@ -7,16 +7,17 @@ spring:
 ---
 
 server:
-#  port: 7100
-#  app-name: zhuozun-admin-server
+  profile: dev
+  port: 7100
+  app-name: zhuozun-admin-server
   discover:
     hostname: 192.168.1.104
     port: 7000
 
 spring:
-  profiles: dev
+  profiles: ${server.profile}
   application:
-    name: ${server.app-name}-{server.config.profile}
+    name: ${server.app-name}-{server.profile}
     admin:
       enabled: true
 
@@ -79,17 +80,18 @@ info:
 
 
 server:
-#  port: 7100
-#  app-name: zhuozun-admin-server
+  profile: local
+  port: 7100
+  app-name: zhuozun-admin-server
   discover:
     hostname: 192.168.1.104
 #    hostname: 192.168.1.204
     port: 7000
 
 spring:
-  profiles: local
+  profiles: {server.profile}
   application:
-    name: ${server.app-name}-{server.config.profile}
+    name: ${server.app-name}-{server.profile}
     admin:
       enabled: true
 
@@ -150,17 +152,18 @@ info:
 
 
 server:
-#  port: 7100
-#  app-name: zhuozun-admin-server
+  profile: test
+  port: 7100
+  app-name: zhuozun-admin-server
   discover:
     hostname: 192.168.1.104
 #    hostname: 192.168.1.204
     port: 7000
 
 spring:
-  profiles: test
+  profiles: {server.profile}
   application:
-    name: ${server.app-name}-{server.config.profile}
+    name: ${server.app-name}-{server.profile}
     admin:
       enabled: true
 
@@ -216,17 +219,18 @@ info:
 
 
 server:
-#  port: 7100
-#  app-name: zhuozun-admin-server
+  profile: prod
+  port: 7100
+  app-name: zhuozun-admin-server
   discover:
     hostname: 192.168.1.104
 #    hostname: 192.168.1.204
     port: 7000
 
 spring:
-  profiles: prod
+  profiles: {server.profile}
   application:
-    name: ${server.app-name}-{server.config.profile}
+    name: ${server.app-name}-{server.profile}
     admin:
       enabled: true
 
