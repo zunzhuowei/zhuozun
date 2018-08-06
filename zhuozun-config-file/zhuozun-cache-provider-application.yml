@@ -1,0 +1,439 @@
+spring:
+  profiles:
+    active:
+    - dev
+
+
+---
+
+server:
+  port: 8100
+  app-name: cache-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
+spring:
+  profiles: dev
+  application:
+    name: ${server.app-name}
+  redis:
+    database: 14
+#    host: 192.168.1.128
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+#    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    username: dev
+    password: dev
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                # 等待连接获取的最大超时时间
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-while-idle: false
+
+## Memcache 配置 ##
+memcache:
+  servers:
+    - 192.168.1.197:11211
+#    - 192.168.1.128:11211
+  weights:
+    - 5
+  failover: true
+  initConn: 20
+  minConn: 10
+  maxConn: 30
+  maintSleep: 3000
+  nagel: false
+  socketTO: 3000
+  aliveCheck: true
+  connectionPoolSize: 1
+  connectTimeout: 60000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+# 服务降级熔断
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+#  build.artifactId: "@project.artifactId@"
+#  build.version: "@project.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+server:
+  port: 8100
+  app-name: cache-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
+spring:
+  profiles: local
+  application:
+    name: ${server.app-name}
+  redis:
+    database: 14
+#    host: 192.168.1.128
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+#    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    username: dev
+    password: dev
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                # 等待连接获取的最大超时时间
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-while-idle: false
+
+## Memcache 配置 ##
+memcache:
+  servers:
+    - 192.168.1.197:11211
+#    - 192.168.1.128:11211
+  weights:
+    - 5
+  failover: true
+  initConn: 20
+  minConn: 10
+  maxConn: 30
+  maintSleep: 3000
+  nagel: false
+  socketTO: 3000
+  aliveCheck: true
+  connectionPoolSize: 1
+  connectTimeout: 60000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+# 服务降级熔断
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+#  build.artifactId: "@project.artifactId@"
+#  build.version: "@project.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
+
+---
+
+
+
+
+
+
+
+
+
+
+
+server:
+  port: 8100
+  app-name: cache-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
+spring:
+  profiles: test
+  application:
+    name: ${server.app-name}
+  redis:
+    database: 14
+#    host: 192.168.1.128
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+#    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    username: dev
+    password: dev
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                # 等待连接获取的最大超时时间
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-while-idle: false
+
+## Memcache 配置 ##
+memcache:
+  servers:
+    - 192.168.1.197:11211
+#    - 192.168.1.128:11211
+  weights:
+    - 5
+  failover: true
+  initConn: 20
+  minConn: 10
+  maxConn: 30
+  maintSleep: 3000
+  nagel: false
+  socketTO: 3000
+  aliveCheck: true
+  connectionPoolSize: 1
+  connectTimeout: 60000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+# 服务降级熔断
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+#  build.artifactId: "@project.artifactId@"
+#  build.version: "@project.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
+
+---
+
+
+
+
+
+
+server:
+  port: 8100
+  app-name: cache-provider
+  discover:
+    hostname: 192.168.1.104
+    port: 7000
+
+spring:
+  profiles: prod
+  application:
+    name: ${server.app-name}
+  redis:
+    database: 14
+#    host: 192.168.1.128
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+#    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    username: dev
+    password: dev
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                # 等待连接获取的最大超时时间
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-while-idle: false
+
+## Memcache 配置 ##
+memcache:
+  servers:
+    - 192.168.1.197:11211
+#    - 192.168.1.128:11211
+  weights:
+    - 5
+  failover: true
+  initConn: 20
+  minConn: 10
+  maxConn: 30
+  maintSleep: 3000
+  nagel: false
+  socketTO: 3000
+  aliveCheck: true
+  connectionPoolSize: 1
+  connectTimeout: 60000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+
+# 服务降级熔断
+feign:
+  hystrix:
+    enabled: true
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+#  build.artifactId: "@project.artifactId@"
+#  build.version: "@project.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"

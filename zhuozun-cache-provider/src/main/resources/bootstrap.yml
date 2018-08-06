@@ -1,0 +1,23 @@
+server:
+  config:
+    server:
+      host: 127.0.0.1
+      port: 7300
+    yml-name: zhuozun-cache-provider-application
+    label: master
+    profile: dev
+
+spring:
+  cloud:
+      config:
+          uri: http://${server.config.server.host}:${server.config.server.port}
+          name: ${server.config.yml-name}
+          label: ${server.config.label}
+          profile: ${server.config.profile}
+
+# 引用监控限制内容Map <Key String>
+info:
+  build.artifactId: "@project.artifactId@"
+  build.version: "@project.version@"
+  spring-boot-version: "@springboot.verion@"
+  spring-cloud-version: "@spring.cloud.version@"
