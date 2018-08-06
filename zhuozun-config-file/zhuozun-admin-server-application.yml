@@ -7,7 +7,6 @@ spring:
 ---
 
 server:
-  profile: dev
   port: 7100
   app-name: zhuozun-admin-server
   discover:
@@ -15,9 +14,9 @@ server:
     port: 7000
 
 spring:
-  profiles: ${server.profile}
+  profiles: dev
   application:
-    name: ${server.app-name}-{server.profile}
+    name: ${server.app-name}-dev
     admin:
       enabled: true
 
@@ -80,7 +79,6 @@ info:
 
 
 server:
-  profile: local
   port: 7100
   app-name: zhuozun-admin-server
   discover:
@@ -89,9 +87,9 @@ server:
     port: 7000
 
 spring:
-  profiles: {server.profile}
+  profiles: local
   application:
-    name: ${server.app-name}-{server.profile}
+    name: ${server.app-name}-local
     admin:
       enabled: true
 
@@ -152,7 +150,6 @@ info:
 
 
 server:
-  profile: test
   port: 7100
   app-name: zhuozun-admin-server
   discover:
@@ -161,9 +158,9 @@ server:
     port: 7000
 
 spring:
-  profiles: {server.profile}
+  profiles: test
   application:
-    name: ${server.app-name}-{server.profile}
+    name: ${server.app-name}-test
     admin:
       enabled: true
 
@@ -219,7 +216,6 @@ info:
 
 
 server:
-  profile: prod
   port: 7100
   app-name: zhuozun-admin-server
   discover:
@@ -228,9 +224,9 @@ server:
     port: 7000
 
 spring:
-  profiles: {server.profile}
+  profiles: prod
   application:
-    name: ${server.app-name}-{server.profile}
+    name: ${server.app-name}-prod
     admin:
       enabled: true
 
