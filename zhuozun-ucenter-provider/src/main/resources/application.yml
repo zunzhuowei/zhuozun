@@ -2,8 +2,8 @@ server:
   port: 8000
   app-name: user-center-provider
   discover:
-#    hostname: 192.168.1.104
-    hostname: 192.168.1.204
+    hostname: 192.168.1.104
+#    hostname: 192.168.1.204
     port: 7000
   eureka:
     user:
@@ -18,8 +18,8 @@ mybatis:
 spring:
     redis:
       database: 14
-      host: 192.168.1.128
-#      host: 192.168.1.197
+#      host: 192.168.1.128
+      host: 192.168.1.197
       port: 6379
       password:
       jedis:
@@ -32,8 +32,8 @@ spring:
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
       driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
-      url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
-#      url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+#      url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+      url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
       username: dev
       password: dev
       dbcp2:
@@ -49,8 +49,8 @@ spring:
 ## Memcache 配置 ##
 memcache:
   servers:
-#    - 192.168.1.197:11211
-    - 192.168.1.128:11211
+    - 192.168.1.197:11211
+#    - 192.168.1.128:11211
   weights:
     - 5
   failover: true
