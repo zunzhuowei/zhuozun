@@ -21,6 +21,7 @@
         <module>zhuozun-dao</module>
         <module>zhuozun-api</module>
         <module>zhuozun-admin-server</module>
+        <module>zhuozun-config-server</module>
     </modules>
 
 

@@ -2,8 +2,8 @@ server:
   port: 7100
   app-name: zhuozun-admin-server
   discover:
-#    hostname: 192.168.1.104
-    hostname: 192.168.1.204
+    hostname: 192.168.1.104
+#    hostname: 192.168.1.204
     port: 7000
 
 spring:
@@ -68,8 +68,8 @@ server:
   port: 7100
   app-name: zhuozun-admin-server-secure
   discover:
-#    hostname: 192.168.1.104
-    hostname: 192.168.1.204
+    hostname: 192.168.1.104
+#    hostname: 192.168.1.204
     port: 7000
 
 spring:

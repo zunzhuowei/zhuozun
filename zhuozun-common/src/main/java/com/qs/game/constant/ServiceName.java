@@ -16,9 +16,11 @@ public interface ServiceName {
     //产品中心 提供者
     String PRODUCT_CENTER_PROVIDER = "PRODUCT-CENTER-PROVIDER";
 
-
     //cache 缓存提供者
     String CACHE_PROVIDER = "CACHE-PROVIDER";
+
+    //配置中心服务
+    String CONFIG_CENTER_SERVER = "CONFIG-CENTER-SERVER";
 
 
 }
