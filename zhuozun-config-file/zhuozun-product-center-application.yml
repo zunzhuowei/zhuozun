@@ -33,8 +33,8 @@ spring:
 #          max-active: 8
 #          min-idle: 8
 #          max-idle: 0
-    application:
     profiles: dev
+    application:
       name: ${server.app-name}
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
@@ -150,8 +150,8 @@ spring:
 #          max-active: 8
 #          min-idle: 8
 #          max-idle: 0
-    application:
     profiles: local
+    application:
       name: ${server.app-name}
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
@@ -265,8 +265,8 @@ spring:
 #          max-active: 8
 #          min-idle: 8
 #          max-idle: 0
-    application:
     profiles: test
+    application:
       name: ${server.app-name}
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
@@ -375,8 +375,8 @@ spring:
 #          max-active: 8
 #          min-idle: 8
 #          max-idle: 0
-    application:
     profiles: prod
+    application:
       name: ${server.app-name}
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
