@@ -17,7 +17,7 @@ server:
 spring:
   profiles: dev
   application:
-    name: ${zhuozun-admin-server}-{spring.profiles}
+    name: ${server.app-name}-{spring.profiles}
     admin:
       enabled: true
 
@@ -90,7 +90,7 @@ server:
 spring:
   profiles: local
   application:
-    name: ${zhuozun-admin-server}-{spring.profiles}
+    name: ${server.app-name}-{spring.profiles}
     admin:
       enabled: true
 
@@ -161,7 +161,7 @@ server:
 spring:
   profiles: test
   application:
-    name: ${zhuozun-admin-server}-{spring.profiles}
+    name: ${server.app-name}-{spring.profiles}
     admin:
       enabled: true
 
@@ -227,7 +227,7 @@ server:
 spring:
   profiles: prod
   application:
-    name: ${zhuozun-admin-server}-{spring.profiles}
+    name: ${server.app-name}-{spring.profiles}
     admin:
       enabled: true
 
