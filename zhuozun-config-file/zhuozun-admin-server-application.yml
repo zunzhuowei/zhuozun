@@ -61,8 +61,8 @@ info:
   name: ${spring.application.name}
   description: 应用监控中心
   version : V1.0
-  spring-boot-version: "@springboot.verion@"
-  spring-cloud-version: "@spring.cloud.version@"
+#  spring-boot-version: "@springboot.verion@"
+#  spring-cloud-version: "@spring.cloud.version@"
 
 ---
 
