@@ -1,0 +1,61 @@
+####################################   local environment ###########################
+server:
+  port: 7300
+  app-name: config-center-server
+  discover:
+#    hostname: 192.168.1.104
+    hostname: 192.168.1.204
+    port: 7000
+  eureka:
+    user:
+      name: zhangsan
+      password: 123
+
+spring:
+  profiles:
+    active: local
+  application:
+    name:  ${server.app-name}
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/zunzhuowei/zhuozun.git #GitHub上面的git仓库名字
+          searchPaths: zhuozun-config-file  # 查找git仓库对应的目录
+          default-label: master
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    root: info
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+  build.artifactId: "@project.artifactId@"
+  build.version: "@project.version@"
+  spring-boot-version: "@springboot.verion@"
+  spring-cloud-version: "@spring.cloud.version@"
