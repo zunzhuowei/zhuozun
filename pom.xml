@@ -182,10 +182,11 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
+        <!-- 热部署工具，但是导致缓存(redis memcached)反序列化对象的时候报异常：巨坑 -->
+       <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

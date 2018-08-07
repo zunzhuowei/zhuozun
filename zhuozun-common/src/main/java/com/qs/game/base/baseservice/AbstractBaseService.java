@@ -48,12 +48,12 @@ public abstract class AbstractBaseService<T,PK> implements IBaseService<T,PK> {
     }
 
     @Override
-    public List queryListAll(Map parameter) {
+    public List<T> queryListAll(Map parameter) {
         return mapper.queryListAll(parameter);
     }
 
     @Override
-    public List queryListByPage(Map parameter) {
+    public List<T> queryListByPage(Map parameter) {
         return mapper.queryListByPage(parameter);
     }
 
