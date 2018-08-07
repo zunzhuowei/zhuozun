@@ -1,7 +1,7 @@
 spring:
   profiles:
     active:
-      - local
+      - dev
 
 ---
 ####################################   development environment ###########################
@@ -25,7 +25,7 @@ spring:
   cloud:
     config:
       server:
-        git:
+        git: # 也可以配置svn
           uri: https://github.com/zunzhuowei/zhuozun.git #GitHub上面的git仓库名字
           searchPaths: zhuozun-config-file  # 查找git仓库对应的目录
           default-label: master
