@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,12 +23,8 @@ import java.util.Objects;
 public class RedisService implements IRedisService {
 
 
-    @Autowired
-    public RedisService(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
-
-    private final RedisTemplate redisTemplate;
+    @Resource(name = "redisTemplate")
+    private RedisTemplate redisTemplate;
 
 
     @Override

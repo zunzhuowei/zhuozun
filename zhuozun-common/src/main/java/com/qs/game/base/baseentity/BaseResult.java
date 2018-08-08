@@ -3,6 +3,10 @@ package com.qs.game.base.baseentity;
 import com.alibaba.fastjson.JSON;
 import com.qs.game.enum0.Code;
 import com.qs.game.enum0.LoggerEnum;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -12,14 +16,21 @@ import java.util.Objects;
  * Created by zun.wei on 2018/8/3 11:19.
  * Description: 返回值统一封装类
  */
+@Data
+@Accessors(chain = true)//链式的操作方式
+@ApiModel(description= "基本结果返回值对象")
 public class BaseResult<T> implements Serializable {
 
+    @ApiModelProperty(value = "返回结果，成功或者失败")
     private Boolean success;
 
+    @ApiModelProperty(value = "返回内容")
     private T content;
 
+    @ApiModelProperty(value = "返回消息")
     private String message;
 
+    @ApiModelProperty(value = "消息代码")
     private int code;
 
     private BaseResult() {
