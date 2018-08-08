@@ -1,12 +1,17 @@
 package com.qs.game.mq;
 
+import com.qs.game.enum0.RedisMQTopic;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.listener.Topic;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by zun.wei on 2018/8/8 17:58.
@@ -37,10 +42,14 @@ public class SubscriberConfig {
      * @return
      */
     @Bean
-    public RedisMessageListenerContainer getRedisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory, MessageListenerAdapter messageListenerAdapter) {
+    public RedisMessageListenerContainer getRedisMessageListenerContainer(
+            RedisConnectionFactory redisConnectionFactory, MessageListenerAdapter messageListenerAdapter) {
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
-        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new PatternTopic("TOPIC_USERNAME"));
+        List<Topic> topics = new LinkedList<>();
+        topics.add(new PatternTopic(RedisMQTopic.TOPIC_USERNAME.TOPIC));
+        topics.add(new PatternTopic(RedisMQTopic.TOPIC_LOGIN_LOG.TOPIC));
+        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, topics);
         return redisMessageListenerContainer;
     }
 
