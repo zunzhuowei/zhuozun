@@ -58,7 +58,8 @@ public class PublisherService {
         }
     }
 
-    private List<String> set2MemoryTemp(RedisMQTopic redisMQTopic) {
+    private List<String> set2MemoryTemp(RedisMQTopic redisMQTopic, String message) {
+
         //stringRedisTemplate.opsForList().
         return null;
     }

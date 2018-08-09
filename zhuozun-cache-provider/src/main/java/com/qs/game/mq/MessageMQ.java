@@ -1,5 +1,6 @@
 package com.qs.game.mq;
 
+import com.qs.game.enum0.MessageOnwer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,5 +26,8 @@ public class MessageMQ implements Serializable {
 
     @ApiModelProperty(value = "是否成功", required = true)
     private boolean success;
+
+    @ApiModelProperty(value = "消息归属者", required = true)
+    private MessageOnwer onwer;
 
 }

@@ -9,9 +9,11 @@ public interface CacheKey {
 
     String getUserById = "getUserById:";
     String getGoodsBrandById = "getGoodsBrandById:";
+    String isLock = "isLock";
 
     enum Redis{
         USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
+        CACHE_PROVIDER_IS_LOCK(isLock, "redis lock是否开启了"),
         ;
 
         public String KEY;
