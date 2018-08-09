@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created by zun.wei on 2018/8/8 17:38.
@@ -19,11 +20,17 @@ public class PublisherService {
     private static final String MSG_ID = "msgId:";
 
 
+    /**
+     *  发送用户名
+     */
     public MessageMQ sendUserName(String username) {
         return this.send2RedisMqQueue(username, RedisMQTopic.TOPIC_USERNAME);
     }
 
 
+    /**
+     *  发送用户日志
+     */
     public MessageMQ sendUserLog(String userLog) {
         return this.send2RedisMqQueue(userLog, RedisMQTopic.TOPIC_LOGIN_LOG);
     }
@@ -41,6 +48,7 @@ public class PublisherService {
             Long msgId = stringRedisTemplate.opsForValue()
                     .increment(MSG_ID + redisMQTopic.TOPIC, 1);
             msg.setMsgId(msgId).setContent(message).setSuccess(true);
+            //stringRedisTemplate.opsForList().le
             stringRedisTemplate.convertAndSend(redisMQTopic.TOPIC, msg);
             return msg;
         } catch (Exception e) {
@@ -48,6 +56,11 @@ public class PublisherService {
             msg.setSuccess(false);
             return msg;
         }
+    }
+
+    private List<String> set2MemoryTemp(RedisMQTopic redisMQTopic) {
+        //stringRedisTemplate.opsForList().
+        return null;
     }
 
 }

@@ -22,4 +22,7 @@ public interface RedisApi {
 
     @PostMapping("/redis/set/user/json")
     BaseResult saveUserByJson(@RequestParam(name = "userJson") String userJson);
+
+
+
 }

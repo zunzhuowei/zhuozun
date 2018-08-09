@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.enum0.Code;
-import com.qs.game.model.product.GoodsBrand;
 import com.qs.game.request.ProductRequest;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.exception.MemcachedException;
