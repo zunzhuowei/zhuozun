@@ -267,6 +267,11 @@ mybatis:
   - classpath:mybatis/mapper/**/*.xml                       # mapper映射文件
 
 spring:
+    boot:
+      admin:
+        client:
+          instance:
+            service-url: http://192.168.1.186:7100
     profiles: test
     redis:
       database: 14
