@@ -252,7 +252,7 @@ server:
   port: 8000
   app-name: user-center-provider
   discover:
-    hostname: 192.168.1.104
+    hostname: 192.168.1.186
 #    hostname: 192.168.1.204
     port: 7000
   eureka:
