@@ -1,21 +1,21 @@
-server:
-#  app-name: zhuozun-admin-server
-#  port: 7100
-  config:
-    server:
-      host: 192.168.1.204
-      port: 7300
-    yml-name: zhuozun-admin-server-application
-    label: master
-    profile: local
-
-spring:
-  cloud:
-      config:
-          uri: http://${server.config.server.host}:${server.config.server.port}
-          name: ${server.config.yml-name}
-          label: ${server.config.label}
-          profile: ${server.config.profile}
+#server:
+##  app-name: zhuozun-admin-server
+##  port: 7100
+#  config:
+#    server:
+#      host: 192.168.1.104
+#      port: 7300
+#    yml-name: zhuozun-admin-server-application
+#    label: master
+#    profile: dev
+#
+#spring:
+#  cloud:
+#      config:
+#          uri: http://${server.config.server.host}:${server.config.server.port}
+#          name: ${server.config.yml-name}
+#          label: ${server.config.label}
+#          profile: ${server.config.profile}
 
 # 引用监控限制内容Map <Key String>
 info:

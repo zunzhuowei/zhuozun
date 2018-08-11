@@ -1,0 +1,47 @@
+server:
+  port: 7100
+  app-name: zhuozun-admin-server
+  discover:
+    hostname: 192.168.1.186
+#    hostname: 192.168.1.204
+    port: 7000
+
+spring:
+  security:
+    user:
+      name: "user"
+      password: "123"
+  application:
+    name: ${server.app-name}
+  boot:
+    admin:
+      context-path: admin
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+    metadata-map:
+      management.context-path: ${spring.boot.admin.context-path}
+      user.name: ${spring.security.user.name}         #These two are needed so that the server
+      user.password: ${spring.security.user.password} #can access the protected client endpoints
+
+# admin server 配置 允许访问权限（此处访问自己）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

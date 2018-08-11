@@ -28,7 +28,7 @@ public class AdminServerApp {
         SpringApplication.run(AdminServerApp.class, args);
     }
 
-    @Configuration
+   /* @Configuration
     public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
 
         @Override
@@ -36,7 +36,7 @@ public class AdminServerApp {
             http.authorizeRequests().anyRequest().permitAll()
                     .and().csrf().disable();
         }
-    }
+    }*/
 /*
     @Profile("insecure")
     @Configuration
@@ -53,7 +53,7 @@ public class AdminServerApp {
         }
     }
 
-    @Profile("secure")
+    @Profile("secure")*/
     @Configuration
     public static class SecuritySecureConfig extends WebSecurityConfigurerAdapter {
         private final String adminContextPath;
@@ -78,10 +78,11 @@ public class AdminServerApp {
                     .logout().logoutUrl(adminContextPath + "/logout").and()
                     .httpBasic().and()
                     .csrf()
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                    .ignoringAntMatchers("/instances", "/actuator/**");
+                    .disable();
+                    //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    //.ignoringAntMatchers("/instances", "/actuator/**");
             // @formatter:on
         }
-    }*/
+    }
 
 }

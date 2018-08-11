@@ -1,0 +1,5 @@
+本地开发为了快速启动，不去github拉取配置文件。所以把各个应用的 config client 的依赖都注释掉了。
+还有bootstrap.yml里面的config 配置注释掉了。
+
+使用本地的profile配置
+（application-dev.yml,application-local.yml,application-test.yml,application-prod.yml）
