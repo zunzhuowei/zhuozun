@@ -21,7 +21,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 @EnableAutoConfiguration
 @EnableAdminServer
 @EnableEurekaClient
-@EnableDiscoveryClient //暴露自己给eureka ,给其他服务调用
+//@EnableDiscoveryClient //暴露自己给eureka ,给其他服务调用
 public class AdminServerApp {
 
     public static void main(String[] args) {
