@@ -13,7 +13,7 @@ server:
 
 spring:
   profiles:
-    active: test
+    active: dev
   application:
     name:  ${server.app-name}
   cloud:

@@ -1,4 +1,4 @@
-####################################   local environment ###########################
+####################################   test environment ###########################
 server:
   port: 7300
   app-name: config-center-server
@@ -12,7 +12,7 @@ server:
 
 spring:
   profiles:
-    active: local
+    active: test
   application:
     name:  ${server.app-name}
   cloud:
