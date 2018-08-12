@@ -13,6 +13,8 @@ public interface CacheKey {
     String isClusterLock = "isClusterLock";
     String serverIdKey = "serverIdKey";
     String distributionResult = "distributionResult";
+    String redisMqSetPrefix = "redisMqSetPrefix:";
+    String redisMqListPrefix = "redisMqListPrefix:";
 
     enum Redis{
         USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
@@ -38,6 +40,20 @@ public interface CacheKey {
         public String KEY;
         public String COMMENT;
         Memcached(String key,String comment) {
+            this.KEY = key;
+            this.COMMENT = comment;
+        }
+    }
+
+
+    enum RedisPrefix{
+        REDIS_MQ_SET_PREFIX(redisMqSetPrefix, "redis mq set 消息前缀!"),
+        REDIS_MQ_LIST_PREFIX(redisMqListPrefix, "redis mq list 消息前缀!"),
+        ;
+
+        public String KEY;
+        public String COMMENT;
+        RedisPrefix(String key,String comment) {
             this.KEY = key;
             this.COMMENT = comment;
         }
