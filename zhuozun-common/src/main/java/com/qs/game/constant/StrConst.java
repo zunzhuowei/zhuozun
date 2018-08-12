@@ -24,4 +24,6 @@ public interface StrConst {
 
     String EMPTY_STR = "";
 
+    String _STR = "-";
+
 }
