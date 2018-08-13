@@ -238,4 +238,108 @@ public interface IRedisService {
      */
     List<String> sRandMember(String key, long count);
 
+    /**
+     * 通过索引获取列表中的元素
+     * Get element at {@code index} form list at {@code key}.
+     *
+     * @param key   key
+     * @param index index
+     * @return element
+     */
+    String lIndex(byte[] key, long index);
+
+    /**
+     * 通过索引获取列表中的元素
+     * Get element at {@code index} form list at {@code key}.
+     *
+     * @param key   key
+     * @param index index
+     * @return element
+     */
+    String lIndex(String key, long index);
+
+    /**
+     * Get the size of list stored at {@code key}.
+     *
+     * @param key key
+     * @return list size
+     */
+    Long lLen(byte[] key);
+
+    /**
+     * Get the size of list stored at {@code key}.
+     *
+     * @param key key
+     * @return list size
+     */
+    Long lLen(String key);
+
+    /**
+     * Removes and returns first element in list stored at {@code key}.
+     *
+     * @param key key
+     * @return element
+     */
+    String lPop(byte[] key);
+
+    /**
+     * Removes and returns first element in list stored at {@code key}.
+     *
+     * @param key key
+     * @return element
+     */
+    String lPop(String key);
+
+    /**
+     * Removes and returns last element in list stored at {@code key}.
+     *
+     * @param key key
+     * @return element
+     */
+    String rPop(byte[] key);
+
+    /**
+     * Removes and returns last element in list stored at {@code key}.
+     *
+     * @param key key
+     * @return element
+     */
+    String rPop(String key);
+
+    /**
+     * Append {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values values
+     * @return elements
+     */
+    Long rPush(byte[] key, byte[]... values);
+
+    /**
+     * Append {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values values
+     * @return elements
+     */
+    Long rPush(String key, String... values);
+
+    /**
+     * Prepend {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values valus
+     * @return elements
+     */
+    Long lPush(byte[] key, byte[]... values);
+
+    /**
+     * Prepend {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values valus
+     * @return elements
+     */
+    Long lPush(String key, String... values);
+
 }

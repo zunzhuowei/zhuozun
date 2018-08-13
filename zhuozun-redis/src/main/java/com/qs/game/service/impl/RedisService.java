@@ -269,5 +269,96 @@ public class RedisService implements IRedisService {
         return this.sRandMember(key.getBytes(), count);
     }
 
+    @Override
+    public String lIndex(final byte[] key, long index) {
+        RedisCallback<String> redisCallback = connection -> {
+            byte[] o = connection.lIndex(key, index);
+            return Objects.isNull(o) ? null : new String(o);
+        };
+        return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public String lIndex(String key, long index) {
+        return this.lIndex(key.getBytes(), index);
+    }
+
+    @Override
+    public Long lLen(final byte[] key) {
+        RedisCallback<Long> redisCallback = connection -> {
+            Long len = connection.lLen(key);
+            return Objects.isNull(len) ? 0L : len;
+        };
+        return (Long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long lLen(String key) {
+        return this.lLen(key.getBytes());
+    }
+
+    @Override
+    public String lPop(final byte[] key) {
+        RedisCallback<String> redisCallback = connection -> {
+            byte[] o = connection.lPop(key);
+            return Objects.isNull(o) ? null : new String(o);
+        };
+        return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public String lPop(String key) {
+        return this.lPop(key.getBytes());
+    }
+
+    @Override
+    public String rPop(final byte[] key) {
+        RedisCallback<String> redisCallback = connection -> {
+            byte[] o = connection.rPop(key);
+            return Objects.isNull(o) ? null : new String(o);
+        };
+        return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public String rPop(String key) {
+        return this.rPop(key.getBytes());
+    }
+
+    @Override
+    public Long rPush(final byte[] key, final byte[]... values) {
+        RedisCallback<Long> redisCallback = connection -> {
+            Long o = connection.rPush(key, values);
+            return Objects.isNull(o) ? 0L : o;
+        };
+        return (Long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long rPush(String key, String... values) {
+        Long items = 0L;
+        for (String value : values) {
+            items += this.rPush(key.getBytes(), value.getBytes());
+        }
+        return items;
+    }
+
+    @Override
+    public Long lPush(final byte[] key, final byte[]... values) {
+        RedisCallback<Long> redisCallback = connection -> {
+            Long o = connection.lPush(key, values);
+            return Objects.isNull(o) ? 0L : o;
+        };
+        return (Long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long lPush(String key, String... values) {
+        Long items = 0L;
+        for (String value : values) {
+            items += this.lPush(key.getBytes(), value.getBytes());
+        }
+        return items;
+    }
 
 }
