@@ -180,24 +180,24 @@ public class RedisService implements IRedisService {
     }
 
     @Override
-    public boolean sAdd(final byte[] key, final byte[] value, final long liveTime) {
-        RedisCallback<Boolean> redisCallback = connection -> {
+    public Long sAdd(final byte[] key, final byte[] value, final long liveTime) {
+        RedisCallback<Long> redisCallback = connection -> {
             Long sAdd = connection.sAdd(key, value);
             if (liveTime > 0 && Objects.nonNull(sAdd) && sAdd > 0) {
                 connection.expire(key, liveTime);
             }
-            return Objects.nonNull(sAdd) && sAdd > 0;
+            return Objects.isNull(sAdd) ? 0L : sAdd;
         };
-        return (boolean) redisTemplate.execute(redisCallback);
+        return (Long) redisTemplate.execute(redisCallback);
     }
 
     @Override
-    public boolean sAdd(String key, String value, long liveTime) {
+    public Long sAdd(String key, String value, long liveTime) {
         return this.sAdd(key.getBytes(), value.getBytes(), liveTime);
     }
 
     @Override
-    public boolean sAdd(String key, String value) {
+    public Long sAdd(String key, String value) {
         return this.sAdd(key, value, 0);
     }
 
@@ -327,8 +327,16 @@ public class RedisService implements IRedisService {
 
     @Override
     public Long rPush(final byte[] key, final byte[]... values) {
+        return this.rPush(key, 0L, values);
+    }
+
+    @Override
+    public Long rPush(final byte[] key, long liveTime, final byte[]... values) {
         RedisCallback<Long> redisCallback = connection -> {
             Long o = connection.rPush(key, values);
+            if (liveTime > 0 && Objects.nonNull(o) && o > 0) {
+                connection.expire(key, liveTime);
+            }
             return Objects.isNull(o) ? 0L : o;
         };
         return (Long) redisTemplate.execute(redisCallback);
@@ -344,12 +352,17 @@ public class RedisService implements IRedisService {
     }
 
     @Override
+    public Long rPush(String key, long liveTime, String... values) {
+        Long items = 0L;
+        for (String value : values) {
+            items += this.rPush(key.getBytes(), liveTime, value.getBytes());
+        }
+        return items;
+    }
+
+    @Override
     public Long lPush(final byte[] key, final byte[]... values) {
-        RedisCallback<Long> redisCallback = connection -> {
-            Long o = connection.lPush(key, values);
-            return Objects.isNull(o) ? 0L : o;
-        };
-        return (Long) redisTemplate.execute(redisCallback);
+        return this.lPush(key, 0L, values);
     }
 
     @Override
@@ -357,6 +370,27 @@ public class RedisService implements IRedisService {
         Long items = 0L;
         for (String value : values) {
             items += this.lPush(key.getBytes(), value.getBytes());
+        }
+        return items;
+    }
+
+    @Override
+    public Long lPush(final byte[] key, long liveTime, final byte[]... values) {
+        RedisCallback<Long> redisCallback = connection -> {
+            Long o = connection.lPush(key, values);
+            if (liveTime > 0 && Objects.nonNull(o) && o > 0) {
+                connection.expire(key, liveTime);
+            }
+            return Objects.isNull(o) ? 0L : o;
+        };
+        return (Long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long lPush(String key, long liveTime, String... values) {
+        Long items = 0L;
+        for (String value : values) {
+            items += this.lPush(key.getBytes(),liveTime, value.getBytes());
         }
         return items;
     }

@@ -135,7 +135,7 @@ public interface IRedisService {
      * @param liveTime 保存时间（秒）
      * @return 是否保存成功
      */
-    boolean sAdd(final byte[] key, final byte[] value, final long liveTime);
+    Long sAdd(final byte[] key, final byte[] value, final long liveTime);
 
     /**
      * 添加一个元素到set中
@@ -145,7 +145,7 @@ public interface IRedisService {
      * @param liveTime 保存时间（秒）
      * @return 是否保存成功
      */
-    boolean sAdd(String key, String value, long liveTime);
+    Long sAdd(String key, String value, long liveTime);
 
     /**
      * 添加一个元素到set中
@@ -154,7 +154,7 @@ public interface IRedisService {
      * @param value value
      * @return 是否保存成功
      */
-    boolean sAdd(String key, String value);
+    Long sAdd(String key, String value);
 
     /**
      * 获取集合的成员数
@@ -320,9 +320,29 @@ public interface IRedisService {
      *
      * @param key    key
      * @param values values
+     * @param liveTime 保存时间（秒）
+     * @return elements
+     */
+    Long rPush(byte[] key, long liveTime, byte[]... values);
+
+    /**
+     * Append {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values values
      * @return elements
      */
     Long rPush(String key, String... values);
+
+    /**
+     * Append {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values values
+     * @param liveTime 保存时间（秒）
+     * @return elements
+     */
+    Long rPush(String key, long liveTime, String... values);
 
     /**
      * Prepend {@code values} to {@code key}.
@@ -341,5 +361,25 @@ public interface IRedisService {
      * @return elements
      */
     Long lPush(String key, String... values);
+
+    /**
+     * Prepend {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values valus
+     * @param liveTime 保存时间（秒）
+     * @return elements
+     */
+    Long lPush(byte[] key, long liveTime, byte[]... values);
+
+    /**
+     * Prepend {@code values} to {@code key}.
+     *
+     * @param key    key
+     * @param values valus
+     * @param liveTime 保存时间（秒）
+     * @return elements
+     */
+    Long lPush(String key, long liveTime, String... values);
 
 }
