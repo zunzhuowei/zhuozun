@@ -11,8 +11,8 @@ spring:
     name: ${server.app-name}
   redis:
     database: 14
-#    host: 192.168.1.128
-    host: 192.168.1.197
+    host: 192.168.1.128
+#    host: 192.168.1.197
     port: 6379
     password:
     jedis:
