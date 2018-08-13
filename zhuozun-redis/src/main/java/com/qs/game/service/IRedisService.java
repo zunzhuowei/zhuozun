@@ -1,20 +1,22 @@
 package com.qs.game.service;
 
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by zun.wei on 2018/8/5.
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
- *
- *  base on redisTemplate redis utils service
+ * <p>
+ * base on redisTemplate redis utils service
  */
 public interface IRedisService {
 
 
     /**
-     *  删除缓存
+     * 删除缓存
+     *
      * @param keys key
      * @return 删除的行数
      */
@@ -25,8 +27,8 @@ public interface IRedisService {
     boolean set(final String key, Object value, long liveTime);
 
     /**
-     * @param key 缓存key
-     * @param value 缓存value
+     * @param key      缓存key
+     * @param value    缓存value
      * @param liveTime 保存的时间（秒）
      */
     boolean set(final byte[] key, final byte[] value, final long liveTime);
@@ -65,12 +67,14 @@ public interface IRedisService {
 
     /**
      * 删除redis 当前连接的db 所有 key
+     *
      * @return 删除成功与否
      */
     boolean flushDB();
 
     /**
      * 删除redis 所有db 所有 key
+     *
      * @return 删除成功与否
      */
     boolean flushAll();
@@ -123,5 +127,115 @@ public interface IRedisService {
      */
     Map<String, String> hGetAll(String key);
 
+    /**
+     * 添加一个元素到set中
+     *
+     * @param key      key
+     * @param value    value
+     * @param liveTime 保存时间（秒）
+     * @return 是否保存成功
+     */
+    boolean sAdd(final byte[] key, final byte[] value, final long liveTime);
+
+    /**
+     * 添加一个元素到set中
+     *
+     * @param key      key
+     * @param value    value
+     * @param liveTime 保存时间（秒）
+     * @return 是否保存成功
+     */
+    boolean sAdd(String key, String value, long liveTime);
+
+    /**
+     * 添加一个元素到set中
+     *
+     * @param key   key
+     * @param value value
+     * @return 是否保存成功
+     */
+    boolean sAdd(String key, String value);
+
+    /**
+     * 获取集合的成员数
+     *
+     * @param key key
+     * @return 成员数
+     */
+    Long sSize(byte[] key);
+
+    /**
+     * 获取set集合的成员数
+     *
+     * @param key key
+     * @return 成员数
+     */
+    Long sSize(String key);
+
+    /**
+     * 返回set集合中的所有成员
+     *
+     * @param key key
+     * @return 所有成员
+     */
+    List<String> sMembers(byte[] key);
+
+    /**
+     * 返回set集合中的所有成员
+     *
+     * @param key key
+     * @return 所有成员
+     */
+    List<String> sMembers(String key);
+
+    /**
+     * 移除set并返回集合中的一个随机元素
+     *
+     * @param key key
+     * @return 随机元素
+     */
+    String sPop(byte[] key);
+
+    /**
+     * 移除set并返回集合中的一个随机元素
+     *
+     * @param key key
+     * @return 随机元素
+     */
+    String sPop(String key);
+
+    /**
+     * 返回set集合中一个或多个随机数
+     *
+     * @param key key
+     * @return 随机元素
+     */
+    String sRandMember(byte[] key);
+
+    /**
+     * 返回set集合中一个或多个随机数
+     *
+     * @param key key
+     * @return 随机元素
+     */
+    String sRandMember(String key);
+
+    /**
+     * 返回set集合中一个或多个随机数
+     *
+     * @param key   key
+     * @param count 个数
+     * @return 多个随机数
+     */
+    List<String> sRandMember(byte[] key, long count);
+
+    /**
+     * 返回set集合中一个或多个随机数
+     *
+     * @param key   key
+     * @param count 个数
+     * @return 多个随机数
+     */
+    List<String> sRandMember(String key, long count);
 
 }

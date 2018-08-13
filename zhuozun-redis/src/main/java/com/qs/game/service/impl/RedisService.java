@@ -3,7 +3,6 @@ package com.qs.game.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.qs.game.constant.StrConst;
 import com.qs.game.service.IRedisService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionCommands;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
@@ -12,12 +11,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- *  redis service
+ * redis service
  */
 @Service
 public class RedisService implements IRedisService {
@@ -179,6 +177,96 @@ public class RedisService implements IRedisService {
             }
         };
         return (Map<String, String>) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public boolean sAdd(final byte[] key, final byte[] value, final long liveTime) {
+        RedisCallback<Boolean> redisCallback = connection -> {
+            Long sAdd = connection.sAdd(key, value);
+            if (liveTime > 0 && Objects.nonNull(sAdd) && sAdd > 0) {
+                connection.expire(key, liveTime);
+            }
+            return Objects.nonNull(sAdd) && sAdd > 0;
+        };
+        return (boolean) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public boolean sAdd(String key, String value, long liveTime) {
+        return this.sAdd(key.getBytes(), value.getBytes(), liveTime);
+    }
+
+    @Override
+    public boolean sAdd(String key, String value) {
+        return this.sAdd(key, value, 0);
+    }
+
+    @Override
+    public Long sSize(final byte[] key) {
+        RedisCallback<Long> redisCallback = connection -> connection.sCard(key);
+        return (Long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long sSize(String key) {
+        return this.sSize(key.getBytes());
+    }
+
+    @Override
+    public List<String> sMembers(final byte[] key) {
+        RedisCallback<List<String>> redisCallback = connection -> {
+            Set<byte[]> set = connection.sMembers(key);
+            return Objects.isNull(set) ? new ArrayList<>() : set.stream().map(String::new).collect(Collectors.toList());
+        };
+        return (List<String>) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public List<String> sMembers(String key) {
+        return this.sMembers(key.getBytes());
+    }
+
+    @Override
+    public String sPop(final byte[] key) {
+        RedisCallback<String> redisCallback = connection -> {
+            byte[] o = connection.sPop(key);
+            return Objects.isNull(o) ? null : new String(o);
+        };
+        return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public String sPop(String key) {
+        return this.sPop(key.getBytes());
+    }
+
+
+    @Override
+    public String sRandMember(final byte[] key) {
+        RedisCallback<String> redisCallback = connection -> {
+            byte[] o = connection.sRandMember(key);
+            return Objects.isNull(o) ? null : new String(o);
+        };
+        return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public String sRandMember(String key) {
+        return this.sRandMember(key.getBytes());
+    }
+
+    @Override
+    public List<String> sRandMember(final byte[] key, long count) {
+        RedisCallback<List<String>> redisCallback = connection -> {
+            List<byte[]> o = connection.sRandMember(key, count);
+            return Objects.isNull(o) ? new ArrayList<>() : o.stream().map(String::new).collect(Collectors.toList());
+        };
+        return (List<String>) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public List<String> sRandMember(String key, long count) {
+        return this.sRandMember(key.getBytes(), count);
     }
 
 
