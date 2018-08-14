@@ -206,7 +206,9 @@ public enum Code {
     ERROR_197(-197, ""),
     ERROR_198(-198, ""),
     ERROR_199(-199, ""),
-    ERROR_200(-200, "server busy"),;
+    ERROR_200(-200, "server busy"),
+    ERROR_1000(-1000, "server err"),
+    ;
 
     public int err;
     public String msg;

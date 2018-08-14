@@ -22,6 +22,7 @@
         <module>zhuozun-api</module>
         <module>zhuozun-admin-server</module>
         <module>zhuozun-config-server</module>
+        <module>zhuozun-security</module>
     </modules>
 
 
@@ -188,6 +189,11 @@
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${springboot.admin.version}</version>
             </dependency>
+            <!--<dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>6.0.12.Final</version>
+            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
