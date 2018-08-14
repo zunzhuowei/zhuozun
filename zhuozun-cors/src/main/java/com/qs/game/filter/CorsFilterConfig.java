@@ -32,7 +32,7 @@ public class CorsFilterConfig {
 
     private String allowMethods = "GET,POST,PUT,DELETE,OPTIONS";
 
-    private String allowCredentials = "false";
+    private String allowCredentials = "true";
 
     private String allowHeaders = "Origin,No-Cache,X-Requested-With,If-Modified-Since,Pragma,Last-Modified," +
             "Cache-Control,Expires,X-E4M-With,userId,token,Content-Type,X-Token";

@@ -23,6 +23,8 @@
         <module>zhuozun-admin-server</module>
         <module>zhuozun-config-server</module>
         <module>zhuozun-security</module>
+        <module>zhuozun-exception</module>
+        <module>zhuozun-cors</module>
     </modules>
 
 

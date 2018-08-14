@@ -65,6 +65,7 @@ public class UserController {
     })
     public Object getUserByList(@PathVariable Integer page, @PathVariable Integer size, @PathVariable String q) throws InterruptedException, MemcachedException, TimeoutException {
         List<User> users = userService.queryListAll(new HashMap<>());
+        //if (true) throw new NullPointerException();
         for (User user : users) {
             System.out.println("user = " + user.getUsername());
             boolean b = memCachedClient.set(user.getUsername(), user);

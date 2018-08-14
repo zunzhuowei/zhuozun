@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <!-- <script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script> -->
+    <title>test</title>
+</head>
+<body>
+
+<script>
+    function createCORS(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ('withCredentials' in xhr) {
+            xhr.open(method, url, true);
+        } else if (typeof XDomainRequest !== 'undefined') {
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        } else {
+            xhr = null;
+        }
+        xhr.withCredentials = true;
+        return xhr;
+    }
+    debugger;
+    var request = createCORS('get', 'http://192.168.1.104:8000/user/list/7/7/7');
+    if (request) {
+
+        request.onload = function () {
+            // 请求结束后,在此处写处理代码
+            alert(request.status);
+            alert(request.readyState);
+            if (request.readyState === 4 && request.status === 200) {
+                alert(request.responseText);
+            }
+        };
+
+        request.setRequestHeader("Content-type", "application/json; charset=utf-8");//发送json格式数据
+
+        request.send('user=admin');
+
+    }
+
+    /////////////////////////////////////// post//////////////////////////
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", 'http://192.168.1.104:8000/user/set/json', true);
+
+    //发送合适的请求头信息
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://aaa');
+
+    xhr.onreadystatechange = function () {//Call a function when the state changes.
+        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            // 请求结束后,在此处写处理代码
+            alert(xhr.responseText);
+        }
+    };
+    xhr.send("foo=bar&lorem=ipsum");
+
+</script>
+
+<!--<script>
+    var xhr = new XMLHttpRequest(); // IE8/9需用window.XDomainRequest兼容
+
+    // 前端设置是否带cookie
+    //xhr.withCredentials = true;
+
+    xhr.open('get', 'http://192.168.1.104:8000/user/list/7/7/7', true);
+    //xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');//编码可带可不带
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");//发送json格式数据
+    //xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=utf-8");//发送表单数据
+    //xhr.setRequestHeader("Content-type", "text/plain; charset=utf-8");//发送纯文本  不指定Content-type时，此是默认值值
+    //xhr.setRequestHeader("Content-type", "text/html; charset=utf-8");//发送html文本
+    xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://aaa');
+    xhr.send('user=admin');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            alert(xhr.responseText);
+        }
+    };
+
+</script>-->
+
+<!--<script>
+    $.ajax({
+        type: "GET",
+        url: "http://192.168.1.104:8000/user/list/7/7/7",
+        data: {},
+        crossOrigin: true,
+        dataType: "jsonp",
+        jsonp: "theFunction",   //指定参数名称
+        jsonpCallback: "showData",  //指定回调函数名称
+        success: function (resultdata) {
+            console.log("aaaaaaaaaaa");
+            var result = JSON.stringify(resultdata); //json对象转成字符串
+            alert(result);
+        },
+        error: function (e) {
+            console.log("ccccccccccc");
+            alert(e);
+        }
+    });
+
+    function showData(data) {
+        console.info("调用showData");
+
+        var result = JSON.stringify(data);
+        $("#text").val(result);
+    }
+
+</script>-->
+</body>
+</html>

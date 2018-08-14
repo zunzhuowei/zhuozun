@@ -3,6 +3,7 @@ package com.qs.game.filter;
 import com.qs.game.utils.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2018/8/14 12:22.
@@ -52,29 +54,35 @@ public class CorsFilter implements Filter {
         System.out.println("9999 = " + 9999);
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
-        String currentOrigin = request.getHeader("Origin");
+        String currentOrigin = request.getHeader(HttpHeaders.ORIGIN);
+        System.out.println("\"null\".equals(currentOrigin) = " + "null".equals(currentOrigin));
         log.info("currentOrigin : " + currentOrigin);
         if (StringUtils.isNotEmpty(allowOrigin)) {
-            List<String> allowOriginList = Arrays.asList(allowOrigin.split(","));
-            log.info("allowOriginList : " + allowOrigin);
+            if (StringUtils.equals("*", allowOrigin)) {
+                response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, currentOrigin);
+            } else {
+                List<String> allowOriginList = Arrays.asList(allowOrigin.split(","));
+                log.info("allowOriginList : " + allowOrigin);
 
-            if (CollectionUtil.isNotEmpty(allowOriginList)) {
-                if (allowOriginList.contains(currentOrigin)) {
-                    response.setHeader("Access-Control-Allow-Origin", currentOrigin);
+                if (CollectionUtil.isNotEmpty(allowOriginList)) {
+                    System.out.println("allowOriginList = " + allowOriginList);
+                    if (allowOriginList.contains(currentOrigin)) {
+                        response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, currentOrigin);
+                    }
                 }
             }
         }
         if (StringUtils.isNotEmpty(allowMethods)) {
-            response.setHeader("Access-Control-Allow-Methods", allowMethods);
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, allowMethods);
         }
         if (StringUtils.isNotEmpty(allowCredentials)) {
-            response.setHeader("Access-Control-Allow-Credentials", allowCredentials);
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, allowCredentials);
         }
         if (StringUtils.isNotEmpty(allowHeaders)) {
-            response.setHeader("Access-Control-Allow-Headers", allowHeaders);
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, allowHeaders);
         }
         if (StringUtils.isNotEmpty(exposeHeaders)) {
-            response.setHeader("Access-Control-Expose-Headers", exposeHeaders);
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, exposeHeaders);
         }
         chain.doFilter(req, res);
         return;
@@ -82,6 +90,10 @@ public class CorsFilter implements Filter {
 
     @Override
     public void destroy() {}
+
+    public static boolean isCorsRequest(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader(HttpHeaders.ORIGIN));
+    }
 
     /*
     Access-Control-Allow-Origin：允许访问的客户端域名，例如：http://web.xxx.com，若为*，则表示从任意域都能访问，即不做任何限制；

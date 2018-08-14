@@ -44,6 +44,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>qs.game</groupId>
+            <artifactId>zhuozun-exception</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>qs.game</groupId>
+            <artifactId>zhuozun-cors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
