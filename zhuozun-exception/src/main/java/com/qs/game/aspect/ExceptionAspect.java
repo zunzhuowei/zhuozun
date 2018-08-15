@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.ValidationException;
 
 /**
@@ -33,7 +34,7 @@ public class ExceptionAspect {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
     public BaseResult handleValidationException(ValidationException e) {
-        log.error("parameter_validation_exception", e);
+        log.debug("parameter_validation_exception", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("parameter_validation_exception").setSuccess(false).build();
     }
 
@@ -43,7 +44,7 @@ public class ExceptionAspect {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public BaseResult handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.error("could_not_read_json...", e);
+        log.debug("could_not_read_json...", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("could_not_read_json").setSuccess(false).build();
     }
 
@@ -53,7 +54,7 @@ public class ExceptionAspect {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public BaseResult handleValidationException(MethodArgumentNotValidException e) {
-        log.error("parameter_validation_exception...", e);
+        log.debug("parameter_validation_exception...", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("parameter_validation_exception")
                 .setSuccess(false).build();
     }
@@ -66,7 +67,7 @@ public class ExceptionAspect {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public BaseResult handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
-        log.error("request_method_not_supported...", e);
+        log.info("request_method_not_supported...", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("request_method_not_supported")
                 .setSuccess(false).build();
     }
@@ -78,7 +79,7 @@ public class ExceptionAspect {
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler({HttpMediaTypeNotSupportedException.class})
     public BaseResult handleHttpMediaTypeNotSupportedException(Exception e) {
-        log.error("content_type_not_supported...", e);
+        log.info("content_type_not_supported...", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("content_type_not_supported")
                 .setSuccess(false).build();
     }

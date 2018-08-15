@@ -1,12 +1,12 @@
 package com.qs.game.model.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qs.game.constant.StrConst;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.qs.game.constant.StrConst;
 
 import java.io.Serializable;
 import java.util.Date;
