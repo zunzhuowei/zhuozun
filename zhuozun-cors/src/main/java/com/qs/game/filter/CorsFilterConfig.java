@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Created by zun.wei on 2018/8/14 12:22.
@@ -39,7 +41,8 @@ public class CorsFilterConfig {
 
     private String exposeHeaders = "";
 
-    @Bean
+   /* 1) 自定义filter 允许跨域请求
+   @Bean
     public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
         FilterRegistrationBean<CorsFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new CorsFilter());
@@ -52,6 +55,23 @@ public class CorsFilterConfig {
         registration.setName("corsFilter");
         registration.setOrder(0);
         return registration;
+    }*/
+
+
+   //2) 基于spring的 允许跨域请求
+    @Bean
+    public org.springframework.web.filter.CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",buildConfig()); // 4
+        return new org.springframework.web.filter.CorsFilter(source);
+    }
+
+    private CorsConfiguration buildConfig() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOrigin("*"); // 1允许任何域名使用
+        corsConfiguration.addAllowedHeader("*"); // 2允许任何头
+        corsConfiguration.addAllowedMethod("*"); // 3允许任何方法（post、get等）
+        return corsConfiguration;
     }
 
 }
