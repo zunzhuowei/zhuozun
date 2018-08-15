@@ -8,7 +8,7 @@
 <body>
 
 <script>
-    function createCORS(method, url) {
+   /* function createCORS(method, url) {
         var xhr = new XMLHttpRequest();
         if ('withCredentials' in xhr) {
             xhr.open(method, url, true);
@@ -21,16 +21,16 @@
         xhr.withCredentials = true;
         return xhr;
     }
-    debugger;
-    var request = createCORS('get', 'http://192.168.1.104:8000/user/list/7/7/7');
+
+    var request = createCORS('get', 'http://192.168.1.204:8000/user/list/7/7/7');
     if (request) {
 
         request.onload = function () {
             // 请求结束后,在此处写处理代码
-            alert(request.status);
-            alert(request.readyState);
+            console.log(request.status);
+            console.log(request.readyState);
             if (request.readyState === 4 && request.status === 200) {
-                alert(request.responseText);
+                console.log(request.responseText);
             }
         };
 
@@ -38,15 +38,15 @@
 
         request.send('user=admin');
 
-    }
+    }*/
 
     /////////////////////////////////////// post//////////////////////////
+    debugger;
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", 'http://192.168.1.104:8000/user/set/json', true);
+    xhr.open("POST", 'http://192.168.1.204:8000/user/set/json', true);
 
     //发送合适的请求头信息
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://aaa');
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=utf-8");
 
     xhr.onreadystatechange = function () {//Call a function when the state changes.
         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {

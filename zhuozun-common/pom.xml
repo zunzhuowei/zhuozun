@@ -16,6 +16,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
@@ -52,6 +56,16 @@
             <groupId>com.whalin</groupId>
             <artifactId>Memcached-Java-Client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- 导致spring boot启动时报：Caused by: java.lang.NoSuchMethodError:
         javax.servlet.ServletContext.getVirtualServerName()Ljava/lang/String;
         -->
