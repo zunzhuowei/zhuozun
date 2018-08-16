@@ -1,42 +1,45 @@
-####################################   dev environment ###########################
 server:
-  port: 7300
-  app-name: config-center-server
+  port: 6666
+  app-name: zuul-gateway-server
   discover:
-    hostname: 192.168.1.104
-#    hostname: 192.168.1.204
+#    hostname: 192.168.1.104
+    hostname: 192.168.1.204
     port: 7000
   eureka:
     user:
       name: zhangsan
       password: 123
 
+# 访问如：http://192.168.1.204:6666/qs/user/user/get/1
+# 不可以用浏览器访问，postman 访问或者其他工具
+
+zuul:
+  prefix: /qs
+  ignored-services: "*"
+  routes:
+    user-service:
+      serviceId: user-center-provider
+      path: /user/**
+    product-service:
+      serviceId: product-center-provider
+      path: /product/**
+
 spring:
-  profiles:
-    active: dev
-  application:
-    name:  ${server.app-name}
-  cloud:
-    config:
-      server:
-        git:
-          uri: https://github.com/zunzhuowei/zhuozun.git #GitHub上面的git仓库名字
-          searchPaths: zhuozun-config-file  # 查找git仓库对应的目录
-          default-label: master
+    application:
+      name: ${server.app-name}
 
 eureka:
   client:
     service-url:
       defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
-    register-with-eureka: true
-    fetch-registry: true
     registry-fetch-interval-seconds: 5
+    #表示eureka client间隔多久去拉取服务注册信息，默认为30秒，
+    # 对于api-gateway，如果要迅速获取服务注册状态，可以缩小该值，比如5秒
   instance:
     instance-id: ${server.app-name}-${server.port}
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 10
     health-check-url-path: /actuator/health
-
 
 # admin server 配置 允许访问权限
 management:
@@ -47,6 +50,7 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+
 
 logging:
   level:

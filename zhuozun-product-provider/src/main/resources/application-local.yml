@@ -101,5 +101,4 @@ info:
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-boot-version: "@springboot.verion@"
-  spring-cloud-version: "@spring.cloud.version@"
+  spring-cloud-version: "@spring.cloud.verion@"

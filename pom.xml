@@ -25,6 +25,7 @@
         <module>zhuozun-security</module>
         <module>zhuozun-exception</module>
         <module>zhuozun-cors</module>
+        <module>zhuozun-gateway-server</module>
     </modules>
 
 
@@ -43,8 +44,8 @@
         <junit.version>4.12</junit.version>
         <fastjson.version>1.2.49</fastjson.version>
         <springboot.admin.version>2.0.1</springboot.admin.version>
-        <spring.cloud.version>1.4.5.RELEASE</spring.cloud.version>
-        <springboot.verion>2.0.1.RELEASE</springboot.verion>
+        <!--<spring.cloud.version>1.4.5.RELEASE</spring.cloud.version>-->
+        <spring.cloud.verion>2.0.1.RELEASE</spring.cloud.verion>
     </properties>
 
     <parent>
@@ -67,49 +68,43 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
-                <version>${springboot.verion}</version>
+                <version>${spring.cloud.verion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-                <version>${springboot.verion}</version>
+                <version>${spring.cloud.verion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-config-server</artifactId>
-                <version>${springboot.verion}</version>
+                <version>${spring.cloud.verion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-config</artifactId>
-                <version>${springboot.verion}</version>
-            </dependency>
-
-            <!--<dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-eureka-server</artifactId>
-                <version>${spring.cloud.version}</version>
-            </dependency>-->
-
-           <!-- <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-eureka</artifactId>
-                <version>${spring.cloud.version}</version>
-            </dependency>-->
-
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-feign</artifactId>
-                <version>${spring.cloud.version}</version>
+                <version>${spring.cloud.verion}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-hystrix</artifactId>
-                <version>${spring.cloud.version}</version>
+                <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+                <version>${spring.cloud.verion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring.cloud.verion}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+                <version>${spring.cloud.verion}</version>
             </dependency>
 
             <dependency>
@@ -133,12 +128,6 @@
                 <version>5.1.40</version>
             </dependency>
 
-            <!--阿里巴巴数据连接池 -->
-            <!--<dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid</artifactId>
-                <version>1.1.9</version>
-            </dependency>-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
@@ -191,11 +180,6 @@
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${springboot.admin.version}</version>
             </dependency>
-            <!--<dependency>
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>6.0.12.Final</version>
-            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
