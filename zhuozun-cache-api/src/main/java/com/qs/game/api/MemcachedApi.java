@@ -3,6 +3,7 @@ package com.qs.game.api;
 import com.qs.game.api.fallback.MemcachedFallbackFactory;
 import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.constant.ServiceName;
+import com.qs.game.model.product.GoodsBrand;
 import com.qs.game.request.ProductRequest;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -25,8 +26,7 @@ public interface MemcachedApi {
 
 
     @PostMapping("/memcached/set/goodsBrand")
-    BaseResult saveGoodsBrand(ProductRequest productRequest)
+    BaseResult saveGoodsBrand(@RequestBody ProductRequest productRequest)
             throws InterruptedException, MemcachedException, TimeoutException;
-
 
 }
