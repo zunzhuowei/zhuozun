@@ -44,7 +44,6 @@
         <junit.version>4.12</junit.version>
         <fastjson.version>1.2.49</fastjson.version>
         <springboot.admin.version>2.0.1</springboot.admin.version>
-        <!--<spring.cloud.version>1.4.5.RELEASE</spring.cloud.version>-->
         <spring.cloud.verion>2.0.1.RELEASE</spring.cloud.verion>
     </properties>
 

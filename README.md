@@ -44,6 +44,8 @@ zhuozun
 ├── zhuozun-security -- 项目安全验证依赖（aop切面日志存储）
 |
 ├── zhuozun-ucenter-provider -- 业务服务用户中心提供者
+|
+├── zhuozun-gateway-server -- zuul服务网关
 ``` 
 
 ### 涉及到的编程语言及技术框架
@@ -69,13 +71,11 @@ Maven | 项目构建管理  | [http://maven.apache.org/](http://maven.apache.org
 
 - memcached     1.4.4
 
-- spring-boot-starter-parent    2.0.1.RELEASE
-
-- spring-cloud-dependencies     Finchley.RC1
+- spring-cloud-dependencies    Finchley.RC1
 
 - spring-boot-admin     2.0.1
 
-- spring-cloud      1.4.5.RELEASE
+- spring-cloud     2.0.1.RELEASE
 
 ### 环境搭建
 
