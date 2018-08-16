@@ -34,9 +34,10 @@ public class LogAspect {
     /**
      * 添加业务逻辑方法切入点 定义在controller包里的以add为前缀的方法的执行
      */
-    @Pointcut("execution(* com.qs.game.*.controller.*.add*(..)) "
-            + "|| execution(* com.qs.game.*.controller.*.save*(..)) "
-            + "|| execution(* com.qs.game.*.controller.*.push*(..)) "
+    @Pointcut("execution(* com.qs.*.controller.*.add*(..)) "
+            + "|| execution(* com.qs.*.controller.*.save*(..)) "
+            + "|| execution(* com.qs.*.controller.*.insert*(..)) "
+            + "|| execution(* com.qs.*.controller.*.push*(..)) "
     )
     public void insertServiceCall() {
     }
@@ -44,24 +45,28 @@ public class LogAspect {
     /**
      * 修改业务逻辑方法切入点 定义在controller包里的以update为前缀的方法的执行
      */
-    @Pointcut("execution(* com.qs.game.*.controller.*.upd*(..)) "
-            + "|| execution(* com.qs.game.*.controller.*.reset*(..)) "
-            + "|| execution(* com.qs.game.*.controller.*.info(..)) "
-            + "|| execution(* com.qs.game.*.controller.*.password(..))")
+    @Pointcut("execution(* com.qs.*.controller.*.upd*(..)) "
+            + "|| execution(* com.qs.*.controller.*.reset*(..)) "
+            + "|| execution(* com.qs.*.controller.*.modif*(..)) "
+            + "|| execution(* com.qs.*.controller.*.revise*(..)) "
+            + "|| execution(* com.qs.*.controller.*.alter*(..))")
     public void updateServiceCall() {
     }
 
     /**
      * 删除业务逻辑方法切入点 定义在controller包里以delete为前缀的方法的执行
      */
-    @Pointcut("execution(* com.qs.game.*.controller.*.del*(..))")
+    @Pointcut("execution(* com.qs.*.controller.*.del*(..)) "
+            + "|| execution(* com.qs.*.controller.*.remove*(..)) "
+            + "|| execution(* com.qs.*.controller.*.cut*(..)) "
+    )
     public void deleteServiceCall() {
     }
 
     /**
      * 授权业务逻辑方法切入点 定义在controller包里以delete为前缀的方法的执行
      */
-    @Pointcut("execution(* com.qs.game.*.controller.*.permission(..))")
+    @Pointcut("execution(* com.qs.*.controller.*.permission(..))")
     public void permissionServiceCall() {
     }
 

@@ -1,5 +1,5 @@
 server:
-  port: 6666
+  port: 7777
   app-name: zuul-gateway-server
   discover:
 #    hostname: 192.168.1.104
@@ -10,19 +10,18 @@ server:
       name: zhangsan
       password: 123
 
-# 访问如：http://192.168.1.204:6666/qs/user/user/get/1
-# 不可以用浏览器访问，postman 访问或者其他工具
+# 访问如：http://192.168.1.204:6666/qs/user-api/user/get/1
 
 zuul:
   prefix: /qs
   ignored-services: "*"
   routes:
-    user-service:
+    user:
       serviceId: user-center-provider
-      path: /user/**
-    product-service:
+      path: /user-api/**
+    product:
       serviceId: product-center-provider
-      path: /product/**
+      path: /product-api/**
 
 spring:
     application:

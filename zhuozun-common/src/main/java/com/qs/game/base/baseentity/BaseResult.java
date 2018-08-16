@@ -88,6 +88,13 @@ public class BaseResult<T> implements Serializable {
             return baseResult;
         }
 
+        public String buildJsonStr() {
+            String content = Objects.isNull(baseResult.content) ? null : JSON.toJSONString(baseResult.content,true);
+            LoggerEnum.BaseResultLog.logger.info("BaseResult-----------::success:{},code:{},message:{},\ncontent:\n{}",
+                    baseResult.success, baseResult.code, baseResult.message, content);
+            return JSON.toJSONString(baseResult);
+        }
+
 
         private void setBaseResult(BaseResult baseResult) {
             this.baseResult = baseResult;
