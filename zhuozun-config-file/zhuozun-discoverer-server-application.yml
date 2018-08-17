@@ -41,6 +41,9 @@ eureka:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 info:
   app.name: ${server.app-name}
@@ -95,6 +98,9 @@ eureka:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 info:
   app.name: ${server.app-name}
@@ -147,6 +153,9 @@ eureka:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 info:
   app.name: ${server.app-name}
@@ -194,6 +203,9 @@ eureka:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 info:
   app.name: ${server.app-name}

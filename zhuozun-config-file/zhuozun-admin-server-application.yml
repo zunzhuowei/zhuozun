@@ -53,6 +53,9 @@ management:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 
 # 引用监控限制内容Map <Key String>
@@ -125,6 +128,9 @@ management:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 
 # 引用监控限制内容Map <Key String>
@@ -195,6 +201,9 @@ management:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 
 # 引用监控限制内容Map <Key String>
@@ -260,6 +269,9 @@ management:
 logging:
   level:
     root: info
+    io: # 指定包输入日志
+      swagger: error
+
 
 
 # 引用监控限制内容Map <Key String>
