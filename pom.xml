@@ -26,6 +26,7 @@
         <module>zhuozun-exception</module>
         <module>zhuozun-cors</module>
         <module>zhuozun-gateway-server</module>
+        <module>zhuozun-kafka-provider</module>
     </modules>
 
 
@@ -115,6 +116,11 @@
             <dependency>
                 <groupId>com.marcosbarbero.cloud</groupId>
                 <artifactId>spring-cloud-zuul-ratelimit</artifactId>
+                <version>${spring.cloud.verion}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-stream-kafka</artifactId>
                 <version>${spring.cloud.verion}</version>
             </dependency>
 
