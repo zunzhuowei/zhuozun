@@ -10,8 +10,55 @@ server:
       password: 123
 
 zuul:
-  prefix: /qs
-  ignored-services: "*"
+  ratelimit:
+    key-prefix: zun-ratelimite
+    enabled: true
+    repository: REDIS
+    behind-proxy: true
+    policies:
+      user:
+        limit: 10
+        quota: 2
+        refresh-interval: 2
+      product:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
+#    policy-list:
+#      user:
+#        ? ''
+#        : - limit: 2
+#            quota: 1
+#            refreshInterval: 3
+#            type:
+#            - matcher: /user/list
+#              type: url
+#          - limit: 2
+#            quota: 1
+#            refreshInterval: 3
+#            type:
+#            - matcher: /user/list
+#              type: url
+#      product:
+#        ? ''
+#        : - limit: 2
+#            quota: 1
+#            refreshInterval: 3
+#            type:
+#            - matcher: /product/list
+#              type: url
+#          - limit: 2
+#            quota: 1
+#            refreshInterval: 3
+#            type:
+#            - matcher: /product/list
+#              type: url
+#    default-policy:
+#      limit: 10
+#      quota: 20
+#      refresh-interval: 30
+  prefix: /qs # 添加前缀
+  ignored-services: "*"  #忽略其他未配置的服务
   routes:
     user:
       serviceId: user-center-provider
@@ -20,9 +67,37 @@ zuul:
       serviceId: product-center-provider
       path: /product-api/**
 
+#    限流配置
+#    limit 单位时间内允许访问的次数
+#    quota 单位时间内允许访问的总时间（单位时间窗口期内，所有的请求的总时间不能超过这个时间限制）
+#    refresh-interval 单位时间设置
+#    type 限流类型
+#    url类型的限流就是通过请求路径区分
+#    origin是通过客户端IP地址区分
+#    user是通过登录用户名进行区分，也包括匿名用户
+#    default-policy 可选 - 针对所有的路由配置的策略,除非特别配置了policy-list
+#    policies 对特定的服务id进行限流
+#    缺点
+#    可以配置多个url，但是这些url都使用一个限流配置，没有办法指定每个url的限流配置
+#    policy-list 对特定的服务id进行限流
+#    优点
+#    可以为某个服务id的每个url 指定不同的限流配置
+#    如：refresh-interval: 30; limit: 10; quota: 20;  表示30秒内允许10个访问，或者要求总请求时间小于20秒
+
 spring:
-    application:
-      name: ${server.app-name}
+  redis:
+    database: 14
+    host: 192.168.1.197
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  application:
+    name: ${server.app-name}
+
 
 eureka:
   client:

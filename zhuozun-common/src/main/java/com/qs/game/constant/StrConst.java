@@ -26,4 +26,9 @@ public interface StrConst {
 
     String _STR = "-";
 
+    /**
+     * JSON 资源
+     */
+    String CONTENT_TYPE = "application/json; charset=utf-8";
+
 }

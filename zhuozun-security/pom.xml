@@ -30,12 +30,11 @@
             <artifactId>tomcat-embed-core</artifactId>
         </dependency>
 
-        <!-- security 暂时还未使用所以 compile -->
-        <dependency>
+        <!-- security 暂时还未使用所以 -->
+       <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <scope>compile</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
