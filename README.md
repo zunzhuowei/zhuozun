@@ -46,6 +46,8 @@ zhuozun
 ├── zhuozun-ucenter-provider -- 业务服务用户中心提供者
 |
 ├── zhuozun-gateway-server -- zuul服务网关
+|
+├── zhuozun-kafka-provider -- kafka服务提供
 ``` 
 
 ### 涉及到的编程语言及技术框架
@@ -76,6 +78,8 @@ Maven | 项目构建管理  | [http://maven.apache.org/](http://maven.apache.org
 - spring-boot-admin     2.0.1
 
 - spring-cloud     2.0.1.RELEASE
+
+- kafka     kafka_2.11-1.0.1
 
 ### 环境搭建
 
