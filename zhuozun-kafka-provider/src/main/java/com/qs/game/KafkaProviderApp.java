@@ -1,6 +1,6 @@
 package com.qs.game;
 
-import com.qs.game.channel.ShopChannel;
+import com.qs.game.channel.Channel;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -14,7 +14,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
  *
  */
 @SpringBootApplication
-@EnableBinding({ShopChannel.class})
+@EnableBinding({Channel.class})
 public class KafkaProviderApp {
 
     public static void main(String[] args) {

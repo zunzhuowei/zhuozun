@@ -1,8 +1,5 @@
 package com.qs.game.source;
 
-import org.springframework.cloud.stream.annotation.Output;
-import org.springframework.messaging.MessageChannel;
-
 /**
  * Created by zun.wei on 2018/8/18.
  * To change this template use File|Default Setting
@@ -14,9 +11,12 @@ import org.springframework.messaging.MessageChannel;
 public interface Source {
 
     //发送队列1
-    String OUTPUT = "output";
 
-    @Output(Source.OUTPUT)
-    MessageChannel output();
+    /**
+     * 发消息的通道名称
+     */
+    String SHOP_OUTPUT = "shop_output";
+
+    String USER_OUTPUT = "user_output";
 
 }

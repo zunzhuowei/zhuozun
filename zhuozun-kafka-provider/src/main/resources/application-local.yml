@@ -2,8 +2,8 @@ server:
   port: 8400
   app-name: kafka-center-provider
   discover:
-    hostname: 192.168.1.104
-#    hostname: 192.168.1.204
+#    hostname: 192.168.1.104
+    hostname: 192.168.1.204
     port: 7000
   eureka:
     user:
@@ -19,7 +19,7 @@ mybatis:
 spring:
     redis:
       database: 14
-      host: 192.168.1.197
+      host: 192.168.1.128
       port: 6379
       password:
       jedis:
@@ -32,7 +32,7 @@ spring:
     datasource:
       type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
       driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
-      url: jdbc:mysql://192.168.1.197:3306/zhuozun?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+      url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
       username: dev
       password: dev
       dbcp2:
@@ -60,7 +60,7 @@ spring:
         default-binder: kafka  #默认的binder是kafka
     kafka:
       bootstrap-servers: # 192.168.1.254:9092  #kafka服务地址
-        - 192.168.1.254:9092
+        - 192.168.1.186:9092
       consumer:
         max-poll-records: 1000
         fetch-min-size: 10

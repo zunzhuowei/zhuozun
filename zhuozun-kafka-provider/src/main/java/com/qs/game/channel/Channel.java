@@ -1,5 +1,7 @@
 package com.qs.game.channel;
 
+import com.qs.game.sink.Sink;
+import com.qs.game.source.Source;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;
@@ -10,17 +12,7 @@ import org.springframework.messaging.SubscribableChannel;
  * To change this template use File|Default Setting
  * |Editor|File and Code Templates|Includes|File Header
  */
-public interface ShopChannel {
-
-    /**
-     * 发消息的通道名称
-     */
-    String SHOP_OUTPUT = "shop_output";
-
-    /**
-     * 消息的订阅通道名称
-     */
-    String SHOP_INPUT = "shop_input";
+public interface Channel extends Sink, Source {
 
     /**
      * 发消息的通道
@@ -37,5 +29,22 @@ public interface ShopChannel {
      */
     @Input(SHOP_INPUT)
     SubscribableChannel recieveShopMessage();
+
+
+    /**
+     * 用户发消息的通道
+     *
+     * @return
+     */
+    @Output(USER_OUTPUT)
+    MessageChannel sendUserMessage();
+
+    /**
+     * 用户收消息的通道
+     *
+     * @return
+     */
+    @Input(USER_INPUT)
+    SubscribableChannel recieveUserMessage();
 
 }
