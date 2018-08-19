@@ -22,5 +22,8 @@ public interface ServiceName {
     //配置中心服务
     String CONFIG_CENTER_SERVER = "CONFIG-CENTER-SERVER";
 
+    //消息中心服务
+    String KAFKA_CENTER_SERVER = "KAFKA-CENTER-SERVER";
+
 
 }

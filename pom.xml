@@ -27,6 +27,7 @@
         <module>zhuozun-cors</module>
         <module>zhuozun-gateway-server</module>
         <module>zhuozun-kafka-provider</module>
+        <module>zhuozun-admin-ui</module>
     </modules>
 
 

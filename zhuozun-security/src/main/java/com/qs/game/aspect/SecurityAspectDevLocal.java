@@ -25,7 +25,12 @@ import java.lang.reflect.Method;
 public class SecurityAspectDevLocal {
 
 
-    @Around("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
+    @Around("@annotation(org.springframework.web.bind.annotation.RequestMapping)"
+    + " || @annotation(org.springframework.web.bind.annotation.PostMapping)"
+    + " || @annotation(org.springframework.web.bind.annotation.GetMapping)"
+    + " || @annotation(org.springframework.web.bind.annotation.PutMapping)"
+    + " || @annotation(org.springframework.web.bind.annotation.DeleteMapping)"
+    )
     public Object execute(ProceedingJoinPoint pjp) throws Throwable {
         // 从切点上获取目标方法
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();

@@ -87,19 +87,23 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public Object add(User user) {
+    public BaseResult add(@RequestBody User user) {
         System.out.println("provider ---  user = " + user);
         if (Objects.isNull(user.getUsername())
-                || Objects.isNull(user.getStatus())
                 || Objects.isNull(user.getPassword())) {
             return BaseResult.getBuilder().setSuccess(false).setCode(Code.ERROR_1)
-                    .setMessage("username or password is null").setContent("aaaabbbccc").build();
+                    .setMessage("username or password is null").setContent(user).build();
         }
 
         Date nowDate = new Date();
         user.setCreateTime(nowDate).setDelStatus(false);
         redisService.set("user", JSON.toJSONString(user));
-        return userService.insertSelective(user);
+        int insert = userService.insertSelective(user);
+        return insert > 0 ?
+                BaseResult.getBuilder().setSuccess(true).setCode(Code.ERROR_0)
+                        .setMessage("add success").setContent(user).build()
+                : BaseResult.getBuilder().setSuccess(false).setCode(Code.ERROR_2)
+                .setMessage("insert db error").setContent(user).build();
     }
 
     /**

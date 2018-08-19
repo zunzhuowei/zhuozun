@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>APP后台接口访问次数</title>
+    <!-- 引入 ECharts 文件 -->
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 600px;height:400px;margin-left: 30%;
+    margin-top: 10%;"></div>
+
+<script type="text/javascript">
+    alert("222222");
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 使用刚指定的配置项和数据显示图表。
+    setInterval(function () {
+        var playSrc = [];
+        $.ajax({
+            type : "POST",
+            url: "/streaming/log/get/20180628",
+            data : {},
+            dataType :"json",
+            async : false,
+            success: function (result) {
+                //alert(result[0].name);
+                for (var i = 0; i < result.length; i++) {
+                    playSrc.push({
+                        "name": result[i].name,
+                        "value" : result[i].count
+                    })
+                }
+            }
+        });
+
+
+        // 指定图表的配置项和数据
+        var option = {
+            title : {
+                text: 'APP后台接口访问次数',
+                subtext: '今天到现在为止',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: playSrc.map(function (value) {
+                    return value.name;
+                })
+            },
+            series : [
+                {
+                    name: '访问次数',
+                    type: 'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data: playSrc ,
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    },10000);
+
+</script>
+
+</body>
+</html>

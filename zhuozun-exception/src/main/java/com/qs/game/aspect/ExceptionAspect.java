@@ -44,7 +44,7 @@ public class ExceptionAspect {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public BaseResult handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.debug("could_not_read_json...", e);
+        log.info("could_not_read_json...", e);
         return BaseResult.getBuilder().setCode(Code.ERROR_1000).setMessage("could_not_read_json").setSuccess(false).build();
     }
 
