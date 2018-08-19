@@ -27,39 +27,14 @@ zuul:
         limit: 20
         quota: 2
         refresh-interval: 3
-#    policy-list:
-#      user:
-#        ? ''
-#        : - limit: 2
-#            quota: 1
-#            refreshInterval: 3
-#            type:
-#            - matcher: /user/list
-#              type: url
-#          - limit: 2
-#            quota: 1
-#            refreshInterval: 3
-#            type:
-#            - matcher: /user/list
-#              type: url
-#      product:
-#        ? ''
-#        : - limit: 2
-#            quota: 1
-#            refreshInterval: 3
-#            type:
-#            - matcher: /product/list
-#              type: url
-#          - limit: 2
-#            quota: 1
-#            refreshInterval: 3
-#            type:
-#            - matcher: /product/list
-#              type: url
-#    default-policy:
-#      limit: 10
-#      quota: 20
-#      refresh-interval: 30
+      kafka:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
+      cache:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
   prefix: /qs # 添加前缀
   ignored-services: "*"  #忽略其他未配置的服务
   routes:
@@ -69,6 +44,12 @@ zuul:
     product:
       serviceId: product-center-provider
       path: /product-api/**
+    kafka:
+      serviceId: kafka-center-provider
+      path: /kafka-api/**
+    cache:
+      serviceId: cache-provider
+      path: /cache-api/**
 
 #    限流配置
 #    limit 单位时间内允许访问的次数

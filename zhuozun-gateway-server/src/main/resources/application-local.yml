@@ -27,6 +27,10 @@ zuul:
         limit: 20
         quota: 2
         refresh-interval: 3
+      kafka:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
 #    policy-list:
 #      user:
 #        ? ''
@@ -69,6 +73,9 @@ zuul:
     product:
       serviceId: product-center-provider
       path: /product-api/**
+    kafka:
+      serviceId: kafka-center-provider
+      path: /kafka-api/**
 
 #    限流配置
 #    limit 单位时间内允许访问的次数

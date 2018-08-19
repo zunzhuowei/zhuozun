@@ -9,7 +9,10 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import static springfox.documentation.swagger.web.UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS;
 
 /**
  * Created by zun.wei on 2018/8/3 17:09.
@@ -40,5 +43,19 @@ public class SwaggerConfig {
                 .contact(new Contact("zhangsan","https://www.baidu.com","123456789@qq.com"))
                 .build();
     }
+
+    /*@Bean
+    public UiConfiguration uiConfig() {
+        return UiConfigurationBuilder.builder()
+                .validatorUrl(null)
+                .docExpansion(DocExpansion.LIST)
+                .operationsSorter(OperationsSorter.ALPHA)
+                .defaultModelRendering(ModelRendering.EXAMPLE)
+                .supportedSubmitMethods(DEFAULT_SUBMIT_METHODS)
+                .tagsSorter(TagsSorter.ALPHA)
+                .displayRequestDuration(true)
+                .showExtensions(true)
+                .build();
+    }*/
 
 }
