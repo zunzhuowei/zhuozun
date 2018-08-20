@@ -23,6 +23,11 @@
             <version>${zhuozun.version}</version>
         </dependency>
         <dependency>
+            <groupId>qs.game</groupId>
+            <artifactId>zhuozun-cors</artifactId>
+            <version>${zhuozun.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
             <version>${spring.cloud.verion}</version>

@@ -13,6 +13,9 @@ server:
 # 访问如：http://192.168.1.204:6666/qs/user-api/user/get/1
 
 zuul:
+  #需要忽略的头部信息，不在传播到其他服务
+  sensitive-headers: Access-Control-Allow-Origin
+  ignored-headers: Access-Control-Allow-Origin,H-APP-Id,Token,APPToken
   ratelimit:
     key-prefix: zun-ratelimite
     enabled: true
@@ -35,6 +38,10 @@ zuul:
         limit: 20
         quota: 2
         refresh-interval: 3
+      adminUi:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
   prefix: /qs # 添加前缀
   ignored-services: "*"  #忽略其他未配置的服务
   routes:
@@ -50,6 +57,9 @@ zuul:
     cache:
       serviceId: cache-provider
       path: /cache-api/**
+    adminUi:
+      serviceId: admin-ui-server
+      path: /adminUi-api/**
 
 #    限流配置
 #    limit 单位时间内允许访问的次数

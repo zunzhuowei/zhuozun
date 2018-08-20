@@ -10,6 +10,9 @@ server:
       password: 123
 
 zuul:
+  #需要忽略的头部信息，不在传播到其他服务
+  sensitive-headers: Access-Control-Allow-Origin
+  ignored-headers: Access-Control-Allow-Origin,H-APP-Id,Token,APPToken
   ratelimit:
     key-prefix: zun-ratelimite
     enabled: true
@@ -25,6 +28,10 @@ zuul:
         quota: 2
         refresh-interval: 3
       kafka:
+        limit: 20
+        quota: 2
+        refresh-interval: 3
+      adminUi:
         limit: 20
         quota: 2
         refresh-interval: 3
@@ -73,7 +80,9 @@ zuul:
     kafka:
       serviceId: product-center-provider
       path: /product-api/**
-
+    adminUi:
+      serviceId: admin-ui-server
+      path: /adminUi-api/**
 #    限流配置
 #    limit 单位时间内允许访问的次数
 #    quota 单位时间内允许访问的总时间（单位时间窗口期内，所有的请求的总时间不能超过这个时间限制）

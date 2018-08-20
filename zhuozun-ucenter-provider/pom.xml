@@ -43,11 +43,11 @@
             <artifactId>zhuozun-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>qs.game</groupId>
             <artifactId>zhuozun-cors</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- actuator监控信息完善 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
