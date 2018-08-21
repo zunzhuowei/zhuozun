@@ -106,6 +106,16 @@ zuul:
 #    可以为某个服务id的每个url 指定不同的限流配置
 #    如：refresh-interval: 30; limit: 10; quota: 20;  表示30秒内允许10个访问，或者要求总请求时间小于20秒
 
+
+# ribbon 负载均衡超时设置 （网关路由到微服务的超时时间）
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  eureka:
+    enabled: true
+
 spring:
   redis:
     database: 14

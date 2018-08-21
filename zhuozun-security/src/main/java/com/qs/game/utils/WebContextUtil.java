@@ -4,6 +4,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
@@ -15,12 +16,20 @@ public class WebContextUtil {
     /**
      * @return HttpServletRequest
      * @description 获取HTTP请求
-     * @author rico
-     * @created 2017年7月4日 下午5:18:08
      */
     public static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
                 .getRequestAttributes())).getRequest();
+    }
+
+    /**
+     * 获取HTTP响应
+     *
+     * @return HttpServletResponse
+     */
+    public static HttpServletResponse getResponse() {
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder
+                .getRequestAttributes())).getResponse();
     }
 
 }
