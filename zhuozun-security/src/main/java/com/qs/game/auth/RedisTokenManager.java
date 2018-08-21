@@ -1,7 +1,9 @@
 package com.qs.game.auth;
 
+import com.qs.game.constant.IntConst;
 import com.qs.game.constant.StrConst;
 import com.qs.game.service.IRedisService;
+import com.qs.game.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -21,13 +23,13 @@ public class RedisTokenManager implements TokenManager{
     @Override
     public String createToken(String username) {
         String token = UUID.randomUUID().toString().replaceAll(StrConst._STR, StrConst.EMPTY_STR);
-        redisService.set(token, username);
+        redisService.set(Constants.TOKEN_PREFIX + token, username, IntConst.HOUR * Constants.TOKEN_EXPIRES_HOUR);
         return token;
     }
 
     @Override
     public boolean checkToken(String token) {
-        return StringUtils.isNotBlank(redisService.get(token));
+        return StringUtils.isNotBlank(token) && StringUtils.isNotBlank(redisService.get(token));
     }
 
     @Override

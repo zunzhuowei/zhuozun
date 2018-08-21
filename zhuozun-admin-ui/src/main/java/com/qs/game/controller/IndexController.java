@@ -1,5 +1,6 @@
 package com.qs.game.controller;
 
+import com.qs.game.annotation.IgnoreSecurity;
 import com.qs.game.api.UserApi;
 import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.base.baseentity.BaseResult;
@@ -49,6 +50,7 @@ public class IndexController extends BaseController {
     }
 
 
+    @IgnoreSecurity
     @ResponseBody
     @RequestMapping(value = "register")
     public BaseResult register(@RequestBody User user) {
@@ -56,6 +58,7 @@ public class IndexController extends BaseController {
         return userApi.add(user);
     }
 
+    @IgnoreSecurity
     @ResponseBody
     @RequestMapping(value = "login")
     public BaseResult login(@RequestBody User user) {
