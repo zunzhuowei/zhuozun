@@ -17,4 +17,7 @@ public interface UserMapper extends IBaseMapper {
     int updateByPrimaryKeySelective(User record);
 
     int updateByPrimaryKey(User record);
+
+    User queryBeanByUserName(String username);
+
 }

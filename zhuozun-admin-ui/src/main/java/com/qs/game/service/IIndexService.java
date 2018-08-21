@@ -1,5 +1,8 @@
 package com.qs.game.service;
 
+import com.qs.game.base.baseentity.BaseResult;
+import com.qs.game.model.user.User;
+
 /**
  * Created by zun.wei on 2018/8/19.
  * To change this template use File|Default Setting
@@ -7,6 +10,8 @@ package com.qs.game.service;
  */
 public interface IIndexService {
 
+    BaseResult login(User user);
 
+    BaseResult register(User user);
 
 }

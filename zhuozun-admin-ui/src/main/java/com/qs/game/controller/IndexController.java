@@ -5,7 +5,9 @@ import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.enum0.Code;
 import com.qs.game.model.user.User;
+import com.qs.game.service.IIndexService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,9 @@ public class IndexController extends BaseController {
     @Resource
     private UserApi userApi;
 
+    @Autowired
+    private IIndexService indexService;
+
     @GetMapping({"", "login.html", "login"})
     public String login() {
         return "login";
@@ -49,6 +54,13 @@ public class IndexController extends BaseController {
     public BaseResult register(@RequestBody User user) {
         log.warn("register user is --::" + user);
         return userApi.add(user);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "login")
+    public BaseResult login(@RequestBody User user) {
+        log.warn("login user is --::" + user);
+        return indexService.login(user);
     }
 
 

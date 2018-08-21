@@ -11,6 +11,7 @@ import com.qs.game.base.baseservice.IBaseService;
 public interface IUserService extends IBaseService<User, Long> {
 
 
+    User queryBeanByUserName(String username);
 
 
 }

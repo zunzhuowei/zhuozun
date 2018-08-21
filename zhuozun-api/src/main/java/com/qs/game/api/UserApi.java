@@ -26,4 +26,7 @@ public interface UserApi {
     @GetMapping("/user/get/{id}")
     BaseResult getUserById(@PathVariable("id") Long id);
 
+    @GetMapping("/user/get/by/{username}")
+    BaseResult findUserByUserName(@PathVariable("username") String username);
+
 }

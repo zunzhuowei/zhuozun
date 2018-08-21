@@ -122,4 +122,11 @@ public class UserController {
         return redisApi.saveUserByJson(JSON.toJSONString(user));
     }
 
+    @GetMapping("/get/by/{username}")
+    public BaseResult getUserById(@PathVariable String username) {
+        User user = userService.queryBeanByUserName(username);
+        return BaseResult.getBuilder().setSuccess(true).setCode(Code.ERROR_0)
+                .setContent(user).setMessage("get user success").build();
+    }
+
 }

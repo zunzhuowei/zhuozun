@@ -84,6 +84,9 @@ zuul:
     adminUi:
       serviceId: admin-ui-server
       path: /adminUi-api/**
+    host:
+      connect-timeout-millis: 10000
+      socket-timeout-millis: 10000
 #    限流配置
 #    limit 单位时间内允许访问的次数
 #    quota 单位时间内允许访问的总时间（单位时间窗口期内，所有的请求的总时间不能超过这个时间限制）

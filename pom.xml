@@ -36,7 +36,7 @@
 
     <properties>
         <!-- 项目激活版本 -->
-        <zhuozun.profile.active>dev</zhuozun.profile.active>
+        <zhuozun.profile.active>local</zhuozun.profile.active>
         <!-- 项目版本 -->
         <zhuozun.version>1.0-SNAPSHOT</zhuozun.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

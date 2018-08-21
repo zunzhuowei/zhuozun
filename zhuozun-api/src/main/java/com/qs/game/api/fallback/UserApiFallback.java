@@ -33,6 +33,11 @@ public class UserApiFallback implements FallbackFactory<UserApi> {
             public BaseResult getUserById(Long id) {
                 return UserApiFallback.getBaseFailResult();
             }
+
+            @Override
+            public BaseResult findUserByUserName(String username) {
+                return UserApiFallback.getBaseFailResult();
+            }
         };
     }
 

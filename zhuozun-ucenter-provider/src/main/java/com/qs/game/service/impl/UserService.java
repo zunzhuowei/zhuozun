@@ -47,7 +47,10 @@ public class UserService extends AbstractBaseService<User,Long> implements IUser
         return super.insertSelective(record);
     }
 
-
+    @Override
+    public User queryBeanByUserName(String username) {
+        return userMapper.queryBeanByUserName(username);
+    }
 
 
     /**

@@ -64,14 +64,14 @@
                 <h2>登录</h2>
                 <div class="form-group">
                     <label for="username" class="sr-only">账号</label>
-                    <input type="text" class="form-control" id="username" placeholder="账号" autocomplete="off">
+                    <input type="text" class="form-control" name="username" id="username" placeholder="账号" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="password" class="sr-only">密码</label>
-                    <input type="password" class="form-control" id="password" placeholder="密码" autocomplete="off">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="密码" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label for="remember"><input type="checkbox" id="remember"> 记住密码 </label>
+                    <label for="remember"><input type="checkbox" name="remember" id="remember"> 记住密码 </label>
                 </div>
                 <div class="form-group">
                     <p>没有注册? <a href="sign-up.html">注册</a> | <a href="forgot.html">忘记密码?</a>
@@ -112,10 +112,46 @@
 <script src="js/core/zhuozun.js"></script>
 
 <script>
+    $(function () {
+        $("#signIn").on("click", function () {
+            var b = $("#password").val() !== '';
+            if (!b) {
+                alert("密码不能为空！");
+                return;
+            }
+
+            var parameters = {};
+            var form = $('form').serializeArray();
+            $.each(form, function () {
+                parameters[this.name] = this.value;
+            });
+            parameters = JSON.stringify(parameters);
+
+            $.ajax({
+                type: "POST",
+                url: zhuozun.baseUrl + zhuozun.admin_ui_api.login,
+                data: parameters,
+                dataType: "json",
+                contentType: 'application/json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("token", "tokenvalue");
+                },
+                async: true,
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (e) {
+                    console.log(JSON.stringify(e));
+                }
+            });
+        });
+    });
+
+    /*
     $("#signIn").on("click", function () {
         $.ajax({
             type: "GET",
-            url: zhuozun.baseUrl + zhuozun.user_api.getUserById + 1,
+            url: zhuozun.baseUrl + zhuozun.user_api.getUserById(1),
             // url:  "http://192.168.1.104:8000/user/get/1",
             data: {},
             dataType: "json",
@@ -132,7 +168,7 @@
             }
         });
 
-    });
+    });*/
 </script>
 
 </body>

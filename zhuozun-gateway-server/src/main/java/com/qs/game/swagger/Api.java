@@ -14,6 +14,7 @@ public enum Api {
     PRODUCT_API("/product-api","产品系统"),
     KAFKA_API("/kafka-api","消息系统"),
     CACHE_API("/cache-api","缓存系统"),
+    ADMIN_API("/adminUi-api","管理系统"),
     ;
 
     public String API; // zuul.routes.*.path
