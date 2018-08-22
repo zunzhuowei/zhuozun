@@ -9,7 +9,7 @@ public enum Code {
     ERROR_0(0, "success"),
     ERROR_1(-1, "user id is null"),
     ERROR_2(-2, "not a json text"),
-    ERROR_3(-3, ""),
+    ERROR_3(-3, "userName or password is invalid"),
     ERROR_4(-4, ""),
     ERROR_5(-5, ""),
     ERROR_6(-6, ""),

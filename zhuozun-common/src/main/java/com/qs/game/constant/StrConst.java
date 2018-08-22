@@ -31,4 +31,6 @@ public interface StrConst {
      */
     String CONTENT_TYPE = "application/json; charset=utf-8";
 
+    String ON = "on";
+
 }

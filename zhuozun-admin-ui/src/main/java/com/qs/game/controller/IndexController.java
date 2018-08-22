@@ -2,6 +2,7 @@ package com.qs.game.controller;
 
 import com.qs.game.annotation.IgnoreSecurity;
 import com.qs.game.api.UserApi;
+import com.qs.game.api.entity.UserRequest;
 import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.enum0.Code;
@@ -61,9 +62,9 @@ public class IndexController extends BaseController {
     @IgnoreSecurity
     @ResponseBody
     @RequestMapping(value = "login")
-    public BaseResult login(@RequestBody User user) {
-        log.warn("login user is --::" + user);
-        return indexService.login(user);
+    public BaseResult login(@RequestBody UserRequest userRequest) {
+        log.warn("login userRequest is --::" + userRequest);
+        return indexService.login(userRequest);
     }
 
 

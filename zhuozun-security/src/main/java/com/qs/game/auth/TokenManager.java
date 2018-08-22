@@ -10,6 +10,8 @@ public interface TokenManager {
 
     boolean checkToken(String token);
 
+    String checkTokenGetValue(String token);
+
     void deleteToken(String token);
 
 }

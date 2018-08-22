@@ -115,12 +115,18 @@
 
 <script>
     $(function () {
+        var storage = window.localStorage;
+        $("#username").val(storage.getItem("userName"));
+        $("#password").val(storage.getItem("password"));
+        $("#remember").val(storage.getItem("remember"));
+
         $("#signIn").on("click", function () {
             var b = $("#password").val() !== '';
             if (!b) {
                 alert("密码不能为空！");
                 return;
             }
+            var remember = $("#remember").val();
 
             var parameters = {};
             var form = $('form').serializeArray();
@@ -144,8 +150,10 @@
                 async: true,
                 success: function (result) {
                     console.log(result);
-                    //var data = JSON.parse(result);
                     if (result.success) {
+                        storage.setItem("userName", result.content.username);
+                        storage.setItem("password", result.content.password);
+                        if (remember) storage.setItem("remember", "on");
                         window.location.href = 'index.html';
                     }
                 },

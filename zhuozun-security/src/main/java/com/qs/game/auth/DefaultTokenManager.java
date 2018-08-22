@@ -36,6 +36,11 @@ public class DefaultTokenManager  implements TokenManager{
         return !StringUtils.isEmpty(token) && tokenMap.containsKey(token);
     }
 
+    @Override
+    public String checkTokenGetValue(String token) {
+        return StringUtils.isBlank(token) ? null : tokenMap.get(token);
+    }
+
     /**
      * Token删除(用户登出时，删除Token)
      */

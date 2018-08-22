@@ -1,5 +1,6 @@
 package com.qs.game.service;
 
+import com.qs.game.api.entity.UserRequest;
 import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.model.user.User;
 
@@ -10,7 +11,7 @@ import com.qs.game.model.user.User;
  */
 public interface IIndexService {
 
-    BaseResult login(User user);
+    BaseResult login(UserRequest userRequest);
 
     BaseResult register(User user);
 

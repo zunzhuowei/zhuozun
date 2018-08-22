@@ -26,4 +26,8 @@ public interface Constants {
      */
     String TOKEN_PREFIX = "uToken:";
 
+    String USER_NAME = "name";
+
+    String PASSWORD = "password";
+
 }

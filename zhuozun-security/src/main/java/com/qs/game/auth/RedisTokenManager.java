@@ -33,6 +33,11 @@ public class RedisTokenManager implements TokenManager{
     }
 
     @Override
+    public String checkTokenGetValue(String token) {
+        return StringUtils.isBlank(token) ? null : redisService.get(Constants.TOKEN_PREFIX + token);
+    }
+
+    @Override
     public void deleteToken(String token) {
         redisService.del(token);
     }
