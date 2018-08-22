@@ -1,10 +1,10 @@
-package com.qs.game.utils;
+package com.qs.game.constant;
 
 /**
  * Created by zun.wei on 2018/8/14 12:40.
  * Description: 常量
  */
-public interface Constants {
+public interface SecurityConstants {
 
     /**
      * 存储当前登录用户id的字段名
@@ -19,7 +19,7 @@ public interface Constants {
     /**
      * 存放Token的header字段  (@author: rico)
      */
-    String DEFAULT_TOKEN_NAME = "X-Token";
+    String DEFAULT_TOKEN_NAME = "token";
 
     /**
      * token 前缀

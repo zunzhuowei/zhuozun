@@ -34,7 +34,7 @@ public class JWTUtils {
      *
      * @param user_id 登录成功后用户user_id, 参数user_id不可传空
      */
-    public static String createToken(Long user_id) throws Exception {
+    public static String createToken(Long user_id) {
         Date iatDate = new Date();
         // expire time
         Calendar nowTime = Calendar.getInstance();
@@ -50,13 +50,24 @@ public class JWTUtils {
         // param backups {iss:Service, aud:APP}
         String token = JWT.create().withHeader(map) // header
                 .withClaim("iss", "Service") // payload
-                .withClaim("aud", "APP").withClaim("user_id", null == user_id ? null : user_id.toString())
+                .withClaim("aud", "APP")
+                .withClaim("user_id", null == user_id ? null : user_id.toString())
                 .withIssuedAt(iatDate) // sign time
                 .withExpiresAt(expiresDate) // expire time
                 .sign(Algorithm.HMAC256(SECRET)); // signature
 
         return token;
     }
+
+    /*
+    iss：jwt签发者
+    sub：jwt所面向的用户
+    aud：接收jwt的一方
+    exp：jwt的过期时间，这个过期时间必须大于签发时间
+    nbf：定义在什么时间之前，该jwt都是不可用的
+    iat：jwt的签发时间
+    jti：jwt的唯一身份标识，主要用来作为一次性token，从而回避重放攻击
+     */
 
     /**
      * 解密Token

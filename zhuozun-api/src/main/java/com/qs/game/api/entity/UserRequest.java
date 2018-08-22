@@ -19,4 +19,6 @@ public class UserRequest implements Serializable {
 
     private String remember; //on or null
 
+    private String token;
+
 }

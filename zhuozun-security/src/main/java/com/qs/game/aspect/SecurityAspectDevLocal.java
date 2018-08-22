@@ -2,11 +2,8 @@ package com.qs.game.aspect;
 
 import com.qs.game.annotation.IgnoreSecurity;
 import com.qs.game.auth.TokenManager;
-import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.constant.Env;
-import com.qs.game.enum0.Code;
-import com.qs.game.utils.Constants;
-import com.qs.game.utils.ResponseType;
+import com.qs.game.constant.SecurityConstants;
 import com.qs.game.utils.WebContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,11 +12,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
-import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -56,7 +51,7 @@ public class SecurityAspectDevLocal {
         }
 
         // 从 request header 中获取当前 token
-        String token = WebContextUtil.getRequest().getHeader(Constants.DEFAULT_TOKEN_NAME);
+        String token = WebContextUtil.getRequest().getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
         System.out.println("token = " + token);
 
         Cookie[] cookies = WebContextUtil.getRequest().getCookies();

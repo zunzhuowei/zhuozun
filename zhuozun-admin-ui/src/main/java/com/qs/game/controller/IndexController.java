@@ -51,7 +51,6 @@ public class IndexController extends BaseController {
     }
 
 
-    @IgnoreSecurity
     @ResponseBody
     @RequestMapping(value = "register")
     public BaseResult register(@RequestBody User user) {
@@ -59,10 +58,17 @@ public class IndexController extends BaseController {
         return userApi.add(user);
     }
 
-    @IgnoreSecurity
     @ResponseBody
     @RequestMapping(value = "login")
     public BaseResult login(@RequestBody UserRequest userRequest) {
+        log.warn("login userRequest is --::" + userRequest);
+        return indexService.login(userRequest);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/test/login/aa")
+    public BaseResult testLogin(@RequestBody UserRequest userRequest) {
         log.warn("login userRequest is --::" + userRequest);
         return indexService.login(userRequest);
     }
