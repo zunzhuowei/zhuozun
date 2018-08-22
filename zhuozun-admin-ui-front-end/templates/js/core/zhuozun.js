@@ -1,6 +1,6 @@
 zhuozun = {
-    baseUrl: "http://192.168.1.204:7777/qs",
-    // baseUrl: "http://192.168.1.104:7777/qs",
+    // baseUrl: "http://192.168.1.204:7777/qs",
+    baseUrl: "http://192.168.1.104:7777/qs",
     user_api: {
         getUserById: function (id) {
             return zhuozunUtils.sprintf("/user-api/user/get/%d", id)
@@ -9,6 +9,7 @@ zhuozun = {
     admin_ui_api: {
         register: "/adminUi-api/register",
         login: "/adminUi-api/login",
+        testlogin: "/adminUi-api/test/login/aa",
     }
 };
 
