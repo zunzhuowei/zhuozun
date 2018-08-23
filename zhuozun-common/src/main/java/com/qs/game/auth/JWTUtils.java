@@ -1,5 +1,6 @@
 package com.qs.game.auth;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.auth0.jwt.JWT;
@@ -77,6 +78,12 @@ public class JWTUtils {
      * @throws Exception
      */
     public static Map<String, Claim> verifyToken(String token) {
+        DecodedJWT jwt = getDecodeJWT(token);
+        return Objects.isNull(jwt) ? null : jwt.getClaims();
+    }
+
+
+    private static DecodedJWT getDecodeJWT(String token) {
         DecodedJWT jwt = null;
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
@@ -86,7 +93,17 @@ public class JWTUtils {
             // token 校验失败, 抛出Token验证非法异常
             return null;
         }
-        return jwt.getClaims();
+        return jwt;
+    }
+
+    /**
+     * 获取过期日期
+     * @param token
+     * @return
+     */
+    public static Date getExpiresAt(String token) {
+        DecodedJWT jwt = getDecodeJWT(token);
+        return Objects.isNull(jwt) ? null : jwt.getExpiresAt();
     }
 
     /**
@@ -113,5 +130,21 @@ public class JWTUtils {
 
         Long userID = JWTUtils.getAppUID(token + 1);
         System.out.println("userID = " + userID);
+
+        DecodedJWT decodedJWT = JWT.decode(token);
+        List<String> list = decodedJWT.getAudience();
+        for (String s : list) {
+            System.out.println("s = " + s);
+        }
+        Map<String, Claim> claimMap1 = decodedJWT.getClaims();
+        for (Map.Entry<String, Claim> stringClaimEntry : claimMap1.entrySet()) {
+            System.out.println("stringClaimEntry = " + stringClaimEntry.getKey()
+                    + " --- " + stringClaimEntry.getValue().asString());
+
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("simpleDateFormat.format(decodedJWT.getExpiresAt()) = "
+                + simpleDateFormat.format(decodedJWT.getExpiresAt()));
+
     }
 }

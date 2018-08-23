@@ -49,6 +49,8 @@ public class AccessFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest servletRequest = ctx.getRequest();
         String requestURI = servletRequest.getRequestURI();
+        String userToken = servletRequest.getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
+        ctx.addZuulRequestHeader(SecurityConstants.DEFAULT_TOKEN_NAME, userToken);//允许请求到达下游服务
         String lastPath = StringUtils.substringAfterLast(requestURI, "/");
         boolean igonre = StringUtils.equalsIgnoreCase(SystemConst.register, lastPath)
                 || StringUtils.equalsIgnoreCase(SystemConst.login, lastPath);
@@ -59,7 +61,7 @@ public class AccessFilter extends ZuulFilter {
     public Object run() throws ZuulException {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest servletRequest = ctx.getRequest();
-        String userToken = servletRequest.getParameter(SecurityConstants.DEFAULT_TOKEN_NAME);
+        String userToken = servletRequest.getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
         if (Objects.isNull(userToken)) {
             log.warn("access token is empty");
             //过滤该请求，不往下级服务去转发请求，到此结束

@@ -5,6 +5,7 @@ import com.qs.game.api.UserApi;
 import com.qs.game.api.entity.UserRequest;
 import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.base.baseentity.BaseResult;
+import com.qs.game.constant.SecurityConstants;
 import com.qs.game.enum0.Code;
 import com.qs.game.model.user.User;
 import com.qs.game.service.IIndexService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by zun.wei on 2018/8/19.
@@ -60,8 +62,9 @@ public class IndexController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "login")
-    public BaseResult login(@RequestBody UserRequest userRequest) {
+    public BaseResult login(@RequestBody UserRequest userRequest, HttpServletRequest request) {
         log.warn("login userRequest is --::" + userRequest);
+        String tk = request.getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
         return indexService.login(userRequest);
     }
 

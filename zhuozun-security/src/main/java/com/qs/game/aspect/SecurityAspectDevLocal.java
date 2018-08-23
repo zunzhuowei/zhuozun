@@ -52,8 +52,7 @@ public class SecurityAspectDevLocal {
 
         // 从 request header 中获取当前 token
         String token = WebContextUtil.getRequest().getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
-        System.out.println("token = " + token);
-
+        log.info("SecurityAspectDevLocal -- execute -- token --::{}", token);
         Cookie[] cookies = WebContextUtil.getRequest().getCookies();
         if (Objects.nonNull(cookies)) {
             for (int i = 0; i < cookies.length; i++) {

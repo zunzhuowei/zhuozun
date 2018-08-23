@@ -15,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -42,11 +40,12 @@ public class IndexServiceImpl implements IIndexService {
         ObjectMapper mapper = new ObjectMapper();
         User user = mapper.convertValue(baseResult.getContent(), User.class);
         if (baseResult.getSuccess() && Objects.nonNull(user)) {//说明根据用户名查到了用户
-            String token = userRequest.getToken();
+            String token = WebContextUtil.getRequest().getHeader(SecurityConstants.DEFAULT_TOKEN_NAME);
             String password = userRequest.getPassword();
 
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("user", user);
+            //如果token校验成功，则直接登录成功；否则往下验证密码
             if (StringUtils.isNotBlank(token)) {
                 Long userId = JWTUtils.getAppUID(token);
                 if (Objects.equals(user.getId(), userId)) {
@@ -55,6 +54,7 @@ public class IndexServiceImpl implements IIndexService {
                     return BaseResult.getBuilder().setSuccess(true)
                             .setContent(result).setCode(Code.ERROR_0).build();
                 }
+                //TODO 返回用户信息的时候应该加密返回，等提交上来的时候拿原明文密码加密比较
             }
 
             //如果密码一样
@@ -76,16 +76,4 @@ public class IndexServiceImpl implements IIndexService {
         return userApi.add(user);
     }
 
-    public static void main(String[] args) {
-        long a  = 1535024776200L;
-        long b = 1535024575000L;
-        System.out.println("a -b = " + (a - b));
-
-        Date date = new Date(a);
-        Date date1 = new Date(b);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String d = simpleDateFormat.format(date);
-        String d1 = simpleDateFormat.format(date1);
-        System.out.println("simpleDateFormat = " + d + "  --  " + d1);
-    }
 }
