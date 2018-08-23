@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -37,10 +39,10 @@ public class IndexServiceImpl implements IIndexService {
             return BaseResult.getBuilder().setMessage("user is null").setCode(Code.ERROR_1).setSuccess(false).build();
         BaseResult baseResult = userApi.findUserByUserName(userRequest.getUsername());
 
-        if (baseResult.getSuccess()){//说明根据用户名查到了用户
+        ObjectMapper mapper = new ObjectMapper();
+        User user = mapper.convertValue(baseResult.getContent(), User.class);
+        if (baseResult.getSuccess() && Objects.nonNull(user)) {//说明根据用户名查到了用户
             String token = userRequest.getToken();
-            ObjectMapper mapper = new ObjectMapper();
-            User user = mapper.convertValue(baseResult.getContent(), User.class);
             String password = userRequest.getPassword();
 
             Map<String, Object> result = new LinkedHashMap<>();
@@ -64,8 +66,9 @@ public class IndexServiceImpl implements IIndexService {
             } else {
                 return BaseResult.getBuilder().setSuccess(false).setCode(Code.ERROR_3).build();
             }
+        } else {
+            return BaseResult.getBuilder().setSuccess(false).setCode(Code.ERROR_3).build();
         }
-        return baseResult;
     }
 
     @Override
@@ -73,5 +76,16 @@ public class IndexServiceImpl implements IIndexService {
         return userApi.add(user);
     }
 
+    public static void main(String[] args) {
+        long a  = 1535024776200L;
+        long b = 1535024575000L;
+        System.out.println("a -b = " + (a - b));
 
+        Date date = new Date(a);
+        Date date1 = new Date(b);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String d = simpleDateFormat.format(date);
+        String d1 = simpleDateFormat.format(date1);
+        System.out.println("simpleDateFormat = " + d + "  --  " + d1);
+    }
 }
