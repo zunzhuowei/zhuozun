@@ -120,7 +120,7 @@
 <script src="js/jquery.waypoints.min.js"></script>
 <!-- Main JS -->
 <script src="js/main.js"></script>
-<!-- zhuozun js -->
+<!-- sys js -->
 <script src="js/core/zhuozun.js"></script>
 
 <script>
@@ -139,23 +139,8 @@
             });
             parameters = JSON.stringify(parameters);
 
-            $.ajax({
-                type: "POST",
-                url: zhuozun.baseUrl + zhuozun.admin_ui_api.register,
-                data: parameters,
-                dataType: "json",
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("token", "tokenvalue");
-                },
-                async: true,
-                success: function (result) {
-                    console.log(result);
-                },
-                error: function (e) {
-                    console.log(JSON.stringify(e));
-                }
-            });
+            //注册
+            sys_request.sign_up(parameters);
         });
     });
 </script>

@@ -110,17 +110,13 @@
 <script src="js/jquery.waypoints.min.js"></script>
 <!-- Main JS -->
 <script src="js/main.js"></script>
-<!-- zhuozun js -->
+<!-- sys js -->
 <script src="js/core/zhuozun.js"></script>
 
 <script>
     $(function () {
-        debugger;
-        //var storage = window.localStorage;
-        var  storage = zhuozunUtils.storage;
-        $("#username").val(storage.getItem("userName"));
-        $("#password").val(storage.getItem("password"));
-        var re = storage.getItem("remember");
+        $("#username").val(sys_utils.storage.getItem("userName"));
+        $("#password").val(sys_utils.storage.getItem("password"));
 
         $("#signIn").on("click", function () {
             debugger;
@@ -138,67 +134,12 @@
             });
             parameters = JSON.stringify(parameters);
 
-            $.ajax({
-                type: "POST",
-                url: zhuozun.baseUrl + zhuozun.admin_ui_api.login,
-                data: parameters,
-                dataType: "json",
-                contentType: 'application/json',
-                beforeSend: function (xhr) {
-                    debugger;
-                    xhr.setRequestHeader("token",storage.getItem("token"));
-                },
-                complete: function (xhr) {
-                    //localStorage.setItem("X-Token", xhr.getResponseHeader("X-Token"));
-                    debugger;
-                    if (!remember) {
-                        storage.removeItem("userName");
-                        storage.removeItem("password");
-                        storage.removeItem("remember");
-                    }
-                },
-                async: true,
-                success: function (result) {
-                    debugger;
-                    console.log(result);
-                    if (result.success) {
-                        if (remember) {
-                            storage.setItem("userName", result.content.user.username);
-                            storage.setItem("password", result.content.user.password);
-                            storage.setItem("remember", "on");
-                        }
-                        window.location.href = 'index.html';
-                    }
-                },
-                error: function (e) {
-                    console.log(JSON.stringify(e));
-                }
-            });
+            //登录
+            sys_request.login(parameters, remember);
+
         });
     });
 
-    /*
-    $("#signIn").on("click", function () {
-        $.ajax({
-            type: "GET",
-            url: zhuozun.baseUrl + zhuozun.user_api.getUserById(1),
-            // url:  "http://192.168.1.104:8000/user/get/1",
-            data: {},
-            dataType: "json",
-            contentType: 'application/json',
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("token", "tokenvalue");
-            },
-            async: false,
-            success: function (result) {
-                console.log(result);
-            },
-            error: function (e) {
-                console.log(JSON.stringify(e));
-            }
-        });
-
-    });*/
 </script>
 
 </body>
