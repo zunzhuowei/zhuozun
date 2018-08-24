@@ -1,20 +1,23 @@
 package com.qs.game.config;
 
-import org.springframework.context.annotation.Configuration;
+import com.qs.game.initializer.BusinessServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.concurrent.ImmediateEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import sun.plugin2.message.Conversation;
-import sun.plugin2.message.HeartbeatMessage;
 
+import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,19 +37,18 @@ public class NettyConfig {
     @Value("${netty.worker.thread.count}")
     private int workerCount;
 
-    @Value("${netty.server.port}")
+    @Value("${netty.websocket.port}")
     private int tcpPort;
 
-    @Value("${netty.server.so.keepalive}")
+    @Value("${netty.websocket.so.keepalive}")
     private boolean keepAlive;
 
-    @Value("${netty.server.so.backlog}")
+    @Value("${netty.websocket.so.backlog}")
     private int backlog;
 
 
-    @Autowired
-    @Qualifier("springProtocolInitializer")
-    private StringProtocolInitalizer protocolInitalizer;
+    @Resource(name = "businessServerInitializer")
+    private BusinessServerInitializer businessServerInitializer;
 
     //bootstrap配置
     @SuppressWarnings("unchecked")
@@ -55,7 +57,7 @@ public class NettyConfig {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup(), workerGroup())
                 .channel(NioServerSocketChannel.class)
-                .childHandler(protocolInitalizer);
+                .childHandler(businessServerInitializer);
 
         Map<ChannelOption<?>, Object> tcpChannelOptions = tcpChannelOptions();
         Set<ChannelOption<?>> keySet = tcpChannelOptions.keySet();
@@ -76,6 +78,11 @@ public class NettyConfig {
         return new NioEventLoopGroup(workerCount);
     }
 
+    @Bean(name = "businessGroup", destroyMethod = "close")
+    public ChannelGroup businessGroup() {
+        return new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
+    }
+
     @Bean(name = "tcpSocketAddress")
     public InetSocketAddress tcpPort() {
         return new InetSocketAddress(tcpPort);
@@ -84,29 +91,9 @@ public class NettyConfig {
     @Bean(name = "tcpChannelOptions")
     public Map<ChannelOption<?>, Object> tcpChannelOptions() {
         Map<ChannelOption<?>, Object> options = new HashMap<ChannelOption<?>, Object>();
-        options.put(ChannelOption.SO_KEEPALIVE, keepAlive);
+        options.put(ChannelOption.SO_KEEPALIVE, true);
         options.put(ChannelOption.SO_BACKLOG, backlog);
         return options;
-    }
-
-    @Bean(name = "stringEncoder")
-    public StringEncoder stringEncoder() {
-        return new StringEncoder();
-    }
-
-    @Bean(name = "stringDecoder")
-    public StringDecoder stringDecoder() {
-        return new StringDecoder();
-    }
-
-    /**
-     * Necessary to make the Value annotations work.
-     *
-     * @return
-     */
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
     }
 
 

@@ -11,14 +11,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetSocketAddress;
 
-
 /**
  * Created by zun.wei on 2018/8/24 18:16.
- * Description: tcp 服务
+ * Description: Server
  */
 @Data
 @Component
-public class TCPServer {
+public class Server {
 
     @Autowired
     @Qualifier("serverBootstrap")

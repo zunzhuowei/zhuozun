@@ -4,14 +4,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Created by zun.wei on 2018/8/24 18:00.
- * Description: 启动类
+ * 启动类
  */
 @SpringBootApplication
-public class NettyServerApp {
+public class WebSocketServerApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(NettyServerApp.class, args);
+        SpringApplication.run(WebSocketServerApp.class, args);
     }
 
 }
