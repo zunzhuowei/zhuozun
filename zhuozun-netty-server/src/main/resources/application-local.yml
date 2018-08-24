@@ -1,0 +1,30 @@
+#不能用localhost,否则启动报异常:Unresolved address
+#tcp监听的端口
+
+tcp:
+  port: 8090
+
+# bossGroup的线程数
+boss:
+  thread:
+    count: 2
+
+# worker的线程数
+worker:
+  thread:
+    count: 2
+
+#是否使用长连接
+so:
+  keepalive: true
+  backlog: 100
+
+logging:
+  level:
+    root: info
+    io: # 指定包输入日志
+      swagger: error
+
+
+# https://www.jianshu.com/p/222fe9f2a564
+#
