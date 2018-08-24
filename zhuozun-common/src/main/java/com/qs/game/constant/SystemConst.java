@@ -11,5 +11,6 @@ public interface SystemConst {
 
     String register = "register";
 
+    String user = "user";
 
 }

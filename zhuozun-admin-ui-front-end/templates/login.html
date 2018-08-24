@@ -42,7 +42,17 @@
     <!--[if lt IE 9]>
     <script src="js/respond.min.js"></script>
     <![endif]-->
-
+<style>
+    .err{
+        font-size: 14px;
+        background: azure;
+        color: red;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        text-align: center;
+        display: none;
+    }
+</style>
 </head>
 <body class="style-2">
 
@@ -62,6 +72,7 @@
             <!-- Start Sign In Form -->
             <form action="" class="fh5co-form animate-box" data-animate-effect="fadeInLeft">
                 <h2>登录</h2>
+                <h5 class="err"></h5>
                 <div class="form-group">
                     <label for="username" class="sr-only">账号</label>
                     <input type="text" class="form-control" name="username" id="username" placeholder="账号"
@@ -119,10 +130,14 @@
         $("#password").val(sys_utils.storage.getItem("password"));
 
         $("#signIn").on("click", function () {
-            debugger;
+            var a = $("#username").val() !== '';
+            if (!a) {
+                $(".err").text("账号不能为空！").fadeIn(200).fadeOut(1000);
+                return;
+            }
             var b = $("#password").val() !== '';
             if (!b) {
-                alert("密码不能为空！");
+                $(".err").text("密码不能为空！").fadeIn(200).fadeOut(1000);
                 return;
             }
             var remember = $("#remember").val();
@@ -135,7 +150,15 @@
             parameters = JSON.stringify(parameters);
 
             //登录
-            sys_request.login(parameters, remember);
+            sys_request.login(parameters, remember,function (result) {
+                if (result.success) {
+                    $(".err").html("");
+                } else {
+                    $("#username").val("");
+                    $("#password").val("");
+                    $(".err").text("code:" + result.code + " " + result.message).fadeIn(200).fadeOut(3000);
+                }
+            });
 
         });
     });

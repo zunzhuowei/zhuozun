@@ -1,6 +1,6 @@
 sys = {
-    // baseUrl: "http://192.168.1.204:7777/qs",
-    baseUrl: "http://192.168.1.104:7777/qs",
+    baseUrl: "http://192.168.1.204:7777/qs",
+    // baseUrl: "http://192.168.1.104:7777/qs",
     user_api: {
         getUserById: function (id) {
             return sys_utils.sprintf("/user-api/user/get/%d", id)
@@ -89,7 +89,7 @@ sys_utils = {
 
 sys_request = {
     //登录首页
-    login: function (parameters,remember) {
+    login: function (parameters,remember,callback) {
         function successCallback(result) {
             console.log(result);
             if (result.success) {
@@ -101,6 +101,7 @@ sys_request = {
                 }
                 window.location.href = 'index.html';
             }
+            callback.call(this, result);
         }
 
         function completeCallBack(xhr, tx) {
