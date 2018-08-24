@@ -28,6 +28,7 @@
         <module>zhuozun-gateway-server</module>
         <module>zhuozun-kafka-provider</module>
         <module>zhuozun-admin-ui</module>
+        <module>zhuozun-netty-server</module>
     </modules>
 
 
@@ -201,6 +202,11 @@
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
                 <version>${springboot.admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>4.1.28.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
