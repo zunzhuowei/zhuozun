@@ -1,103 +1,84 @@
 package com.qs.game.handler;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.qs.game.common.Constants;
-import com.qs.game.model.ChatMessage;
-import com.qs.game.model.UserInfo;
+import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
+
+import static com.qs.game.common.Global.channelGroup;
 
 @Slf4j
-@Component
-@Qualifier("textWebSocketFrameHandler")
-@ChannelHandler.Sharable
 public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
 
-    private ChannelGroup channelGroup;
-
-    @Autowired
-    public TextWebSocketFrameHandler(ChannelGroup channelGroup) {
-        this.channelGroup = channelGroup;
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        log.info("Event====>{}", evt);
-
-        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            ctx.pipeline().remove(HttpRequestHandler.class);
-
-            //加入当前, 上线人员推送前端，显示用户列表中去
-            Channel channel = ctx.channel();
-            ChatMessage message = new ChatMessage(null, "");
-            channelGroup.writeAndFlush(new TextWebSocketFrame
-                    (JSON.toJSONString(message, SerializerFeature.DisableCircularReferenceDetect)));
-            channelGroup.add(channel);
-        } else {
-            super.userEventTriggered(ctx, evt);
-        }
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+        Channel channel = ctx.channel();
+        log.info("Client: {} 在线",channel.remoteAddress());
     }
+
+
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+        log.info("Client: {} 掉线",channel.remoteAddress());
+    }
+
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        super.handlerAdded(ctx);
+        Channel channel = ctx.channel();
+        for (Channel ch : channelGroup) { //遍历发送给所有在线用户
+            ch.writeAndFlush(new TextWebSocketFrame("[SERVER] - "  + channel.remoteAddress() + " 加入"));
+        }
+        channelGroup.add(ctx.channel()); //加入在线组
+        log.info("Client: {} 加入",channel.remoteAddress());
+    }
+
+
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        Channel incoming = ctx.channel();
+        for (Channel channel : channelGroup) {
+            channel.writeAndFlush(new TextWebSocketFrame("[SERVER] - "  + incoming.remoteAddress() + " 离开"));
+        }
+        log.info("Client: {} 离开",incoming.remoteAddress());
+        channelGroup.remove(ctx.channel());
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        Channel channel = ctx.channel();
-        String token = channel.attr(Constants.CHANNEL_TOKEN_KEY).get();
-        UserInfo from = Constants.onlines.get(token);
-        if (from == null) {
-            channelGroup.writeAndFlush("OK");
-        } else {
-            ChatMessage message = new ChatMessage(from, msg.text());
-            channelGroup.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(message, SerializerFeature.DisableCircularReferenceDetect)));
+        Channel incoming = ctx.channel();
+        String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
+
+        for (Channel channel : channelGroup) {
+            String groupClientId = HandlerUtils.getClientShortIdByChannel(channel);
+            if (StringUtils.equals(incomingId, groupClientId)) {
+                channel.writeAndFlush(new TextWebSocketFrame("[服务器端返回]：" + msg.text()));
+            }else {
+                //发送给指定的
+                channel.writeAndFlush(new TextWebSocketFrame
+                        ("[来自客户端的消息]：" + incomingId + " : " + msg.text()));
+
+                StringBuffer sb = new StringBuffer();
+                sb.append(incoming.remoteAddress()).append("->").append(msg.text());
+                log.info("channelRead0 :: {}", sb.toString());
+            }
         }
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("Current channel channelInactive");
-        offlines(ctx);
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        log.info("Current channel handlerRemoved");
-        offlines(ctx);
-    }
-
-    private void offlines(ChannelHandlerContext ctx) {
-        Channel channel = ctx.channel();
-        String token = channel.attr(Constants.CHANNEL_TOKEN_KEY).get();
-        Constants.removeOnlines(token);
-
-        channelGroup.remove(channel);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        Channel incoming = ctx.channel();
+        log.error("Client: {} 异常",incoming.remoteAddress());
+        // 当出现异常就关闭连接
+        cause.printStackTrace();
         ctx.close();
     }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("=====> {}", cause.getMessage());
-        offlines(ctx);
-    }
-
 
 }

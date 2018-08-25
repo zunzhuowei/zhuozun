@@ -3,67 +3,62 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 
 <head>
-
-    <title>Hello World!</title>
-
+    <meta charset="UTF-8">
+    <title>WebSocket Chat</title>
 </head>
+
 <body>
-<div id="message"></div>
-<div id="text"></div>
-<button onclick="send()">发送</button>
-<button onclick="closeWebSocket()">关闭</button>
-</body>
-<script>
-    var websocket = null;
-
-    //判断当前浏览器是否支持WebSocket
-    if ('WebSocket' in window) {
-        //websocket = new WebSocket("ws://192.168.1.104:9002/ws");
-        websocket = new WebSocket("ws://192.168.1.204:9002/ws");
+<script type="text/javascript">
+    var socket;
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
     }
-    else {
-        alert('Dont support websocket')
-    }
+    if (window.WebSocket) {
+        window.onbeforeunload = function(event) {
+            console.log("关闭WebSocket连接！");
+            socket.close();
+        };
 
-    //连接发生错误的回调方法
-    websocket.onerror = function () {
-        setMessageInnerHTML("error");
-    };
-
-    //连接成功建立的回调方法
-    websocket.onopen = function (event) {
-        setMessageInnerHTML("open");
-    };
-
-    //接收到消息的回调方法
-    websocket.onmessage = function (event) {
-        setMessageInnerHTML(event.data);
-    };
-
-    //连接关闭的回调方法
-    websocket.onclose = function () {
-        setMessageInnerHTML("close");
-    };
-
-    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-    window.onbeforeunload = function () {
-        websocket.close();
-    };
-
-    //将消息显示在网页上
-    function setMessageInnerHTML(innerHTML) {
-        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+        socket = new WebSocket("ws://192.168.1.104:9002/ws");
+        socket.onmessage = function (event) {
+            var ta = document.getElementById('responseText');
+            ta.value = ta.value + '\n' + event.data
+        };
+        socket.onopen = function (event) {
+            var ta = document.getElementById('responseText');
+            ta.value = "连接开启!";
+        };
+        socket.onclose = function (event) {
+            var ta = document.getElementById('responseText');
+            ta.value = ta.value + "连接被关闭";
+        };
+    } else {
+        alert("你的浏览器不支持 WebSocket！");
     }
 
-    //关闭连接
-    function closeWebSocket() {
-        websocket.close();
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            alert("连接没有开启.");
+        }
     }
 
-    //发送消息
-    function send() {
-        var message = document.getElementById('text').value;
-        websocket.send(message);
-    }
 </script>
+
+<form onsubmit="return false;">
+    <h3>WebSocket 聊天室：</h3>
+    <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
+    <br>
+    <input type="text" name="message" style="width: 300px" value="Welcome to www.waylau.com">
+    <input type="button" value="发送消息" onclick="send(this.form.message.value)">
+    <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空聊天记录">
+</form>
+<br>
+<br>
+
+</body>
 </html>

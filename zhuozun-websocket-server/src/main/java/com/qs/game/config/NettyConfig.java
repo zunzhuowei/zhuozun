@@ -1,29 +1,30 @@
 package com.qs.game.config;
 
-import com.qs.game.initializer.BusinessServerInitializer;
+import com.qs.game.common.Constants;
+import com.qs.game.handler.HeartbeatHandler;
+import com.qs.game.handler.HttpRequestHandler;
+import com.qs.game.handler.TextWebSocketFrameHandler;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.ImmediateEventExecutor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import javax.annotation.Resource;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static com.qs.game.common.Constants.URI;
 
 /**
  * Created by zun.wei on 2018/8/24 18:04.
@@ -42,15 +43,6 @@ public class NettyConfig {
     @Value("${netty.websocket.port}")
     private int tcpPort;
 
-    @Value("${netty.websocket.so.keepalive}")
-    private boolean keepAlive;
-
-    @Value("${netty.websocket.so.backlog}")
-    private int backlog;
-
-
-    @Resource(name = "businessServerInitializer")
-    private BusinessServerInitializer businessServerInitializer;
 
     //bootstrap配置
     @SuppressWarnings("unchecked")
@@ -59,14 +51,9 @@ public class NettyConfig {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup(), workerGroup())
                 .channel(NioServerSocketChannel.class)
-                .childHandler(businessServerInitializer);
-
-        Map<ChannelOption<?>, Object> tcpChannelOptions = tcpChannelOptions();
-        Set<ChannelOption<?>> keySet = tcpChannelOptions.keySet();
-
-        for (ChannelOption option : keySet) {
-            bootstrap.option(option, tcpChannelOptions.get(option));
-        }
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                .childHandler(new WebSocketServerHandlerInitializer());
         return bootstrap;
     }
 
@@ -90,13 +77,24 @@ public class NettyConfig {
         return new InetSocketAddress(tcpPort);
     }
 
-    @Bean(name = "tcpChannelOptions")
-    public Map<ChannelOption<?>, Object> tcpChannelOptions() {
-        Map<ChannelOption<?>, Object> options = new HashMap<ChannelOption<?>, Object>();
-        options.put(ChannelOption.SO_KEEPALIVE, true);
-        options.put(ChannelOption.SO_BACKLOG, backlog);
-        return options;
-    }
 
+
+    protected class WebSocketServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
+
+        @Override
+        protected void initChannel(SocketChannel ch) throws Exception {
+            ChannelPipeline pipeline = ch.pipeline();
+            //处理日志
+            pipeline.addLast(new LoggingHandler(LogLevel.TRACE));
+            pipeline.addLast(new HttpServerCodec());
+            pipeline.addLast(new HttpObjectAggregator(64 * 1024));
+            pipeline.addLast(new HeartbeatHandler()); //心跳
+            pipeline.addLast(new ChunkedWriteHandler());
+            pipeline.addLast(new HttpRequestHandler(Constants.URI));
+            pipeline.addLast(new WebSocketServerProtocolHandler(Constants.URI));
+            pipeline.addLast(new TextWebSocketFrameHandler());
+        }
+
+    }
 
 }

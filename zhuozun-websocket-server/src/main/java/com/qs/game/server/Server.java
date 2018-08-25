@@ -3,6 +3,7 @@ package com.qs.game.server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -17,27 +18,37 @@ import java.net.InetSocketAddress;
  */
 @Data
 @Component
+@Slf4j
 public class Server {
 
-    @Autowired
-    @Qualifier("serverBootstrap")
-    private ServerBootstrap serverBootstrap;
+    private final ServerBootstrap serverBootstrap;
+
+    private final InetSocketAddress inetSocketAddress;
+
+    private ChannelFuture channelFuture;
 
     @Autowired
-    @Qualifier("tcpSocketAddress")
-    private InetSocketAddress inetSocketAddress;
-
-    private ChannelFuture serverChannelFuture;
+    public Server(@Qualifier("serverBootstrap") ServerBootstrap serverBootstrap,
+                  @Qualifier("tcpSocketAddress") InetSocketAddress inetSocketAddress) {
+        this.serverBootstrap = serverBootstrap;
+        this.inetSocketAddress = inetSocketAddress;
+    }
 
     @PostConstruct
     public void start() throws Exception {
-        System.out.println("Starting server at " + inetSocketAddress);
-        serverChannelFuture = serverBootstrap.bind(inetSocketAddress).sync();
+        try {
+            channelFuture = serverBootstrap.bind(inetSocketAddress).sync();
+            log.info("Starting server at {} , local address is {}", inetSocketAddress,
+                    channelFuture.channel().localAddress());
+        } catch (InterruptedException e) {
+            log.warn(e.toString());
+            //e.printStackTrace();
+        }
     }
 
     @PreDestroy
     public void stop() throws Exception {
-        serverChannelFuture.channel().closeFuture().sync();
+        channelFuture.channel().closeFuture().sync();
     }
 
 }

@@ -3,9 +3,6 @@
 netty:
   websocket:
     port: 9002
-    so:
-      keepalive: true  #是否使用长连接
-      backlog: 128
   boss:
     thread:
       count: 2  # bossGroup的线程数
