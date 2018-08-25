@@ -18,7 +18,8 @@
 
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://192.168.1.104:9002/ws");
+        //websocket = new WebSocket("ws://192.168.1.104:9002/ws");
+        websocket = new WebSocket("ws://192.168.1.204:9002/ws");
     }
     else {
         alert('Dont support websocket')

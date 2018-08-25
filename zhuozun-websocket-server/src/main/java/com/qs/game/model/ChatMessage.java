@@ -1,7 +1,7 @@
 package com.qs.game.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.qs.game.common.ChatConstants;
+import com.qs.game.common.Constants;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -36,7 +36,7 @@ public class ChatMessage implements Serializable {
     public ChatMessage(UserInfo from,String message) {
         this.from = from;
         this.message = message;
-        this.to = ChatConstants.onlines;
+        this.to = Constants.onlines;
         this.createTime = new Date();
     }
 

@@ -2,7 +2,7 @@ package com.qs.game.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.qs.game.common.ChatConstants;
+import com.qs.game.common.Constants;
 import com.qs.game.model.ChatMessage;
 import com.qs.game.model.UserInfo;
 import io.netty.channel.Channel;
@@ -50,10 +50,20 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+    }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        super.handlerAdded(ctx);
+    }
+
+    @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         Channel channel = ctx.channel();
-        String token = channel.attr(ChatConstants.CHANNEL_TOKEN_KEY).get();
-        UserInfo from = ChatConstants.onlines.get(token);
+        String token = channel.attr(Constants.CHANNEL_TOKEN_KEY).get();
+        UserInfo from = Constants.onlines.get(token);
         if (from == null) {
             channelGroup.writeAndFlush("OK");
         } else {
@@ -76,8 +86,8 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     private void offlines(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
-        String token = channel.attr(ChatConstants.CHANNEL_TOKEN_KEY).get();
-        ChatConstants.removeOnlines(token);
+        String token = channel.attr(Constants.CHANNEL_TOKEN_KEY).get();
+        Constants.removeOnlines(token);
 
         channelGroup.remove(channel);
         ctx.close();

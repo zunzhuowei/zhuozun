@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static com.qs.game.common.Constants.URI;
+
 /**
  * Created by zun.wei on 2018/8/24 18:04.
  * Description: netty配置
