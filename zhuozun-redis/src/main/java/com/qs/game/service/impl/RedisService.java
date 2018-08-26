@@ -40,12 +40,23 @@ public class RedisService implements IRedisService {
 
     @Override
     public boolean set(String key, Object value) {
+        try {
+            redisTemplate.opsForValue().set(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean setJson(String key, Object value) {
         String strValue = JSON.toJSONString(value);
         return this.set(key, strValue);
     }
 
     @Override
-    public boolean set(String key, Object value, long liveTime) {
+    public boolean setJson(String key, Object value, long liveTime) {
         String strValue = JSON.toJSONString(value);
         return this.set(key, strValue, liveTime);
     }
@@ -89,6 +100,11 @@ public class RedisService implements IRedisService {
             }
         };
         return (String) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Object getObj(final String key) {
+        return redisTemplate.opsForValue().get(key);
     }
 
 

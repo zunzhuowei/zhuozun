@@ -24,7 +24,9 @@ public interface IRedisService {
 
     boolean set(final String key, Object value);
 
-    boolean set(final String key, Object value, long liveTime);
+    boolean setJson(final String key, Object value);
+
+    boolean setJson(final String key, Object value, long liveTime);
 
     /**
      * @param key      缓存key
@@ -58,6 +60,8 @@ public interface IRedisService {
      * @return 缓存value
      */
     String get(final String key);
+
+    Object getObj(final String key);
 
     /**
      * @param key 缓存key

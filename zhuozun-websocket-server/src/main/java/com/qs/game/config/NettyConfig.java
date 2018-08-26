@@ -1,6 +1,7 @@
 package com.qs.game.config;
 
 import com.qs.game.common.Constants;
+import com.qs.game.common.Global;
 import com.qs.game.handler.HeartbeatHandler;
 import com.qs.game.handler.HttpRequestHandler;
 import com.qs.game.handler.TextWebSocketFrameHandler;
@@ -20,6 +21,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.ImmediateEventExecutor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +44,9 @@ public class NettyConfig {
 
     @Value("${netty.websocket.port}")
     private int tcpPort;
+
+    @Autowired
+    private Global global;
 
 
     //bootstrap配置
@@ -92,7 +97,7 @@ public class NettyConfig {
             pipeline.addLast(new ChunkedWriteHandler());
             pipeline.addLast(new HttpRequestHandler(Constants.URI));
             pipeline.addLast(new WebSocketServerProtocolHandler(Constants.URI));
-            pipeline.addLast(new TextWebSocketFrameHandler());
+            pipeline.addLast(new TextWebSocketFrameHandler(global));
         }
 
     }
