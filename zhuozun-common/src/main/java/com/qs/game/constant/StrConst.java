@@ -26,6 +26,8 @@ public interface StrConst {
 
     String _STR = "-";
 
+    String SLASH = "/";
+
     /**
      * JSON 资源
      */

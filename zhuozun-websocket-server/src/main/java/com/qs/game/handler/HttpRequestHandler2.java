@@ -4,24 +4,19 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 @Slf4j
-public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpRequestHandler2 extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 
     private final String wsUri;
 
     private final boolean autoRelease;
 
-    public HttpRequestHandler(String wsUri) {
+    public HttpRequestHandler2(String wsUri) {
         this.wsUri = wsUri;
         this.autoRelease = true;
     }
@@ -82,22 +77,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         ctx.close();
     }
 
-/*
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        boolean release = true;
-        try {
-            if (acceptInboundMessage(msg)) {
-                channelRead0(ctx, (FullHttpRequest)msg);
-            } else {
-                release = false;
-                ctx.fireChannelRead(msg);
-            }
-        } finally {
-            if (autoRelease && release) {
-                ReferenceCountUtil.release(msg);
-            }
-        }
-    }*/
+
+        super.channelRead(ctx, msg);
+    }
 
 }

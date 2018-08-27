@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,14 +16,18 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     private Global global;
 
+    private final boolean autoRelease;
+
     public TextWebSocketFrameHandler(Global global) {
         this.global = global;
+        this.autoRelease = true;
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         log.info("Client: {} 在线",channel.remoteAddress());
+        //ctx.fireChannelActive();
     }
 
 
@@ -82,4 +87,22 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
         ctx.close();
     }
 
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        log.warn("TextWebSocketFrameHandler channelRead --:: {},{}", ctx, msg);
+        boolean release = true;
+        try {
+            if (acceptInboundMessage(msg)) {
+                channelRead0(ctx, (TextWebSocketFrame)msg);
+                //ctx.fireChannelRead(msg);// 让消息前往 TextWebSocketFrameHandler2
+            } else {
+                release = false;
+                ctx.fireChannelRead(msg);
+            }
+        } finally {
+            if (autoRelease && release) {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+    }
 }

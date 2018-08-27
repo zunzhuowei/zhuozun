@@ -2,9 +2,8 @@ package com.qs.game.config;
 
 import com.qs.game.common.Constants;
 import com.qs.game.common.Global;
-import com.qs.game.handler.HeartbeatHandler;
-import com.qs.game.handler.HttpRequestHandler;
-import com.qs.game.handler.TextWebSocketFrameHandler;
+import com.qs.game.constant.StrConst;
+import com.qs.game.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -56,7 +55,7 @@ public class NettyConfig {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup(), workerGroup())
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 128)
+                .option(ChannelOption.SO_BACKLOG, 1024) //消息队列容量
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new WebSocketServerHandlerInitializer());
         return bootstrap;
@@ -95,9 +94,11 @@ public class NettyConfig {
             pipeline.addLast(new HttpObjectAggregator(64 * 1024));
             pipeline.addLast(new HeartbeatHandler()); //心跳
             pipeline.addLast(new ChunkedWriteHandler());
-            pipeline.addLast(new HttpRequestHandler(Constants.URI));
-            pipeline.addLast(new WebSocketServerProtocolHandler(Constants.URI));
+            pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
+            //pipeline.addLast(new HttpRequestHandler2(StrConst.SLASH));
+            pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
             pipeline.addLast(new TextWebSocketFrameHandler(global));
+            //pipeline.addLast(new TextWebSocketFrameHandler2());
         }
 
     }

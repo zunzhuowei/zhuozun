@@ -8,6 +8,8 @@
 </head>
 
 <body>
+<#--<script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>-->
+
 <script type="text/javascript">
     var socket;
     if (!window.WebSocket) {
@@ -19,7 +21,7 @@
             socket.close();
         };
 
-        socket = new WebSocket("ws://192.168.1.104:9002/ws");
+        socket = new WebSocket("ws://${websocketHost}:${websocketPort}");
         socket.onmessage = function (event) {
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data
