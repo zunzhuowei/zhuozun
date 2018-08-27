@@ -10,7 +10,9 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.ChannelMatcher;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import io.netty.util.concurrent.ImmediateEventExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,11 +25,13 @@ public class Global {
     @Resource
     private IRedisService redisService;
 
+    public static final AttributeKey<String> atrrToken = AttributeKey.valueOf("netty.channel.token");
 
     /**
      * 当前在线人员
      */
-    private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+//    private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static ChannelGroup channelGroup = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
 
     public static ChannelGroup getChannelGroup() {
         return channelGroup;

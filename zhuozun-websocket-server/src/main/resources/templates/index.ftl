@@ -8,6 +8,20 @@
 </head>
 
 <body>
+<form onsubmit="return false;">
+    <h3>WebSocket 聊天室 </h3>
+    <input type="hidden" id="username" value="${username}">
+    <input type="hidden" id="token" value="${token}">
+    <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
+    <br>
+    <input type="text" name="message" style="width: 300px" value="Welcome to www.waylau.com">
+    <input type="button" value="发送消息" onclick="send(this.form.message.value)">
+    <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空聊天记录">
+    <input type="button" onclick="close()" value="关闭连接">
+</form>
+<br>
+<br>
+
 <#--<script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>-->
 
 <script type="text/javascript">
@@ -21,7 +35,12 @@
             socket.close();
         };
 
-        socket = new WebSocket("ws://${websocketHost}:${websocketPort}");
+        var username = document.getElementById('username');
+        var token = document.getElementById('token');
+
+        //socket = new WebSocket("ws://${websocketHost}:${websocketPort}");
+        socket = new WebSocket("ws://${websocketHost}:${websocketPort}"
+                + "?username=" + encodeURIComponent(username.value) + "&token=" + token.value);
         socket.onmessage = function (event) {
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data
@@ -33,6 +52,7 @@
         socket.onclose = function (event) {
             var ta = document.getElementById('responseText');
             ta.value = ta.value + "连接被关闭";
+            window.location.href = "login.html";
         };
     } else {
         alert("你的浏览器不支持 WebSocket！");
@@ -46,21 +66,14 @@
             socket.send(message);
         } else {
             alert("连接没有开启.");
+            window.location.href = "login.html";
         }
     }
 
+    function close() {
+        socket.close();
+    }
+
 </script>
-
-<form onsubmit="return false;">
-    <h3>WebSocket 聊天室：</h3>
-    <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
-    <br>
-    <input type="text" name="message" style="width: 300px" value="Welcome to www.waylau.com">
-    <input type="button" value="发送消息" onclick="send(this.form.message.value)">
-    <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空聊天记录">
-</form>
-<br>
-<br>
-
 </body>
 </html>

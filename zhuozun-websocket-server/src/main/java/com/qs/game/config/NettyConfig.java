@@ -95,10 +95,9 @@ public class NettyConfig {
             pipeline.addLast(new HeartbeatHandler()); //心跳
             pipeline.addLast(new ChunkedWriteHandler());
             pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
-            //pipeline.addLast(new HttpRequestHandler2(StrConst.SLASH));
             pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
             pipeline.addLast(new TextWebSocketFrameHandler(global));
-            //pipeline.addLast(new TextWebSocketFrameHandler2());
+            pipeline.addLast(new TextWebSocketFrameHandler2());
         }
 
     }

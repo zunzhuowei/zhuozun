@@ -59,7 +59,9 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        Channel incoming = ctx.channel();
+        String msgText = msg.text();
+        System.out.println("msgText = " + msgText);
+        /*Channel incoming = ctx.channel();
         String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
 
         for (Channel channel : Global.getChannelGroup()) {
@@ -75,17 +77,11 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
                 sb.append(incoming.remoteAddress()).append("->").append(msg.text());
                 log.info("channelRead0 :: {}", sb.toString());
             }
-        }
+        }*/
+
+        ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        Channel incoming = ctx.channel();
-        log.error("Client: {} 异常",incoming.remoteAddress());
-        // 当出现异常就关闭连接
-        cause.printStackTrace();
-        ctx.close();
-    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -94,7 +90,8 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
         try {
             if (acceptInboundMessage(msg)) {
                 channelRead0(ctx, (TextWebSocketFrame)msg);
-                //ctx.fireChannelRead(msg);// 让消息前往 TextWebSocketFrameHandler2
+                release = false;
+                ctx.fireChannelRead(msg); //让消息前往 TextWebSocketFrameHandler2
             } else {
                 release = false;
                 ctx.fireChannelRead(msg);

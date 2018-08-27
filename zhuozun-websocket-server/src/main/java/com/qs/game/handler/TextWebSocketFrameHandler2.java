@@ -5,7 +5,6 @@ import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +46,12 @@ public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<Text
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("TextWebSocketFrameHandler2 channelRead ctx = [" + ctx + "], msg = [" + msg + "]");
-        super.channelRead(ctx, msg);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        Channel incoming = ctx.channel();
+        log.error("Client: {} 异常",incoming.remoteAddress());
+        // 当出现异常就关闭连接
+        cause.printStackTrace();
+        ctx.close();
     }
+
 }

@@ -1,5 +1,6 @@
 package com.qs.game.handler;
 
+import com.qs.game.common.Global;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -44,21 +45,22 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         String uri = StringUtils.substringBefore(srcUir, "?");
         if (wsUri.equalsIgnoreCase(uri)) {
             //1 token 认证
-           /* QueryStringDecoder query = new QueryStringDecoder(request.uri());
+            QueryStringDecoder query = new QueryStringDecoder(request.uri());
             Map<String, List<String>> map = query.parameters();
             List<String> tokens = map.get("token");
-            if (Objects.isNull(tokens) || tokens.isEmpty() || !StringUtils.equals(tokens.get(0), "110")) {
+            if (Objects.isNull(tokens) || tokens.isEmpty()) {//关闭连接
                 ctx.close();
                 ReferenceCountUtil.release(request);
             } else {
-                ctx.channel().attr(AttributeKey.valueOf("netty.channel.token")).getAndSet(tokens.get(0));
-                FullHttpRequest retain = request.retain();
+                ctx.channel().attr(Global.atrrToken).getAndSet(tokens.get(0));
+                //一定要把原请求uri后面的参数去掉，否则不能完成握手.
+                FullHttpRequest retain = request.setUri(uri).retain();
                 ctx.fireChannelRead(retain);
-            }*/
+            }
 
             //2 不认证token
-            FullHttpRequest retain = request.retain();
-            ctx.fireChannelRead(retain);
+            //FullHttpRequest retain = request.setUri(uri).retain();
+            //ctx.fireChannelRead(retain);
         } else {
             ctx.close();
             ReferenceCountUtil.release(request);
@@ -82,7 +84,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         ctx.close();
     }
 
-/*
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         boolean release = true;
@@ -98,6 +99,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 ReferenceCountUtil.release(msg);
             }
         }
-    }*/
+    }
 
 }

@@ -28,6 +28,12 @@ public class JWTUtils {
     public static final int calendarField = Calendar.DATE;
     public static final int calendarInterval = 10;
 
+
+    public static String createToken(String username) {
+        return JWTUtils.createTokenObj(null, username);
+    }
+
+
     /**
      * JWT生成Token.<br/>
      * <p>
@@ -36,6 +42,10 @@ public class JWTUtils {
      * @param user_id 登录成功后用户user_id, 参数user_id不可传空
      */
     public static String createToken(Long user_id) {
+        return JWTUtils.createTokenObj(user_id, null);
+    }
+
+    private static String createTokenObj(Long user_id, String username) {
         Date iatDate = new Date();
         // expire time
         Calendar nowTime = Calendar.getInstance();
@@ -49,14 +59,24 @@ public class JWTUtils {
 
         // build token
         // param backups {iss:Service, aud:APP}
-        String token = JWT.create().withHeader(map) // header
-                .withClaim("iss", "Service") // payload
-                .withClaim("aud", "APP")
-                .withClaim("user_id", null == user_id ? null : user_id.toString())
-                .withIssuedAt(iatDate) // sign time
-                .withExpiresAt(expiresDate) // expire time
-                .sign(Algorithm.HMAC256(SECRET)); // signature
-
+        String token = null;
+        if (Objects.nonNull(user_id)) {
+            token = JWT.create().withHeader(map) // header
+                    .withClaim("iss", "Service") // payload
+                    .withClaim("aud", "APP")
+                    .withClaim("user_id", user_id.toString())
+                    .withIssuedAt(iatDate) // sign time
+                    .withExpiresAt(expiresDate) // expire time
+                    .sign(Algorithm.HMAC256(SECRET)); // signature
+        } else if (StringUtils.isNotBlank(username)) {
+            token = JWT.create().withHeader(map) // header
+                    .withClaim("iss", "Service") // payload
+                    .withClaim("aud", "APP")
+                    .withClaim("username", username)
+                    .withIssuedAt(iatDate) // sign time
+                    .withExpiresAt(expiresDate) // expire time
+                    .sign(Algorithm.HMAC256(SECRET)); // signaturev
+        }
         return token;
     }
 
@@ -113,14 +133,23 @@ public class JWTUtils {
      * @return user_id
      */
     public static Long getAppUID(String token) {
+        String userId = JWTUtils.getAppKey(token, "user_id");
+        return StringUtils.isBlank(userId) ? null :Long.valueOf(userId);
+    }
+
+    public static String getAppUsername(String token) {
+        return JWTUtils.getAppKey(token, "username");
+    }
+
+    private static String getAppKey(String token, String key) {
         Map<String, Claim> claims = verifyToken(token);
         if (Objects.isNull(claims)) return null;
-        Claim user_id_claim = claims.get("user_id");
+        Claim user_id_claim = claims.get(key);
         if (Objects.isNull(user_id_claim) || StringUtils.isBlank(user_id_claim.asString())) {
             return null;
             // token 校验失败, 抛出Token验证非法异常
         }
-        return Long.valueOf(user_id_claim.asString());
+        return user_id_claim.asString();
     }
 
     public static void main(String[] args) throws Exception {
