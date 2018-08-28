@@ -2,10 +2,10 @@ package com.qs.game.handler;
 
 import com.qs.game.common.Global;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
-import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
+@ChannelHandler.Sharable
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
 

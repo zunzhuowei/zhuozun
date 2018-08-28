@@ -3,6 +3,7 @@ package com.qs.game.handler;
 import com.qs.game.common.Global;
 import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
 
@@ -21,7 +23,6 @@ public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<Text
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         log.info("TextWebSocketFrameHandler2 channelRead0 {},{}", ctx, msg);
         Channel incoming = ctx.channel();
-        System.out.println("TextWebSocketFrameHandler2 ctx = [" + ctx + "], msg = [" + msg + "]");
         String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
         for (Channel channel : Global.getChannelGroup()) {
             String groupClientId = HandlerUtils.getClientShortIdByChannel(channel);
@@ -52,6 +53,11 @@ public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<Text
         // 当出现异常就关闭连接
         cause.printStackTrace();
         ctx.close();
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        super.channelRead(ctx, msg);
     }
 
 }

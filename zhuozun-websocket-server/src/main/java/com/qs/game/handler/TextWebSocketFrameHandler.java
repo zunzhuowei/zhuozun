@@ -3,6 +3,7 @@ package com.qs.game.handler;
 import com.qs.game.common.Global;
 import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 @Slf4j
+@ChannelHandler.Sharable
 public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     private Global global;
@@ -85,13 +87,13 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.warn("TextWebSocketFrameHandler channelRead --:: {},{}", ctx, msg);
+        log.info("TextWebSocketFrameHandler channelRead --:: {},{}", ctx, msg);
         boolean release = true;
         try {
             if (acceptInboundMessage(msg)) {
                 channelRead0(ctx, (TextWebSocketFrame)msg);
-                release = false;
-                ctx.fireChannelRead(msg); //让消息前往 TextWebSocketFrameHandler2
+                //release = false;
+                //ctx.fireChannelRead(msg); //让消息前往 TextWebSocketFrameHandler2
             } else {
                 release = false;
                 ctx.fireChannelRead(msg);

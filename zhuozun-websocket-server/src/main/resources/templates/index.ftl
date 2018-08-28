@@ -54,6 +54,9 @@
             ta.value = ta.value + "连接被关闭";
             window.location.href = "login.html";
         };
+        socket.addEventListener('open', function (event) {
+            socket.send('{"cmd":11,"params":{"passwore":"dasfa","sex":"1","user":"zhansgan"},"sign":"aaaa","token":"abcdefg"}');
+        });
     } else {
         alert("你的浏览器不支持 WebSocket！");
     }
@@ -70,9 +73,6 @@
         }
     }
 
-    function close() {
-        socket.close();
-    }
 
 </script>
 </body>
