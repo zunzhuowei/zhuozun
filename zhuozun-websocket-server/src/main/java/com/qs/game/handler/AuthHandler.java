@@ -1,6 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.common.Global;
+import com.qs.game.model.ReqEntity;
+import com.qs.game.utils.AccessUtils;
 import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -11,16 +13,18 @@ import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 
 @Slf4j
 @ChannelHandler.Sharable
-public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class AuthHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     private Global global;
 
     private final boolean autoRelease;
 
-    public TextWebSocketFrameHandler(Global global) {
+    public AuthHandler(Global global) {
         this.global = global;
         this.autoRelease = true;
     }
@@ -62,38 +66,22 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         String msgText = msg.text();
-        System.out.println("msgText = " + msgText);
-        /*Channel incoming = ctx.channel();
-        String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
-
-        for (Channel channel : Global.getChannelGroup()) {
-            String groupClientId = HandlerUtils.getClientShortIdByChannel(channel);
-            if (StringUtils.equals(incomingId, groupClientId)) {
-                channel.writeAndFlush(new TextWebSocketFrame("[服务器端返回]：" + msg.text()));
-            }else {
-                //发送给指定的
-                channel.writeAndFlush(new TextWebSocketFrame
-                        ("[来自客户端的消息]：" + incomingId + " : " + msg.text()));
-
-                StringBuffer sb = new StringBuffer();
-                sb.append(incoming.remoteAddress()).append("->").append(msg.text());
-                log.info("channelRead0 :: {}", sb.toString());
-            }
-        }*/
-
-        ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+        ReqEntity reqEntity = AccessUtils.checkAngGetReqEntity(msgText);
+        if (Objects.isNull(reqEntity)) {
+            ctx.channel().close();
+        } else {
+            ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+        }
     }
 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("TextWebSocketFrameHandler channelRead --:: {},{}", ctx, msg);
+        log.info("AuthHandler channelRead --:: {},{}", ctx, msg);
         boolean release = true;
         try {
             if (acceptInboundMessage(msg)) {
                 channelRead0(ctx, (TextWebSocketFrame)msg);
-                //release = false;
-                //ctx.fireChannelRead(msg); //让消息前往 TextWebSocketFrameHandler2
             } else {
                 release = false;
                 ctx.fireChannelRead(msg);

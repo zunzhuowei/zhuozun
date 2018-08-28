@@ -1,6 +1,5 @@
 package com.qs.game.config;
 
-import com.qs.game.common.Constants;
 import com.qs.game.common.Global;
 import com.qs.game.constant.StrConst;
 import com.qs.game.handler.*;
@@ -96,7 +95,7 @@ public class NettyConfig {
             pipeline.addLast(new ChunkedWriteHandler());
             pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
             pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
-            pipeline.addLast(new TextWebSocketFrameHandler(global));
+            pipeline.addLast(new AuthHandler(global)); //访问权限认证
             pipeline.addLast(new TextWebSocketFrameHandler2());
         }
 

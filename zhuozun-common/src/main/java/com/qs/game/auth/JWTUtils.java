@@ -21,10 +21,10 @@ public class JWTUtils {
 
 
     /**
-     * token秘钥，请勿泄露，请勿随便修改 backups:JKKLJOoasdlfj
+     * token秘钥，请勿泄露，请勿随便修改
      * token 过期时间: 10天
      */
-    public static final String SECRET = "JKKLJOoasdlfj";
+    public static final String SECRET = "q1rhhQW%GxX6sYu6BZ1Q";
     public static final int calendarField = Calendar.DATE;
     public static final int calendarInterval = 10;
 
