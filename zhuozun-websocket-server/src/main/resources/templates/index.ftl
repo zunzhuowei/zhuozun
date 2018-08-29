@@ -38,9 +38,12 @@
         var username = document.getElementById('username');
         var token = document.getElementById('token');
 
-        //socket = new WebSocket("ws://${websocketHost}:${websocketPort}");
         socket = new WebSocket("ws://${websocketHost}:${websocketPort}"
                 + "?username=" + encodeURIComponent(username.value) + "&token=" + token.value);
+        //ssl需要域名，否则握手失败
+        //socket = new WebSocket("wss://localhost:${websocketPort}"
+        //        + "?username=" + encodeURIComponent(username.value) + "&token=" + token.value);
+
         socket.onmessage = function (event) {
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data

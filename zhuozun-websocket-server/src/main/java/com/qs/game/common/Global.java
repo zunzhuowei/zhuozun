@@ -10,6 +10,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.ChannelMatcher;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.util.concurrent.ImmediateEventExecutor;
@@ -93,7 +94,7 @@ public class Global {
     /**
      * @param toChannelIdStr asLongText
      */
-    public boolean sendMsg2One(Object message, String toChannelIdStr) {
+    public boolean sendMsg2One(TextWebSocketFrame message, String toChannelIdStr) {
         Channel target = this.getChannelById(toChannelIdStr);
         if (Objects.isNull(target)) return false;
         ChannelFuture channelFuture = target.writeAndFlush(message);
@@ -101,7 +102,7 @@ public class Global {
     }
 
 
-    public boolean sendMsg2All(Object message) {
+    public boolean sendMsg2All(TextWebSocketFrame message) {
         ChannelGroupFuture channelGroupFuture = channelGroup.writeAndFlush(message);
         return channelGroupFuture.isSuccess();
     }
@@ -109,7 +110,7 @@ public class Global {
     /**
      * @param matcherStr asLongText
      */
-    public boolean sendMsgByMatcher(String matcherStr, Object message) {
+    public boolean sendMsgByMatcher(String matcherStr, TextWebSocketFrame message) {
         ChannelMatcher matcher = (channel) -> channel.id().asLongText().startsWith(matcherStr);
         ChannelGroupFuture channelGroupFuture = channelGroup.writeAndFlush(message, matcher,true);
         return channelGroupFuture.isSuccess();

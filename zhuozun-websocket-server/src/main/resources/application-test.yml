@@ -11,15 +11,21 @@ netty:
       count: 2  # worker的线程数
 
 server:
-  port: 8600
+  port: 8600 #https
   app-name: websocket-server
   discover:
-    hostname: 192.168.1.104
+    hostname: 192.168.1.204
     port: 7000
   eureka:
     user:
       name: zhangsan
       password: 123
+  ssl:
+    http:
+      port: 8601 # http
+    key-store: wss.jks
+    key-store-type: JKS
+    key-password: netty123
 
 spring:
   application:

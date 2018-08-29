@@ -37,10 +37,10 @@ public class Server {
     @PostConstruct
     public void start() throws Exception {
         try {
-            channelFuture = serverBootstrap.bind(inetSocketAddress).sync();
+            channelFuture = serverBootstrap.bind(inetSocketAddress).syncUninterruptibly();
             log.info("Starting server at {} , local address is {}", inetSocketAddress,
                     channelFuture.channel().localAddress());
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             log.warn(e.toString());
             //e.printStackTrace();
         }
@@ -48,7 +48,7 @@ public class Server {
 
     @PreDestroy
     public void stop() throws Exception {
-        channelFuture.channel().closeFuture().sync();
+        channelFuture.channel().closeFuture().syncUninterruptibly();
     }
 
 }

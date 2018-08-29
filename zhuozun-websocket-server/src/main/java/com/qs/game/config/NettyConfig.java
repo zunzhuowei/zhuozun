@@ -1,23 +1,15 @@
 package com.qs.game.config;
 
 import com.qs.game.common.Global;
-import com.qs.game.constant.StrConst;
-import com.qs.game.handler.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.ssl.SslContext;
 import io.netty.util.concurrent.ImmediateEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,8 +36,7 @@ public class NettyConfig {
     private int tcpPort;
 
     @Autowired
-    private Global global;
-
+    private ChannelInitializer channelInitializer;
 
     //bootstrap配置
     @SuppressWarnings("unchecked")
@@ -56,7 +47,7 @@ public class NettyConfig {
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG, 1024) //消息队列容量
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
-                .childHandler(new WebSocketServerHandlerInitializer());
+                .childHandler(channelInitializer);
         return bootstrap;
     }
 
@@ -82,23 +73,5 @@ public class NettyConfig {
 
 
 
-    protected class WebSocketServerHandlerInitializer extends ChannelInitializer<SocketChannel> {
-
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-            ChannelPipeline pipeline = ch.pipeline();
-            //处理日志
-            pipeline.addLast(new LoggingHandler(LogLevel.TRACE));
-            pipeline.addLast(new HttpServerCodec());
-            pipeline.addLast(new HttpObjectAggregator(64 * 1024));
-            pipeline.addLast(new HeartbeatHandler()); //心跳
-            pipeline.addLast(new ChunkedWriteHandler());
-            pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
-            pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
-            pipeline.addLast(new AuthHandler(global)); //访问权限认证
-            pipeline.addLast(new TextWebSocketFrameHandler2());
-        }
-
-    }
 
 }
