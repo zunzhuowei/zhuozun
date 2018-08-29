@@ -3,9 +3,9 @@ package com.qs.game.config;
 import com.qs.game.common.Global;
 import com.qs.game.constant.StrConst;
 import com.qs.game.handler.AccessHandler;
+import com.qs.game.handler.BusinessHandler;
 import com.qs.game.handler.HeartbeatHandler;
 import com.qs.game.handler.HttpRequestHandler;
-import com.qs.game.handler.TextWebSocketFrameHandler2;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -40,7 +40,7 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
         pipeline.addLast(new AccessHandler(global)); //访问权限认证
-        pipeline.addLast(new TextWebSocketFrameHandler2());
+        pipeline.addLast(new BusinessHandler());
     }
 
 }

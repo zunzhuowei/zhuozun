@@ -16,12 +16,12 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        log.info("TextWebSocketFrameHandler2 channelRead0 {},{}", ctx, msg);
+        log.info("BusinessHandler channelRead0 {},{}", ctx, msg);
         Channel incoming = ctx.channel();
         String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
         for (Channel channel : Global.getChannelGroup()) {
@@ -42,7 +42,7 @@ public class TextWebSocketFrameHandler2 extends SimpleChannelInboundHandler<Text
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("TextWebSocketFrameHandler2 ctx = [" + ctx + "]");
+        System.out.println("BusinessHandler ctx = [" + ctx + "]");
         super.channelActive(ctx);
     }
 

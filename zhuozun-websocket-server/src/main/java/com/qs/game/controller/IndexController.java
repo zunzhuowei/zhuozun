@@ -6,7 +6,6 @@ import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Global;
 import com.qs.game.service.IRedisService;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.util.internal.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

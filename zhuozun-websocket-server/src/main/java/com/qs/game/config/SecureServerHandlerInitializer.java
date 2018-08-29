@@ -5,7 +5,7 @@ import com.qs.game.constant.StrConst;
 import com.qs.game.handler.AccessHandler;
 import com.qs.game.handler.HeartbeatHandler;
 import com.qs.game.handler.HttpRequestHandler;
-import com.qs.game.handler.TextWebSocketFrameHandler2;
+import com.qs.game.handler.BusinessHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -49,7 +49,7 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
         pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
         pipeline.addLast(new AccessHandler(global)); //访问权限认证
-        pipeline.addLast(new TextWebSocketFrameHandler2());
+        pipeline.addLast(new BusinessHandler());
 
         SSLEngine engine = context.newEngine(ch.alloc());
         engine.setUseClientMode(false);
