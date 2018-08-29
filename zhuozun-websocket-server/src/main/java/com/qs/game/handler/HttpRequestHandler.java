@@ -28,26 +28,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         this.autoRelease = true;
     }
 
-
-    /*@Override
-    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-        if (wsUri.equalsIgnoreCase(request.uri())) {
-            ctx.fireChannelRead(request.retain());
-        } else {
-            if (HttpUtil.is100ContinueExpected(request)) {
-                send100Continue(ctx);
-            }
-        }
-    }
-
-    private static void send100Continue(ChannelHandlerContext ctx) {
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE);
-        ctx.writeAndFlush(response);
-    }
-
-    */
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
         String srcUir = request.uri();

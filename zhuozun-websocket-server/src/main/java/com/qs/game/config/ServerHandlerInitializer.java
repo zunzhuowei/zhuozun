@@ -2,7 +2,7 @@ package com.qs.game.config;
 
 import com.qs.game.common.Global;
 import com.qs.game.constant.StrConst;
-import com.qs.game.handler.AuthHandler;
+import com.qs.game.handler.AccessHandler;
 import com.qs.game.handler.HeartbeatHandler;
 import com.qs.game.handler.HttpRequestHandler;
 import com.qs.game.handler.TextWebSocketFrameHandler2;
@@ -39,7 +39,7 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpRequestHandler(StrConst.SLASH));
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
-        pipeline.addLast(new AuthHandler(global)); //访问权限认证
+        pipeline.addLast(new AccessHandler(global)); //访问权限认证
         pipeline.addLast(new TextWebSocketFrameHandler2());
     }
 

@@ -22,13 +22,13 @@ import java.util.*;
 
 @Slf4j
 @ChannelHandler.Sharable
-public class AuthHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     private Global global;
 
     private final boolean autoRelease;
 
-    public AuthHandler(Global global) {
+    public AccessHandler(Global global) {
         this.global = global;
         this.autoRelease = true;
     }
@@ -37,7 +37,7 @@ public class AuthHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
             WebSocketServerProtocolHandler.HandshakeComplete complete = (WebSocketServerProtocolHandler.HandshakeComplete) evt;
-            log.info("AuthHandler userEventTriggered handshake evt = {},|{},|{}",
+            log.info("AccessHandler userEventTriggered handshake evt = {},|{},|{}",
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestHeaders(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestUri(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).selectedSubprotocol());
@@ -104,7 +104,7 @@ public class AuthHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("AuthHandler channelRead --:: {},{}", ctx, msg);
+        log.info("AccessHandler channelRead --:: {},{}", ctx, msg);
         boolean release = true;
         try {
             if (acceptInboundMessage(msg)) {
