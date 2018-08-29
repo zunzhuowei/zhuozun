@@ -10,7 +10,7 @@
 <body>
 <form onsubmit="return false;">
     <h3>WebSocket 聊天室 </h3>
-    <input type="hidden" id="username" value="${username}">
+    <input type="hidden" id="uid" value="${uid}">
     <input type="hidden" id="token" value="${token}">
     <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
     <br>
@@ -35,14 +35,14 @@
             socket.close();
         };
 
-        var username = document.getElementById('username');
+        var uid = document.getElementById('uid');
         var token = document.getElementById('token');
 
         socket = new WebSocket("ws://${websocketHost}:${websocketPort}"
-                + "?username=" + encodeURIComponent(username.value) + "&token=" + token.value);
+                + "?uid=" + uid.value + "&token=" + token.value);
         //ssl需要域名，否则握手失败
         //socket = new WebSocket("wss://localhost:${websocketPort}"
-        //        + "?username=" + encodeURIComponent(username.value) + "&token=" + token.value);
+        //        + "?uid=" + uid.value + "&token=" + token.value);
 
         socket.onmessage = function (event) {
             var ta = document.getElementById('responseText');
@@ -58,7 +58,7 @@
             window.location.href = "login.html";
         };
         socket.addEventListener('open', function (event) {
-            socket.send('{"cmd":11,"params":{"passwore":"dasfa","sex":"1","user":"zhansgan"},"sign":"aaaa","token":"abcdefg"}');
+            socket.send('{"cmd":1000,"params":{"passwore":"dasfa","sex":"1","user":"zhansgan"},"sign":"aaaa","stamp":1535562802,"token":"abcdefg"}');
         });
     } else {
         alert("你的浏览器不支持 WebSocket！");

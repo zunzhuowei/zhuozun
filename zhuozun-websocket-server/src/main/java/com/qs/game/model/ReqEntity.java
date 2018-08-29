@@ -31,11 +31,13 @@ public class ReqEntity implements Serializable {
         req.put("user", "zhansgan");
         req.put("passwore", "dasfa");
         req.put("sex", "1");
-        reqEntity.setCmd(11).setToken("abcdefg").setSign("aaaa")
-                .setStamp(new Date().getTime() / 1000).setParams(req);
+        reqEntity.setCmd(1000)
+                .setToken("abcdefg")
+                .setSign("aaaa")
+                .setStamp(new Date().getTime() / 1000)
+                .setParams(req);
         String json = JSONObject.toJSONString(reqEntity);
         System.out.println("reqEntity = " + json);
-        json = "{\"aa\":11}";
         ReqEntity reqEntity1 = JSONObject.parseObject(json, ReqEntity.class);
         System.out.println("reqEntity1 = " + reqEntity1);
 

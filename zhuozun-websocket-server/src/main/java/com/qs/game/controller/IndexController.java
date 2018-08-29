@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -43,28 +44,28 @@ public class IndexController extends BaseController {
 
     //提交登录请求
     @RequestMapping(value = {"", "login", "login.html"}, method = RequestMethod.POST)
-    public String login(String username, String password) throws UnsupportedEncodingException {
-        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+    public String login(Long uid, String password) throws UnsupportedEncodingException {
+        if (Objects.isNull(uid) || StringUtils.isBlank(password)) {
             return "redirect:login.html";
         }
-        String token = JWTUtils.createToken(username);
-        redisService.set(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + username, token);
-        return String.format("redirect:index.html?token=%s&username=%s", token,
-                URLEncoder.encode(username, "utf-8"));
+        String token = JWTUtils.createToken(uid);
+        redisService.set(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid, token);
+        return String.format("redirect:index.html?token=%s&uid=%s", token,
+                URLEncoder.encode(uid + "", "utf-8"));
     }
 
     //前往聊天室
     @RequestMapping(value = {"index", "index.html"}, method = RequestMethod.GET)
     public String index(Model model,
                         @RequestParam(name = "token", required = false) String token,
-                        @RequestParam(name = "username", required = false) String username) {
-        if (StringUtils.isBlank(token) || StringUtils.isBlank(username)) {
+                        @RequestParam(name = "uid", required = false) Long uid) {
+        if (StringUtils.isBlank(token) || Objects.isNull(uid)) {
             return "redirect:login.html";
         }
         model.addAttribute("websocketHost", websocketHost);
         model.addAttribute("websocketPort", websocketPort);
         model.addAttribute("token", token);
-        model.addAttribute("username", username);
+        model.addAttribute("uid", uid);
         return "index";
     }
 

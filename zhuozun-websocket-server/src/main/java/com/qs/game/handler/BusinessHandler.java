@@ -49,7 +49,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         Channel incoming = ctx.channel();
-        log.error("Client: {} 异常",incoming.remoteAddress());
+        log.warn("Client: {} 异常,{}", incoming.remoteAddress(), cause.toString());
         // 当出现异常就关闭连接
         cause.printStackTrace();
         ctx.close();

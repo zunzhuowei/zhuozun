@@ -89,16 +89,18 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         //1）消息验证
-       /* String msgText = msg.text();
+        String msgText = msg.text();
         ReqEntity reqEntity = AccessUtils.checkAngGetReqEntity(msgText);
         if (Objects.isNull(reqEntity)) {
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(String.format("bad request: %s", msgText)));
             ctx.channel().close();
         } else {
+            ctx.channel().attr(Global.atrrToken).set(reqEntity.getToken());//在channel中设置attr
             ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
-        }*/
+        }
 
         //2）取消消息验证
-        ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+        //ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
     }
 
 

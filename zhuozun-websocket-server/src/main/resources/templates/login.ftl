@@ -16,8 +16,8 @@
 <form action="login.html" method="post">
     <h3>登录 WebSocket 聊天室：</h3>
     <br>
-    <label for="username">用户名:</label>
-    <input type="text" id="username" name="username" style="width: 300px" /><br/>
+    <label for="uid">用户ID:</label>
+    <input type="number" id="uid" name="uid" style="width: 300px" /><br/>
     <label for="password">密码:</label>
     <input type="password" id="password" name="password" style="width: 300px" /><br/><br/>
     <input type="submit" value="登录"/>

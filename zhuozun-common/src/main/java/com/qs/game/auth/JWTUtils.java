@@ -1,14 +1,14 @@
 package com.qs.game.auth;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang3.StringUtils;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by zun.wei on 2018/8/3 18:49.
@@ -28,7 +28,22 @@ public class JWTUtils {
     public static final int calendarField = Calendar.DATE;
     public static final int calendarInterval = 10;
 
+    private static final String USER_ID = "userId";
+    private static final String USER_NAME = "userName";
 
+    // header Map
+    private static final Map<String, Object> HEADER = new HashMap<>();
+
+    static {
+        HEADER.put("alg", "HS256");
+        HEADER.put("typ", "JWT");
+    }
+
+    /**
+     *  生成 username 类型的token
+     * @param username userName
+     * @return new token
+     */
     public static String createToken(String username) {
         return JWTUtils.createTokenObj(null, username);
     }
@@ -39,43 +54,46 @@ public class JWTUtils {
      * <p>
      * JWT构成: header, payload, signature
      *
-     * @param user_id 登录成功后用户user_id, 参数user_id不可传空
+     * @param userId 登录成功后用户userId, 参数userId不可传空
      */
-    public static String createToken(Long user_id) {
-        return JWTUtils.createTokenObj(user_id, null);
+    public static String createToken(Long userId) {
+        return JWTUtils.createTokenObj(userId, null);
     }
 
-    private static String createTokenObj(Long user_id, String username) {
+    /**
+     *  生成token
+     * @param userId userId
+     * @param username userName
+     * @return token
+     */
+    private static String createTokenObj(Long userId, String username) {
         Date iatDate = new Date();
         // expire time
         Calendar nowTime = Calendar.getInstance();
         nowTime.add(calendarField, calendarInterval);
         Date expiresDate = nowTime.getTime();
 
-        // header Map
-        Map<String, Object> map = new HashMap<>();
-        map.put("alg", "HS256");
-        map.put("typ", "JWT");
-
         // build token
         // param backups {iss:Service, aud:APP}
         String token = null;
-        if (Objects.nonNull(user_id)) {
-            token = JWT.create().withHeader(map) // header
-                    .withClaim("iss", "Service") // payload
-                    .withClaim("aud", "APP")
-                    .withClaim("user_id", user_id.toString())
-                    .withIssuedAt(iatDate) // sign time
-                    .withExpiresAt(expiresDate) // expire time
+        if (Objects.nonNull(userId)) {
+            token = JWT.create().withHeader(HEADER) // header
+                    .withIssuer("Service") //jwt签发者  // payload
+                    .withSubject("APP") //jwt所面向的用户
+                    .withAudience("APP") //接收jwt的一方
+                    .withClaim(USER_ID, userId.toString()) //自定义
+                    .withIssuedAt(iatDate) // jwt的签发时间
+                    .withExpiresAt(expiresDate) // jwt的过期时间，这个过期时间必须大于签发时间
                     .sign(Algorithm.HMAC256(SECRET)); // signature
         } else if (StringUtils.isNotBlank(username)) {
-            token = JWT.create().withHeader(map) // header
-                    .withClaim("iss", "Service") // payload
-                    .withClaim("aud", "APP")
-                    .withClaim("username", username)
-                    .withIssuedAt(iatDate) // sign time
-                    .withExpiresAt(expiresDate) // expire time
-                    .sign(Algorithm.HMAC256(SECRET)); // signaturev
+            token = JWT.create().withHeader(HEADER) // header
+                    .withIssuer("Service") //jwt签发者  // payload
+                    .withSubject("APP") //jwt所面向的用户
+                    .withAudience("APP") //接收jwt的一方
+                    .withClaim(USER_NAME, username)
+                    .withIssuedAt(iatDate) // jwt的签发时间
+                    .withExpiresAt(expiresDate) // jwt的过期时间，这个过期时间必须大于签发时间
+                    .sign(Algorithm.HMAC256(SECRET)); // signature
         }
         return token;
     }
@@ -92,19 +110,19 @@ public class JWTUtils {
 
     /**
      * 解密Token
-     *
-     * @param token
-     * @return
-     * @throws Exception
      */
     public static Map<String, Claim> verifyToken(String token) {
         DecodedJWT jwt = getDecodeJWT(token);
         return Objects.isNull(jwt) ? null : jwt.getClaims();
     }
 
-
+    /**
+     *  根据token 解密jwt
+     * @param token token
+     * @return DecodedJWT
+     */
     private static DecodedJWT getDecodeJWT(String token) {
-        DecodedJWT jwt = null;
+        DecodedJWT jwt;
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
             jwt = verifier.verify(token);
@@ -118,8 +136,6 @@ public class JWTUtils {
 
     /**
      * 获取过期日期
-     * @param token
-     * @return
      */
     public static Date getExpiresAt(String token) {
         DecodedJWT jwt = getDecodeJWT(token);
@@ -127,29 +143,40 @@ public class JWTUtils {
     }
 
     /**
-     * 根据Token获取user_id
+     * 根据Token获取userId
      *
-     * @param token
-     * @return user_id
+     * @return userId
      */
     public static Long getAppUID(String token) {
-        String userId = JWTUtils.getAppKey(token, "user_id");
-        return StringUtils.isBlank(userId) ? null :Long.valueOf(userId);
+        String userId = JWTUtils.getClaimValueByTokenAndKey(token, USER_ID);
+        return StringUtils.isBlank(userId) ? null : Long.valueOf(userId);
     }
 
+    /**
+     * 根据Token获取username
+     *
+     * @return usernamev
+     */
     public static String getAppUsername(String token) {
-        return JWTUtils.getAppKey(token, "username");
+        return JWTUtils.getClaimValueByTokenAndKey(token, USER_NAME);
     }
 
-    private static String getAppKey(String token, String key) {
+    /**
+     * 根据Claim 的key 获取其值
+     *
+     * @param token Token
+     * @param key   Claim key
+     * @return Claim value
+     */
+    public static String getClaimValueByTokenAndKey(String token, String key) {
         Map<String, Claim> claims = verifyToken(token);
         if (Objects.isNull(claims)) return null;
-        Claim user_id_claim = claims.get(key);
-        if (Objects.isNull(user_id_claim) || StringUtils.isBlank(user_id_claim.asString())) {
+        Claim claim = claims.get(key);
+        if (Objects.isNull(claim) || StringUtils.isBlank(claim.asString())) {
             return null;
             // token 校验失败, 抛出Token验证非法异常
         }
-        return user_id_claim.asString();
+        return claim.asString();
     }
 
     public static void main(String[] args) throws Exception {

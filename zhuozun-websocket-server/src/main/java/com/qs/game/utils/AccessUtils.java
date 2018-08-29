@@ -1,5 +1,6 @@
 package com.qs.game.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.qs.game.auth.JWTUtils;
 import com.qs.game.enum0.DateEnum;
 import com.qs.game.model.ReqEntity;
@@ -32,8 +33,9 @@ public class AccessUtils {
      * @return ReqEntity 实体类
      */
     public static ReqEntity checkAngGetReqEntity(String requestJson) {
-        ReqEntity reqEntity = HandlerUtils.getReqEntity(requestJson);
+        ReqEntity reqEntity = AccessUtils.getReqEntity(requestJson);
         Integer cmd = reqEntity.getCmd();
+        //校验命令是否存在
         SysCmd sysCmd = Arrays.stream(SysCmd.values())
                 .filter(e -> Objects.equals(e.CMD, cmd))
                 .findFirst().orElse(null);
@@ -42,14 +44,17 @@ public class AccessUtils {
         Long stamp = reqEntity.getStamp();
         String token = reqEntity.getToken();
         Map<String,Object> reqMap = reqEntity.getParams();
+        //校验空参数
         boolean isBadReq = Objects.isNull(sysCmd)
                 || Objects.isNull(sign)
                 || Objects.isNull(stamp)
                 || Objects.isNull(token);
         if (isBadReq) return null;
+        //TODO 校验token是否存在缓存中（登录的时候放入的缓存）
+        //TODO 校验签名的盐值应该是从token中去出来，针对不同的人进行签名。
 
-        if (Objects.isNull(reqMap))
-            reqMap = new TreeMap<>();
+        //参数排序准备签名比较
+        if (Objects.isNull(reqMap)) reqMap = new TreeMap<>();
         //reqMap.put(SIGN, sign);
         reqMap.put(STAMP, stamp);
         reqMap.put(TOKEN, token);
@@ -62,9 +67,12 @@ public class AccessUtils {
         String reqStr = buffer.deleteCharAt(buffer.length() - 1)
                 .append(KEY).append(EQUALS).append(SALT_VALUE).toString();
         String md5Code = MD5Utils.getMD5Code(reqStr);
-        log.info("AccessUtils checkReqEntity reqStr={}, sign={}, md5Code={}", reqStr, sign, md5Code);
+        log.info("AccessUtils checkReqEntity reqStr:{}, sign:{}, md5Code:{}", reqStr, sign, md5Code);
         //签名校验
-        if (!StringUtils.equals(md5Code,sign)) return null;
+        if (!StringUtils.equals(md5Code, sign)) {
+            log.warn("AccessUtils checkReqEntity sign valid fail !");
+            return null;
+        }
 
         //校验token失效时间(同时也验证了token有效性了)
         Date expDate = JWTUtils.getExpiresAt(token);
@@ -83,6 +91,20 @@ public class AccessUtils {
         return reqEntity;
     }
 
-
+    /**
+     *  根据请求json 获取请求实体类
+     * @param json 请求json
+     * @return ReqEntity
+     */
+    private static ReqEntity getReqEntity(String json) {
+        log.info("HandlerUtils getReqEntity --::{}", json);
+        ReqEntity reqEntity;
+        try {
+            reqEntity = JSONObject.parseObject(json, ReqEntity.class);
+        } catch (Exception e) {
+            reqEntity = new ReqEntity();
+        }
+        return reqEntity;
+    }
 
 }
