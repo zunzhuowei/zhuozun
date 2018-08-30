@@ -192,15 +192,11 @@ public class JWTUtils {
         Claim sKey = claims.get(USER_SIGN_KEY);
         Claim userId = claims.get(USER_ID);
         if (Objects.nonNull(username))
-        return new JWTEntity()
-                .setExpDate(jwt.getExpiresAt())
-                .setSKey(sKey.asString())
-                .setUName(username.asString());
+            return new JWTEntity().setExpDate(jwt.getExpiresAt())
+                    .setSKey(sKey.asString()).setUName(username.asString());
         if (Objects.nonNull(userId))
-        return new JWTEntity()
-                .setExpDate(jwt.getExpiresAt())
-                .setSKey(sKey.asString())
-                .setUid(Long.valueOf(userId.asString()));
+            return new JWTEntity().setExpDate(jwt.getExpiresAt())
+                    .setSKey(sKey.asString()).setUid(Long.valueOf(userId.asString()));
         return null;
     }
 

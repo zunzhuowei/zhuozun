@@ -8,8 +8,6 @@ import com.qs.game.common.Global;
 import com.qs.game.constant.StrConst;
 import com.qs.game.service.IRedisService;
 import com.qs.game.utils.SpringBeanUtil;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,8 +16,6 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Date;
 import java.util.List;
@@ -118,6 +114,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                     ctx.close();
                     return;
                 }
+                //把attr放入context中到下一个handler中处理
                 ctx.channel().attr(Global.atrrSkey).set(jwtEntity.getSKey());
 
                 //一定要把原请求uri后面的参数去掉，否则不能完成握手.
