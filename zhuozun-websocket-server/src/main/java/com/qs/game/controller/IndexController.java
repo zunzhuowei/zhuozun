@@ -5,6 +5,7 @@ import com.qs.game.base.basecontroller.BaseController;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Global;
 import com.qs.game.service.IRedisService;
+import com.qs.game.utils.AccessUtils;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -44,21 +44,26 @@ public class IndexController extends BaseController {
 
     //提交登录请求
     @RequestMapping(value = {"", "login", "login.html"}, method = RequestMethod.POST)
-    public String login(Long uid, String password) throws UnsupportedEncodingException {
+    public ModelAndView login(Long uid, String password) {
+        ModelAndView modelAndView = null;
         if (Objects.isNull(uid) || StringUtils.isBlank(password)) {
-            return "redirect:login.html";
+            return new ModelAndView("redirect:login.html");
         }
-        String token = JWTUtils.createToken(uid);
+        String sKey = AccessUtils.createPassWord(16);
+        String token = JWTUtils.createToken(uid, sKey);
         redisService.set(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid, token);
-        return String.format("redirect:index.html?token=%s&uid=%s", token,
-                URLEncoder.encode(uid + "", "utf-8"));
+        modelAndView = new ModelAndView("redirect:index.html");
+        modelAndView.addObject("token", token);
+        modelAndView.addObject("uid", uid);
+        return modelAndView;
+        //return String.format("redirect:index.html?token=%s&uid=%s", token, uid + "");
     }
 
     //前往聊天室
     @RequestMapping(value = {"index", "index.html"}, method = RequestMethod.GET)
     public String index(Model model,
-                        @RequestParam(name = "token", required = false) String token,
-                        @RequestParam(name = "uid", required = false) Long uid) {
+                        @ModelAttribute("token") String token,
+                        @ModelAttribute("uid") Long uid) {
         if (StringUtils.isBlank(token) || Objects.isNull(uid)) {
             return "redirect:login.html";
         }

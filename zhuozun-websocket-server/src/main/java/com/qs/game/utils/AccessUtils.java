@@ -25,10 +25,12 @@ public class AccessUtils {
     private static final String KEY = "key";
     private static final String EQUALS = "=";
     private static final String AND = "&";
+    private static final char charr[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890$@#_".toCharArray();
 
 
     /**
-     *  如果签名错误，或者不满足条件则返回空。否则发返回 ReqEntity
+     * 如果签名错误，或者不满足条件则返回空。否则发返回 ReqEntity
+     *
      * @param requestJson 请求字符串
      * @return ReqEntity 实体类
      */
@@ -43,7 +45,7 @@ public class AccessUtils {
         String sign = reqEntity.getSign();
         Long stamp = reqEntity.getStamp();
         String token = reqEntity.getToken();
-        Map<String,Object> reqMap = reqEntity.getParams();
+        Map<String, Object> reqMap = reqEntity.getParams();
         //校验空参数
         boolean isBadReq = Objects.isNull(sysCmd)
                 || Objects.isNull(sign)
@@ -92,7 +94,8 @@ public class AccessUtils {
     }
 
     /**
-     *  根据请求json 获取请求实体类
+     * 根据请求json 获取请求实体类
+     *
      * @param json 请求json
      * @return ReqEntity
      */
@@ -105,6 +108,26 @@ public class AccessUtils {
             reqEntity = new ReqEntity();
         }
         return reqEntity;
+    }
+
+
+    /**
+     * @param len 获取的随机密码长度
+     * @return String 密码
+     */
+    public static String createPassWord(int len) {
+        StringBuilder sb = new StringBuilder();
+        Random r = new Random();
+        for (int x = 0; x < len; ++x) {
+            sb.append(charr[r.nextInt(charr.length)]);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 100; i++) {
+            System.out.println(AccessUtils.createPassWord(16));
+        }
     }
 
 }

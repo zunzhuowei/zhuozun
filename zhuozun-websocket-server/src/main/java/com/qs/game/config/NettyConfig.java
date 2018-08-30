@@ -2,6 +2,7 @@ package com.qs.game.config;
 
 import com.qs.game.common.Global;
 import com.qs.game.constant.Env;
+import com.qs.game.service.IRedisService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -42,6 +43,9 @@ public class NettyConfig {
     @Autowired
     private ChannelInitializer channelInitializer;
 
+    @Autowired
+    private IRedisService redisService;
+
     //bootstrap配置
     @SuppressWarnings("unchecked")
     @Bean(name = "serverBootstrap")
@@ -77,7 +81,7 @@ public class NettyConfig {
 
     @Bean
     @Profile({Env.TEST, Env.PROD})
-    public SslContext initSSLContextTextProd() throws Exception {
+    public ChannelInitializer<SocketChannel> createSSLChannelInitializer(Global global) throws Exception {
         String type = "JKS";
         String path = "C:\\Users\\xin.tu\\wss.jks";
         String password = "netty123";
@@ -89,28 +93,15 @@ public class NettyConfig {
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(ks, password.toCharArray());
         //SSLContext的实例表示安全套接字协议的实现，它充当用于安全套接字工厂或 SSLEngine 的工厂。
-        return SslContextBuilder.forServer(kmf).build();
-    }
-
-    @Bean
-    @Profile({Env.TEST, Env.PROD})
-    public ChannelInitializer<SocketChannel> createInitializer(Global global, SslContext context) {
+        SslContext context = SslContextBuilder.forServer(kmf).build();
         return new SecureServerHandlerInitializer(global, context); //ssl
     }
 
 
     @Bean
     @Profile({Env.LOCAL, Env.DEV})
-    public SslContext initSSLContextDevLocal() throws Exception {
-        //dev or local 不使用ssl故这里随便注入一个client作bean
-        return SslContextBuilder.forClient().build();
-    }
-
-    @Bean
-    @Profile({Env.LOCAL, Env.DEV})
-    public ChannelInitializer<SocketChannel> createInitializer2(Global global, SslContext context) {
+    public ChannelInitializer<SocketChannel> createChannelInitializer(Global global) {
         return new ServerHandlerInitializer(global);
     }
-
 
 }

@@ -10,7 +10,7 @@
 <body>
 <form onsubmit="return false;">
     <h3>WebSocket 聊天室 </h3>
-    <input type="hidden" id="uid" value="${uid}">
+    <span style="display: none;" id="uid" >${uid ?c }</span> <!-- 如何去掉","逗号呢.,加上"?c"就可以了。 -->
     <input type="hidden" id="token" value="${token}">
     <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
     <br>
@@ -39,16 +39,17 @@
         var token = document.getElementById('token');
 
         socket = new WebSocket("ws://${websocketHost}:${websocketPort}"
-                + "?uid=" + uid.value + "&token=" + token.value);
-        //ssl需要域名，否则握手失败
-        //socket = new WebSocket("wss://localhost:${websocketPort}"
+                + "?uid=" + uid.innerText + "&token=" + token.value);
+        //ssl需要域名，否则握手失败        //socket = new WebSocket("wss://localhost:${websocketPort}"
         //        + "?uid=" + uid.value + "&token=" + token.value);
 
         socket.onmessage = function (event) {
+            debugger;
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data
         };
         socket.onopen = function (event) {
+            debugger;
             var ta = document.getElementById('responseText');
             ta.value = "连接开启!";
         };

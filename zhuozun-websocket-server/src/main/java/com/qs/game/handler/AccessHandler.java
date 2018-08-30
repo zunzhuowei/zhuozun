@@ -1,14 +1,21 @@
 package com.qs.game.handler;
 
+import com.qs.game.base.baseentity.BaseResult;
 import com.qs.game.common.Global;
+import com.qs.game.enum0.Code;
 import com.qs.game.model.ReqEntity;
 import com.qs.game.utils.AccessUtils;
 import com.qs.game.utils.HandlerUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
@@ -41,6 +48,10 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestHeaders(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestUri(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).selectedSubprotocol());
+            // 获取token中的签名秘钥返回给客户端
+            String sKey =  ctx.channel().attr(Global.atrrSkey).get();
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(BaseResult.getBuilder().setCode(Code.ERROR_0)
+                    .setSuccess(true).setMessage("login success").setContent(sKey).buildJsonStr()));
 
             ctx.pipeline().remove(HttpRequestHandler.class);//其除掉，因为后面不会接收任何http请求
             //global.sendMsg2All(new TextWebSocketFrame("Client " + ctx.channel() + " joined"));//发消息给全组成员
@@ -92,7 +103,8 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         String msgText = msg.text();
         ReqEntity reqEntity = AccessUtils.checkAngGetReqEntity(msgText);
         if (Objects.isNull(reqEntity)) {
-            ctx.channel().writeAndFlush(new TextWebSocketFrame(String.format("bad request: %s", msgText)));
+            ctx.channel().writeAndFlush(new TextWebSocketFrame(BaseResult.getBuilder().setCode(Code.ERROR_6)
+                    .setSuccess(false).setContent(msgText).buildJsonStr()));
             ctx.channel().close();
         } else {
             ctx.channel().attr(Global.atrrToken).set(reqEntity.getToken());//在channel中设置attr

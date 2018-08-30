@@ -12,7 +12,7 @@ public enum Code {
     ERROR_3(-3, "userName or password is invalid"),
     ERROR_4(-4, "access token is empty"),
     ERROR_5(-5, "token is invalid"),
-    ERROR_6(-6, ""),
+    ERROR_6(-6, "bad request"),
     ERROR_7(-7, ""),
     ERROR_8(-8, ""),
     ERROR_9(-9, ""),

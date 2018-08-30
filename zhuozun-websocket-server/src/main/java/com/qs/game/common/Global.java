@@ -27,6 +27,7 @@ public class Global {
     private IRedisService redisService;
 
     public static final AttributeKey<String> atrrToken = AttributeKey.valueOf("netty.channel.token");
+    public static final AttributeKey<String> atrrSkey = AttributeKey.valueOf("netty.channel.sKey");
 
     /**
      * 当前在线人员

@@ -1,7 +1,15 @@
 package com.qs.game.handler;
 
+import com.qs.game.auth.JWTEntity;
+import com.qs.game.auth.JWTUtils;
+import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Constants;
 import com.qs.game.common.Global;
+import com.qs.game.constant.StrConst;
+import com.qs.game.service.IRedisService;
+import com.qs.game.utils.SpringBeanUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,7 +18,10 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,9 +35,12 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     private final boolean autoRelease;
 
-    public HttpRequestHandler(String wsUri) {
-        this.wsUri = wsUri;
+    private IRedisService redisService;
+
+    public HttpRequestHandler() {
+        this.wsUri = StrConst.SLASH;
         this.autoRelease = true;
+        redisService = SpringBeanUtil.getBean("redisService", IRedisService.class);
     }
 
     @Override
@@ -39,16 +53,72 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             Map<String, List<String>> map = query.parameters();
             log.info("HttpRequestHandler channelRead0 map --:{}", map);
             List<String> tokens = map.get(Constants.TOKEN);
-            List<String> uid = map.get(Constants.USER_ID);
+            List<String> uids = map.get(Constants.USER_ID);
             //校验是否为空参数
             boolean isBad = Objects.isNull(tokens) || tokens.isEmpty()
-                    || Objects.isNull(uid) || uid.isEmpty();
+                    || Objects.isNull(uids) || uids.isEmpty();
             if (isBad) {//关闭连接
+                log.warn("HttpRequestHandler channelRead0 isBad = true");
                 ctx.channel().writeAndFlush(new DefaultFullHttpResponse
                                 (HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
                 ctx.close();
             } else {
-                //TODO 登录的时候放token到缓存中了，所以此处应该校验缓存中的token是否存在
+                String token = tokens.get(0); //参数中的token
+                String uid = uids.get(0); //参数中的uid
+                JWTEntity jwtEntity = JWTUtils.getEntityByToken(token);
+                if (Objects.isNull(jwtEntity)) {
+                    log.warn("HttpRequestHandler channelRead0 jwtEntity is null,maybe token is illegal");
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
+                    ctx.close();
+                    return;
+                }
+                Date expDate = jwtEntity.getExpDate();
+                //校验token是否合法
+                if (Objects.isNull(expDate)) {
+                    log.warn("HttpRequestHandler channelRead0 expDate is null,maybe token is illegal");
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
+                    ctx.close();
+                    return;
+                }
+                long nowTime = new Date().getTime();
+                long expTime = expDate.getTime();
+                //校验token过期时间
+                if (expTime < nowTime) {
+                    log.warn("HttpRequestHandler channelRead0 expDate is exp");
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
+                    ctx.close();
+                    return;
+                }
+                //校验token是否是登录用户产生
+                String cacheToken = redisService.get(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid);
+                if (StringUtils.isBlank(cacheToken)) {
+                    log.warn("HttpRequestHandler channelRead0 cacheToken is null, uid:{}", uid);
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED));
+                    ctx.close();
+                    return;
+                }
+                //校验cache 中的token 和传过来的token是否一致
+                if (!StringUtils.equals(cacheToken, token)) {
+                    log.warn("HttpRequestHandler channelRead0 cacheToken not equals token, uid:{}", uid);
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED));
+                    ctx.close();
+                    return;
+                }
+                //校验token中的uid与参数中的uid是否一致
+                Long tokenUid = jwtEntity.getUid();
+                if (!StringUtils.equals(tokenUid + StrConst.EMPTY_STR, uid)) {
+                    log.warn("HttpRequestHandler channelRead0 tokenUid not equals param uid , uid:{}", uid);
+                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
+                    ctx.close();
+                    return;
+                }
+                ctx.channel().attr(Global.atrrSkey).set(jwtEntity.getSKey());
 
                 //一定要把原请求uri后面的参数去掉，否则不能完成握手.
                 FullHttpRequest retain = request.setUri(uri).retain();
@@ -68,7 +138,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         Channel channel = ctx.channel();
         log.warn("Client: {} 异常! --::{}", channel.remoteAddress(), cause.toString());
         // 当出现异常就关闭连接
-        //cause.printStackTrace();
+        cause.printStackTrace();
         ctx.close();
     }
 

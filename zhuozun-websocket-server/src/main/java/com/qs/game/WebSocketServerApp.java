@@ -1,11 +1,13 @@
 package com.qs.game;
 
+import com.qs.game.utils.SpringBeanUtil;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -15,7 +17,8 @@ import org.springframework.context.annotation.Bean;
 public class WebSocketServerApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(WebSocketServerApp.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(WebSocketServerApp.class, args);
+        SpringBeanUtil.setApplicationContext(applicationContext);
     }
 
     @Value("${server.ssl.http.port}")

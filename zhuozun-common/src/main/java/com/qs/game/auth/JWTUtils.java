@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.qs.game.constant.StrConst;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -30,6 +31,8 @@ public class JWTUtils {
 
     private static final String USER_ID = "userId";
     private static final String USER_NAME = "userName";
+    private static final String USER_SIGN_KEY = "sKey";
+
 
     // header Map
     private static final Map<String, Object> HEADER = new HashMap<>();
@@ -40,12 +43,13 @@ public class JWTUtils {
     }
 
     /**
-     *  生成 username 类型的token
+     * 生成 username 类型的token
+     *
      * @param username userName
      * @return new token
      */
-    public static String createToken(String username) {
-        return JWTUtils.createTokenObj(null, username);
+    public static String createToken(String username, String signKey) {
+        return JWTUtils.createTokenObj(null, username, signKey);
     }
 
 
@@ -56,8 +60,8 @@ public class JWTUtils {
      *
      * @param userId 登录成功后用户userId, 参数userId不可传空
      */
-    public static String createToken(Long userId) {
-        return JWTUtils.createTokenObj(userId, null);
+    public static String createToken(Long userId, String signKey) {
+        return JWTUtils.createTokenObj(userId, null, signKey);
     }
 
     /**
@@ -66,7 +70,7 @@ public class JWTUtils {
      * @param username userName
      * @return token
      */
-    private static String createTokenObj(Long userId, String username) {
+    private static String createTokenObj(Long userId, String username,String sKey) {
         Date iatDate = new Date();
         // expire time
         Calendar nowTime = Calendar.getInstance();
@@ -82,6 +86,7 @@ public class JWTUtils {
                     .withSubject("APP") //jwt所面向的用户
                     .withAudience("APP") //接收jwt的一方
                     .withClaim(USER_ID, userId.toString()) //自定义
+                    .withClaim(USER_SIGN_KEY, sKey) //用户签名秘钥
                     .withIssuedAt(iatDate) // jwt的签发时间
                     .withExpiresAt(expiresDate) // jwt的过期时间，这个过期时间必须大于签发时间
                     .sign(Algorithm.HMAC256(SECRET)); // signature
@@ -91,6 +96,7 @@ public class JWTUtils {
                     .withSubject("APP") //jwt所面向的用户
                     .withAudience("APP") //接收jwt的一方
                     .withClaim(USER_NAME, username)
+                    .withClaim(USER_SIGN_KEY, sKey) //用户签名秘钥
                     .withIssuedAt(iatDate) // jwt的签发时间
                     .withExpiresAt(expiresDate) // jwt的过期时间，这个过期时间必须大于签发时间
                     .sign(Algorithm.HMAC256(SECRET)); // signature
@@ -155,10 +161,47 @@ public class JWTUtils {
     /**
      * 根据Token获取username
      *
-     * @return usernamev
+     * @return username
      */
     public static String getAppUsername(String token) {
         return JWTUtils.getClaimValueByTokenAndKey(token, USER_NAME);
+    }
+
+    /**
+     * 根据Token获取用户签名秘钥
+     * @return sign key
+     */
+    public static String getSignKey(String token) {
+        return JWTUtils.getClaimValueByTokenAndKey(token, USER_SIGN_KEY);
+    }
+
+    /**
+     * 获取jwt参数实体类
+     */
+    public static JWTEntity getEntityByToken(String token) {
+        DecodedJWT jwt;
+        try {
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
+            jwt = verifier.verify(token);
+        } catch (Exception e) {
+            return null;
+        }
+        Map<String, Claim> claims = jwt.getClaims();
+        if (Objects.isNull(claims)) return null;
+        Claim username = claims.get(USER_NAME);
+        Claim sKey = claims.get(USER_SIGN_KEY);
+        Claim userId = claims.get(USER_ID);
+        if (Objects.nonNull(username))
+        return new JWTEntity()
+                .setExpDate(jwt.getExpiresAt())
+                .setSKey(sKey.asString())
+                .setUName(username.asString());
+        if (Objects.nonNull(userId))
+        return new JWTEntity()
+                .setExpDate(jwt.getExpiresAt())
+                .setSKey(sKey.asString())
+                .setUid(Long.valueOf(userId.asString()));
+        return null;
     }
 
     /**
@@ -180,7 +223,7 @@ public class JWTUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        String token = JWTUtils.createToken(100L);
+        String token = JWTUtils.createToken(100L, "aa");
         System.out.println("token = " + token);
         Map<String, Claim> claimMap = JWTUtils.verifyToken(token + 1);
 
@@ -201,6 +244,7 @@ public class JWTUtils {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println("simpleDateFormat.format(decodedJWT.getExpiresAt()) = "
                 + simpleDateFormat.format(decodedJWT.getExpiresAt()));
-
+        System.out.println("\"token length\" = "
+                + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBUFAiLCJhdWQiOiJBUFAiLCJpc3MiOiJTZXJ2aWNlIiwic0tleSI6ImFhIiwiZXhwIjoxNTM2NDY0MzUzLCJ1c2VySWQiOiIxMDAiLCJpYXQiOjE1MzU2MDAzNTN9.hSuCRIkR42eWRrOkmX0u9e-c6XOEo_aaWs5UTa08rfQ".length());
     }
 }
