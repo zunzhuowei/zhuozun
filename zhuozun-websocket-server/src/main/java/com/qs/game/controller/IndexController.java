@@ -51,7 +51,7 @@ public class IndexController extends BaseController {
         }
         String sKey = AccessUtils.createPassWord(16);
         String token = JWTUtils.createToken(uid, sKey);
-        redisService.set(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid, token);
+        redisService.set(CacheKey.RedisPrefix.TOKEN_PREFIX.KEY + uid, token);
         modelAndView = new ModelAndView("redirect:index.html");
         modelAndView.addObject("token", token);
         modelAndView.addObject("uid", uid);

@@ -41,7 +41,7 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new HttpRequestHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
         pipeline.addLast(new AccessHandler(global)); //访问权限认证
-        pipeline.addLast(new BusinessHandler());
+        pipeline.addLast(new BusinessHandler(global));
     }
 
 }

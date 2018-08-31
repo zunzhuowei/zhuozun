@@ -43,7 +43,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestUri(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).selectedSubprotocol());
             // 获取token中的签名秘钥返回给客户端
-            String sKey =  ctx.channel().attr(Global.atrrSkey).get();
+            String sKey =  ctx.channel().attr(Global.attrSkey).get();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(
                     RespEntity.getBuilder().setCmd(CMD.HAND_SHAKE)
                             .setErr(ERREnum.SUCCESS).setContent(sKey).buildJsonStr()
@@ -63,7 +63,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         log.info("Client: {} 在线",channel.remoteAddress());
-        //ctx.fireChannelActive();
+        ctx.fireChannelActive();
     }
 
 
@@ -71,16 +71,20 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        log.info("Client: {} 掉线",channel.remoteAddress());
+        ctx.fireChannelInactive();
+        log.info("Client: {} 掉线", channel.remoteAddress());
+        String uid = ctx.channel().attr(Global.attrUid).get();
+        global.delChannelFromGroup(uid, channel); //掉线剔除
     }
 
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        global.sendMsg2All(new TextWebSocketFrame("[SERVER] - "  + channel.remoteAddress() + " 加入"));
-        global.add2ChannelGroup(channel);//加入在线组
-        log.info("Client: {} 加入",channel.remoteAddress());
+        //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - "  + channel.remoteAddress() + " 加入"));
+//        String uid = ctx.channel().attr(Global.attrUid).get();
+//        global.add2ChannelGroup(uid, channel);//加入在线组
+        log.info("Client: {} 加入;{}", channel.remoteAddress());
     }
 
 
@@ -88,9 +92,10 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        global.sendMsg2All(new TextWebSocketFrame("[SERVER] - " + incoming.remoteAddress() + " 离开"));
-        log.info("Client: {} 离开",incoming.remoteAddress());
-        global.delChannelFromGroup(incoming);
+        //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - " + incoming.remoteAddress() + " 离开"));
+        String uid = ctx.channel().attr(Global.attrUid).get();
+        global.delChannelFromGroup(uid, incoming);
+        log.info("Client: {} 离开;{}", incoming.remoteAddress());
     }
 
     @Override
@@ -101,9 +106,14 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         ERREnum errEnum = reqErrEntity.getErrEnum();
         ReqEntity reqEntity = reqErrEntity.getReqEntity();
         switch (errEnum) {
-            case SUCCESS:
+            case SUCCESS: //成功通过请求
             {
-                ctx.channel().attr(Global.atrrToken).set(reqEntity.getToken());//在channel中设置attr
+                Integer cmd = reqEntity.getCmd();
+                if (CMD.LOGIN.VALUE.equals(cmd)) { //登录成功添加到在线组
+                    global.add2ChannelGroup(reqErrEntity.getuId(), ctx.channel());
+                }
+                ctx.channel().attr(Global.attrToken).set(reqEntity.getToken()); //在channel中设置attr
+                ctx.channel().attr(Global.attrUid).set(String.valueOf(reqErrEntity.getuId())); //userId
                 ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
                 break;
             }

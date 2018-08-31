@@ -45,88 +45,93 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         String uri = StringUtils.substringBefore(srcUir, Constants.QUESTION_MARK);
         if (wsUri.equalsIgnoreCase(uri)) {
             //1 token 认证,如果认证不过，则不进行websocket通信。
-            QueryStringDecoder query = new QueryStringDecoder(request.uri());
-            Map<String, List<String>> map = query.parameters();
-            log.info("HttpRequestHandler channelRead0 map --:{}", map);
-            List<String> tokens = map.get(Constants.TOKEN);
-            List<String> uids = map.get(Constants.USER_ID);
-            //校验是否为空参数
-            boolean isBad = Objects.isNull(tokens) || tokens.isEmpty()
-                    || Objects.isNull(uids) || uids.isEmpty();
-            if (isBad) {//关闭连接
-                log.warn("HttpRequestHandler channelRead0 isBad = true");
-                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                                (HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
-                ctx.close();
-            } else {
-                String token = tokens.get(0); //参数中的token
-                String uid = uids.get(0); //参数中的uid
-                JWTEntity jwtEntity = JWTUtils.getEntityByToken(token);
-                if (Objects.isNull(jwtEntity)) {
-                    log.warn("HttpRequestHandler channelRead0 jwtEntity is null,maybe token is illegal");
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
-                    ctx.close();
-                    return;
-                }
-                Date expDate = jwtEntity.getExpDate();
-                //校验token是否合法
-                if (Objects.isNull(expDate)) {
-                    log.warn("HttpRequestHandler channelRead0 expDate is null,maybe token is illegal");
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
-                    ctx.close();
-                    return;
-                }
-                long nowTime = new Date().getTime();
-                long expTime = expDate.getTime();
-                //校验token过期时间
-                if (expTime < nowTime) {
-                    log.warn("HttpRequestHandler channelRead0 expDate is exp");
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
-                    ctx.close();
-                    return;
-                }
-                //校验token是否是登录用户产生
-                String cacheToken = redisService.get(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid);
-                if (StringUtils.isBlank(cacheToken)) {
-                    log.warn("HttpRequestHandler channelRead0 cacheToken is null, uid:{}", uid);
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED));
-                    ctx.close();
-                    return;
-                }
-                //校验cache 中的token 和传过来的token是否一致
-                if (!StringUtils.equals(cacheToken, token)) {
-                    log.warn("HttpRequestHandler channelRead0 cacheToken not equals token, uid:{}", uid);
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED));
-                    ctx.close();
-                    return;
-                }
-                //校验token中的uid与参数中的uid是否一致
-                Long tokenUid = jwtEntity.getUid();
-                if (!StringUtils.equals(tokenUid + StrConst.EMPTY_STR, uid)) {
-                    log.warn("HttpRequestHandler channelRead0 tokenUid not equals param uid , uid:{}", uid);
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse
-                            (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
-                    ctx.close();
-                    return;
-                }
-                //把attr放入context中到下一个handler中处理
-                ctx.channel().attr(Global.atrrSkey).set(jwtEntity.getSKey());
-
-                //一定要把原请求uri后面的参数去掉，否则不能完成握手.
-                FullHttpRequest retain = request.setUri(uri).retain();
-                ctx.fireChannelRead(retain);
-            }
+            this.authenticationToken(ctx, request, uri);
 
             //2 不认证token
             //FullHttpRequest retain = request.setUri(uri).retain();
             //ctx.fireChannelRead(retain);
         } else {
             ctx.close();
+        }
+    }
+
+    //token认证
+    private void authenticationToken(ChannelHandlerContext ctx, FullHttpRequest request, String uri) {
+        QueryStringDecoder query = new QueryStringDecoder(request.uri());
+        Map<String, List<String>> map = query.parameters();
+        log.info("HttpRequestHandler channelRead0 map --:{}", map);
+        List<String> tokens = map.get(Constants.TOKEN);
+        List<String> uids = map.get(Constants.USER_ID);
+        //校验是否为空参数
+        boolean isBad = Objects.isNull(tokens) || tokens.isEmpty()
+                || Objects.isNull(uids) || uids.isEmpty();
+        if (isBad) {//关闭连接
+            log.warn("HttpRequestHandler channelRead0 isBad = true");
+            ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                            (HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+            ctx.close();
+        } else {
+            String token = tokens.get(0); //参数中的token
+            String uid = uids.get(0); //参数中的uid
+            JWTEntity jwtEntity = JWTUtils.getEntityByToken(token);
+            if (Objects.isNull(jwtEntity)) {
+                log.warn("HttpRequestHandler channelRead0 jwtEntity is null,maybe token is illegal");
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
+                ctx.close();
+                return;
+            }
+            Date expDate = jwtEntity.getExpDate();
+            //校验token是否合法
+            if (Objects.isNull(expDate)) {
+                log.warn("HttpRequestHandler channelRead0 expDate is null,maybe token is illegal");
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.METHOD_NOT_ALLOWED));
+                ctx.close();
+                return;
+            }
+            long nowTime = new Date().getTime();
+            long expTime = expDate.getTime();
+            //校验token过期时间
+            if (expTime < nowTime) {
+                log.warn("HttpRequestHandler channelRead0 expDate is exp");
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
+                ctx.close();
+                return;
+            }
+            //校验token是否是登录用户产生
+            String cacheToken = redisService.get(CacheKey.RedisPrefix.TOKEN_PREFIX.KEY + uid);
+            if (StringUtils.isBlank(cacheToken)) {
+                log.warn("HttpRequestHandler channelRead0 cacheToken is null, uid:{}", uid);
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.UNAUTHORIZED));
+                ctx.close();
+                return;
+            }
+            //校验cache 中的token 和传过来的token是否一致
+            if (!StringUtils.equals(cacheToken, token)) {
+                log.warn("HttpRequestHandler channelRead0 cacheToken not equals token, uid:{}", uid);
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.PROXY_AUTHENTICATION_REQUIRED));
+                ctx.close();
+                return;
+            }
+            //校验token中的uid与参数中的uid是否一致
+            Long tokenUid = jwtEntity.getUid();
+            if (!StringUtils.equals(tokenUid + StrConst.EMPTY_STR, uid)) {
+                log.warn("HttpRequestHandler channelRead0 tokenUid not equals param uid , uid:{}", uid);
+                ctx.channel().writeAndFlush(new DefaultFullHttpResponse
+                        (HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_ACCEPTABLE));
+                ctx.close();
+                return;
+            }
+            //把attr放入context中到下一个handler中处理
+            ctx.channel().attr(Global.attrSkey).set(jwtEntity.getSKey()); //signKey
+
+            //一定要把原请求uri后面的参数去掉，否则不能完成握手.
+            FullHttpRequest retain = request.setUri(uri).retain();
+            ctx.fireChannelRead(retain);
         }
     }
 

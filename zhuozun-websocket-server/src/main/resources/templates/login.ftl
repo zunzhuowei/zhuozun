@@ -24,6 +24,15 @@
 </form>
 <br>
 <br>
+<script>
 
+    var dic = {"sign":"aaaa","cmd":1000,"token":"abcdefg","stamp":1535562802,"params":{"passwore": "dasfa","sex":"1","user":"zhansgan"}};//输出  {x:2，y:3，z:1}
+    //参数字典排序
+    var sdic = Object.keys(dic).sort();
+    for (ki in sdic) {
+        document.writeln(sdic[ki] + ":" + dic[sdic[ki]] + ",");
+    }
+
+</script>
 </body>
 </html>

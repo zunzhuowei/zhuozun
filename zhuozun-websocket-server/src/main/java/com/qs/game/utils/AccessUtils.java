@@ -57,19 +57,19 @@ public class AccessUtils {
                 || Objects.isNull(sign)
                 || Objects.isNull(stamp)
                 || Objects.isNull(token);
-        if (isBadReq) return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_1);
+        if (isBadReq) return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_1, null, reqEntity);
 
         //校验token失效时间(同时也验证了token有效性了)
         JWTEntity jwtEntity = JWTUtils.getEntityByToken(token);
-        log.info("AccessUtils checkReqEntity jwtEntity, token valid fail ----::{}", jwtEntity);
+        log.info("AccessUtils checkReqEntity jwtEntity ----::{}", jwtEntity);
         if (Objects.isNull(jwtEntity)) {
             log.warn("AccessUtils checkReqEntity jwtEntity is invalid");
-            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_2);
+            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_2, null, reqEntity);
         }
         Date expDate = jwtEntity.getExpDate();
         if (Objects.isNull(expDate)) {
             log.warn("AccessUtils checkReqEntity expDate is null or token is invalid");
-            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_3);
+            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_3, null, reqEntity);
         }
         long expTime = expDate.getTime();
         long nowTime = new Date().getTime();
@@ -77,15 +77,15 @@ public class AccessUtils {
         if (expTime < nowTime) {
             String expDateFormat = DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(expDate);
             log.warn("AccessUtils checkReqEntity expDate less than now date = {}", expDateFormat);
-            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_4);
+            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_4, null, reqEntity);
         }
 
         Long uid = jwtEntity.getUid();
         IRedisService redisService = SpringBeanUtil.getBean("redisService", IRedisService.class);
-        String cacheToken = redisService.get(CacheKey.RedisPrefix.WEBSOCKET_USER_PREFIX.KEY + uid);
+        String cacheToken = redisService.get(CacheKey.RedisPrefix.TOKEN_PREFIX.KEY + uid);
         if (StringUtils.isBlank(cacheToken) || !StringUtils.equals(cacheToken, token)) {
             log.warn("AccessUtils checkReqEntity cacheToken not equals  request token ::{},{}", cacheToken, token);
-            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_5);
+            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_5, uid + "", reqEntity);
         }
 
         //参数排序准备签名比较
@@ -99,16 +99,16 @@ public class AccessUtils {
         for (Map.Entry<String, Object> kv : treeMap.entrySet()) {
             buffer.append(kv.getKey()).append(EQUALS).append(kv.getValue()).append(AND);
         }
-        String reqStr = buffer.deleteCharAt(buffer.length() - 1)
-                .append(KEY).append(EQUALS).append(jwtEntity.getSKey()).toString();
+        //String reqStr = buffer.deleteCharAt(buffer.length() - 1)
+        String reqStr = buffer.append(KEY).append(EQUALS).append(jwtEntity.getSKey()).toString();
         String md5Code = MD5Utils.getMD5Code(reqStr);
         log.info("AccessUtils checkReqEntity reqStr: {}, sign: {}, md5Code: {}", reqStr, sign, md5Code);
         //签名校验
         if (!StringUtils.equals(md5Code, sign)) {
             log.warn("AccessUtils checkReqEntity sign valid fail !");
-            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_6);
+            return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_6, uid + "", reqEntity);
         }
-        return new ReqErrEntity(ERREnum.SUCCESS, reqEntity);
+        return new ReqErrEntity(ERREnum.SUCCESS, uid + "", reqEntity);
     }
 
     /**
@@ -140,12 +140,6 @@ public class AccessUtils {
             sb.append(charr[r.nextInt(charr.length)]);
         }
         return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        for (int i = 0; i < 100; i++) {
-            System.out.println(AccessUtils.createPassWord(16));
-        }
     }
 
 }

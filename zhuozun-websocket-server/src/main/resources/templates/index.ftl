@@ -23,8 +23,22 @@
 <br>
 
 <#--<script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>-->
+<script src="md5.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    var req = {
+        makeReq: function (base, params) {
+            var obj = Object.assign(base, params);
+
+            var sdic = Object.keys(obj).sort();
+            var sortStr = "";
+            for (ki in sdic) {
+                sortStr += sdic[ki] + "=" + obj[sdic[ki]] + "&";
+            }
+            return sortStr;
+        }
+    };
+
     var socket;
     if (!window.WebSocket) {
         window.WebSocket = window.MozWebSocket;
@@ -45,6 +59,38 @@
 
         socket.onmessage = function (event) {
             debugger;
+            var resp = JSON.parse(event.data);
+            console.log(resp);
+            var cmd = resp.cmd;
+            if (cmd === 999) {
+                window.localStorage.setItem("sKey", resp.content);
+
+                var dic = {
+                    cmd: 1000,
+                    token: '${token}',
+                    stamp: Date.parse(new Date()) / 1000,
+                };
+
+                var parmas = {
+                    mid: 111,
+                    username: "zhangsan"
+                };
+
+                var sortStr = req.makeReq(dic, parmas) + "key=" + window.localStorage.getItem("sKey");
+                var md5Str = hex_md5(sortStr);
+                dic.sign = md5Str;
+                dic.params = parmas;
+
+                socket.send(JSON.stringify(dic));
+            }
+            if (cmd === 1000) {
+                var sKey = window.localStorage.getItem("sKey");
+                if (resp.err < 0) {
+                    alert(resp.comment + ":" + resp.err);
+                } else {
+                    alert("login success");
+                }
+            }
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data
         };
@@ -59,7 +105,7 @@
             window.location.href = "login.html";
         };
         socket.addEventListener('open', function (event) {
-            socket.send('{"cmd":1000,"params":{"passwore":"dasfa","sex":"1","user":"zhansgan"},"sign":"aaaa","stamp":1535562802,"token":"abcdefg"}');
+            //socket.send('{"cmd":1000,"params":{"passwore":"dasfa","sex":"1","user":"zhansgan"},"sign":"aaaa","stamp":1535562802,"token":"abcdefg"}');
         });
     } else {
         alert("你的浏览器不支持 WebSocket！");

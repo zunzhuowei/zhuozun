@@ -15,10 +15,13 @@ public class ReqErrEntity implements Serializable {
 
     private ERREnum errEnum;
 
-    public ReqErrEntity(ERREnum errEnum, ReqEntity... reqEntities) {
+    private String uId;
+
+    public ReqErrEntity(ERREnum errEnum, String uId, ReqEntity... reqEntities) {
         this.errEnum = errEnum;
         if (Objects.nonNull(reqEntities) && reqEntities.length > 0)
             this.reqEntity = reqEntities[0];
+        this.uId = uId;
     }
 
     public ReqEntity getReqEntity() {
@@ -27,6 +30,10 @@ public class ReqErrEntity implements Serializable {
 
     public ERREnum getErrEnum() {
         return errEnum;
+    }
+
+    public String getuId() {
+        return uId;
     }
 
 }

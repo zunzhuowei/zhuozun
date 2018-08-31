@@ -3,6 +3,7 @@ package com.qs.game.aspect;
 import com.alibaba.fastjson.JSON;
 import com.qs.game.constant.IntConst;
 import com.qs.game.entity.OperationLog;
+import com.qs.game.enum0.DateEnum;
 import com.qs.game.service.IRedisService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -90,7 +91,8 @@ public class LogAspect {
         String opContent = adminOptionContent(joinPoint.getArgs(), methodName);
         // 创建日志对象
         OperationLog operationLog = new OperationLog();
-        operationLog.setCreateTime(new Date()).setContent(opContent).setOpreation("insert");
+        String createDate = DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date());
+        operationLog.setCreateTime(createDate).setContent(opContent).setOpreation("insert");
         redisService.lPush("insertServiceCall", IntConst.MONTH, JSON.toJSONString(operationLog));
     }
 
@@ -114,7 +116,8 @@ public class LogAspect {
         String opContent = adminOptionContent(joinPoint.getArgs(), methodName);
         // 创建日志对象
         OperationLog operationLog = new OperationLog();
-        operationLog.setCreateTime(new Date()).setContent(opContent).setOpreation("update");
+        String createDate = DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date());
+        operationLog.setCreateTime(createDate).setContent(opContent).setOpreation("update");
         redisService.lPush("updateServiceCall", IntConst.MONTH, JSON.toJSONString(operationLog));
     }
 
@@ -141,7 +144,8 @@ public class LogAspect {
         }
         // 创建日志对象
         OperationLog operationLog = new OperationLog();
-        operationLog.setCreateTime(new Date()).setContent(rs.toString()).setOpreation("delete");
+        String createDate = DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date());
+        operationLog.setCreateTime(createDate).setContent(rs.toString()).setOpreation("delete");
         redisService.lPush("deleteServiceCall", IntConst.MONTH, JSON.toJSONString(operationLog));
     }
 
@@ -165,7 +169,8 @@ public class LogAspect {
         String opContent = adminOptionContent(joinPoint.getArgs(), methodName);
         // 创建日志对象
         OperationLog operationLog = new OperationLog();
-        operationLog.setCreateTime(new Date()).setContent(opContent).setOpreation("permission");
+        String createDate = DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date());
+        operationLog.setCreateTime(createDate).setContent(opContent).setOpreation("permission");
         redisService.lPush("permissionServiceCallCalls", IntConst.MONTH, JSON.toJSONString(operationLog));
     }
 

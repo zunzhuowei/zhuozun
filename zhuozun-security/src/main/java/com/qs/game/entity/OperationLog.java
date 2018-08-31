@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class OperationLog {
 
-    private Date createTime;// 操作时间
+    private String createTime;// 操作时间
 
     private String content;// 操作内容
 

@@ -18,20 +18,27 @@ import org.apache.commons.lang3.StringUtils;
 @ChannelHandler.Sharable
 public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    private Global global;
+
+    public BusinessHandler(Global global) {
+        this.global = global;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         log.info("BusinessHandler channelRead0 {},{}", ctx, msg);
         Channel incoming = ctx.channel();
         String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
+        String token = ctx.channel().attr(Global.attrToken).get(); //在channel中设置attr
+        String uid = ctx.channel().attr(Global.attrUid).get(); //userId
+
         for (Channel channel : Global.getChannelGroup()) {
             String groupClientId = HandlerUtils.getClientShortIdByChannel(channel);
             if (StringUtils.equals(incomingId, groupClientId)) {
-                channel.writeAndFlush(new TextWebSocketFrame("[服务器22端返回]：" + msg.text()));
+                channel.writeAndFlush(new TextWebSocketFrame(msg.text()));
             }else {
                 //发送给指定的
-                channel.writeAndFlush(new TextWebSocketFrame
-                        ("[来自客户端2的消息]：" + incomingId + " : " + msg.text()));
+                channel.writeAndFlush(new TextWebSocketFrame(msg.text()));
 
                 StringBuffer sb = new StringBuffer();
                 sb.append(incoming.remoteAddress()).append("->").append(msg.text());
@@ -42,7 +49,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("BusinessHandler ctx = [" + ctx + "]");
+        log.info("BusinessHandler ctx = [" + ctx + "]");
         super.channelActive(ctx);
     }
 

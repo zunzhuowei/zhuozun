@@ -16,6 +16,8 @@ public interface CacheKey {
     String redisMqSetPrefix = "redisMqSetPrefix:";
     String redisMqListPrefix = "redisMqListPrefix:";
     String socketUserPrefix = "socket:";
+    String tokenPrefix = "token:";
+    String userIdPrefix = "userId:";
 
     enum Redis{
         USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
@@ -51,6 +53,8 @@ public interface CacheKey {
         REDIS_MQ_SET_PREFIX(redisMqSetPrefix, "redis mq set 消息前缀!"),
         REDIS_MQ_LIST_PREFIX(redisMqListPrefix, "redis mq list 消息前缀!"),
         WEBSOCKET_USER_PREFIX(socketUserPrefix, "websocket 用户前缀!"),
+        TOKEN_PREFIX(tokenPrefix, "token前缀!"),
+        USER_ID_PREFIX(userIdPrefix, "用户id前缀!"),
         ;
 
         public String KEY;
