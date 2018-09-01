@@ -1,4 +1,4 @@
-package com.qs.game.model;
+package com.qs.game.model.base;
 
 import com.alibaba.fastjson.JSON;
 import com.qs.game.common.CMD;
