@@ -17,22 +17,28 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 
 @Slf4j
 @ChannelHandler.Sharable
+@Component
+@Qualifier("accessHandler")
 public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    @Autowired
     private Global global;
 
-    private final boolean autoRelease;
+    private final boolean autoRelease = true;
 
-    public AccessHandler(Global global) {
-        this.global = global;
-        this.autoRelease = true;
-    }
+//    public AccessHandler(Global global) {
+//        this.global = global;
+//        this.autoRelease = true;
+//    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

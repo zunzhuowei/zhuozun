@@ -28,7 +28,7 @@
 <script type="text/javascript">
     var req = {
         makeReq: function (base, params) {
-            var obj = Object.assign(base, params);
+            var obj = Object.assign({}, base, params);
 
             var sdic = Object.keys(obj).sort();
             var sortStr = "";
@@ -64,7 +64,7 @@
             var cmd = resp.cmd;
             if (cmd === 999) {
                 window.localStorage.setItem("sKey", resp.content);
-
+    debugger;
                 var dic = {
                     cmd: 1000,
                     token: '${token}',

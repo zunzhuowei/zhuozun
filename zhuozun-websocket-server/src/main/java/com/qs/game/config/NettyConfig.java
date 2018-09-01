@@ -79,9 +79,15 @@ public class NettyConfig {
         return new InetSocketAddress(tcpPort);
     }
 
+//    @Bean
+//    @Profile({Env.TEST, Env.PROD})
+//    public ChannelInitializer<SocketChannel> createSSLChannelInitializer(SecureServerHandlerInitializer secureServerHandlerInitializer) throws Exception {
+//        return secureServerHandlerInitializer; //ssl
+//    }
+
     @Bean
     @Profile({Env.TEST, Env.PROD})
-    public ChannelInitializer<SocketChannel> createSSLChannelInitializer(Global global) throws Exception {
+    public SslContext createSSLContext() throws Exception {
         String type = "JKS";
         String path = "C:\\Users\\xin.tu\\wss.jks";
         String password = "netty123";
@@ -93,15 +99,14 @@ public class NettyConfig {
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmf.init(ks, password.toCharArray());
         //SSLContext的实例表示安全套接字协议的实现，它充当用于安全套接字工厂或 SSLEngine 的工厂。
-        SslContext context = SslContextBuilder.forServer(kmf).build();
-        return new SecureServerHandlerInitializer(global, context); //ssl
+        return SslContextBuilder.forServer(kmf).build();
     }
 
 
-    @Bean
-    @Profile({Env.LOCAL, Env.DEV})
-    public ChannelInitializer<SocketChannel> createChannelInitializer(Global global) {
-        return new ServerHandlerInitializer(global);
-    }
+//    @Bean
+//    @Profile({Env.LOCAL, Env.DEV})
+//    public ChannelInitializer<SocketChannel> createChannelInitializer(ServerHandlerInitializer serverHandlerInitializer) {
+//        return serverHandlerInitializer;
+//    }
 
 }

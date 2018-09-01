@@ -9,6 +9,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 /**
  * binary handler
@@ -16,13 +19,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 @ChannelHandler.Sharable
+@Component
+@Qualifier("businessHandler")
 public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    @Autowired
     private Global global;
 
-    public BusinessHandler(Global global) {
-        this.global = global;
-    }
+//    public BusinessHandler(Global global) {
+//        this.global = global;
+//    }
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
