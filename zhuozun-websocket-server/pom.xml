@@ -73,19 +73,6 @@
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
         </dependency>
-        <dependency>
-            <!-- 文档地址：http://binary.ac.cn/weixin-java-miniapp-javadoc/ -->
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>weixin-java-miniapp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>weixin-java-pay</artifactId>
-        </dependency>
-       <!-- <dependency>
-            <groupId>com.github.liyiorg</groupId>
-            <artifactId>weixin-popular</artifactId>
-        </dependency>-->
     </dependencies>
 
     <build>

@@ -64,14 +64,6 @@ spring:
       validation-query-timeout: 5000
       test-while-idle: false
 
-# 微信配置
-wechat:
-  miniapp:
-    appid: 111
-    secret: 111
-    token: 111
-    aesKey: 111
-    msgDataFormat: JSON
 
 eureka:
   client:
