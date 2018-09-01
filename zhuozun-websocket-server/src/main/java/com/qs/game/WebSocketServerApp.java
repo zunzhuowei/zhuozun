@@ -9,11 +9,13 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 启动类
  */
 @SpringBootApplication
+@EnableTransactionManagement
 public class WebSocketServerApp {
 
     public static void main(String[] args) {
