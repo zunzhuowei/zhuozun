@@ -68,7 +68,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        log.info("Client: {} 在线",channel.remoteAddress());
+        log.info("Client: {} 在线", channel.remoteAddress());
         ctx.fireChannelActive();
     }
 
@@ -78,8 +78,8 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         ctx.fireChannelInactive();
-        log.info("Client: {} 掉线", channel.remoteAddress());
         String uid = ctx.channel().attr(Global.attrUid).get();
+        log.info("Client: {} : {} 掉线", channel.remoteAddress(), uid);
         global.delChannelFromGroup(uid, channel); //掉线剔除
     }
 
@@ -90,7 +90,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - "  + channel.remoteAddress() + " 加入"));
 //        String uid = ctx.channel().attr(Global.attrUid).get();
 //        global.add2ChannelGroup(uid, channel);//加入在线组
-        log.info("Client: {} 加入;{}", channel.remoteAddress());
+        log.info("Client: {} 加入", channel.remoteAddress());
     }
 
 
@@ -101,7 +101,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - " + incoming.remoteAddress() + " 离开"));
         String uid = ctx.channel().attr(Global.attrUid).get();
         global.delChannelFromGroup(uid, incoming);
-        log.info("Client: {} 离开;{}", incoming.remoteAddress());
+        log.info("Client: {} : {} 离开", incoming.remoteAddress(), uid);
     }
 
     @Override

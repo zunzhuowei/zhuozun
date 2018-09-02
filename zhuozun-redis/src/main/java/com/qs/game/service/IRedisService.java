@@ -15,6 +15,21 @@ public interface IRedisService {
 
 
     /**
+     * 自增自定义值
+     * @param key key
+     * @param delta 自增的值
+     * @return 自增后的值
+     */
+    Long incr(String key, long delta);
+
+    /**
+     *  自增1
+     * @param key key
+     * @return 自增后的值
+     */
+    Long incrOne(String key);
+
+    /**
      * 删除缓存
      *
      * @param keys key

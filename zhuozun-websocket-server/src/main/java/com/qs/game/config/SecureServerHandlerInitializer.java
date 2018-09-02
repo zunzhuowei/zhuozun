@@ -60,6 +60,9 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
     @Autowired
     private BusinessHandler businessHandler;
 
+    @Autowired
+    private HeartbeatHandler heartbeatHandler;
+
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -68,7 +71,7 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(64 * 1024));
         pipeline.addLast(new IdleStateHandler(10, 0, 0));
-        pipeline.addLast(new HeartbeatHandler()); //心跳
+        pipeline.addLast(heartbeatHandler); //心跳
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpRequestHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));

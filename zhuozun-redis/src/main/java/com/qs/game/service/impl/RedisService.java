@@ -26,6 +26,20 @@ public class RedisService implements IRedisService {
 
 
     @Override
+    public Long incr(String key, long delta) {
+        RedisCallback<Long> redisCallback = connection -> {
+            Long result = connection.incrBy(key.getBytes(), delta);
+            return Objects.isNull(result) ? 0L : result;
+        };
+        return (long) redisTemplate.execute(redisCallback);
+    }
+
+    @Override
+    public Long incrOne(String key) {
+        return this.incr(key, 1L);
+    }
+
+    @Override
     public long del(final String... keys) {
         RedisCallback<Long> redisCallback = connection -> {
             Long result = 0L;

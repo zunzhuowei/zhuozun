@@ -3,6 +3,8 @@ package com.qs.game.utils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Objects;
+
 /**
  * Created by zun.wei on 2018/8/30 16:48.
  * Description: spring 获取bean工具
@@ -27,6 +29,14 @@ public class SpringBeanUtil {
      * 获取applicationContext
      */
     public static ApplicationContext getApplicationContext() {
+        if (Objects.isNull(applicationContext)) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            getApplicationContext();
+        }
         return applicationContext;
     }
 

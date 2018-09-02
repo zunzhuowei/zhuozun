@@ -163,6 +163,9 @@
             }
             if (event.data === "OK") {
                 console.log("server HB!");
+                //如果获取到消息，心跳检测重置
+                //拿到任何消息都说明当前连接是正常的
+                heartCheck.reset().start();
                 return;
             }
             var resp = JSON.parse(event.data);
@@ -199,9 +202,6 @@
             var ta = document.getElementById('responseText');
             ta.value = ta.value + '\n' + event.data;
 
-            //如果获取到消息，心跳检测重置
-            //拿到任何消息都说明当前连接是正常的
-            heartCheck.reset().start();
         }
     }
 
