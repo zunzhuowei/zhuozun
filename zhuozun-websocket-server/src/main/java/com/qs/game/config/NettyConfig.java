@@ -85,22 +85,7 @@ public class NettyConfig {
 //        return secureServerHandlerInitializer; //ssl
 //    }
 
-    @Bean
-    @Profile({Env.TEST, Env.PROD})
-    public SslContext createSSLContext() throws Exception {
-        String type = "JKS";
-        String path = "C:\\Users\\xin.tu\\wss.jks";
-        String password = "netty123";
-        KeyStore ks = KeyStore.getInstance(type); /// "JKS"
-        InputStream ksInputStream = new FileInputStream(path); /// 证书存放地址
-        ks.load(ksInputStream, password.toCharArray());
-        //KeyManagerFactory充当基于密钥内容源的密钥管理器的工厂。
-        //getDefaultAlgorithm:获取默认的 KeyManagerFactory 算法名称。
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(ks, password.toCharArray());
-        //SSLContext的实例表示安全套接字协议的实现，它充当用于安全套接字工厂或 SSLEngine 的工厂。
-        return SslContextBuilder.forServer(kmf).build();
-    }
+
 
 
 //    @Bean
