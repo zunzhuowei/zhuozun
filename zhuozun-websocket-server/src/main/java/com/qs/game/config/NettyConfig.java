@@ -53,7 +53,8 @@ public class NettyConfig {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup(), workerGroup())
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 1024) //消息队列容量
+                //标识当服务器请求处理线程全满时，用于临时存放已完成三次握手的请求的队列的最大长度
+                .option(ChannelOption.SO_BACKLOG, 1024)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(channelInitializer);
         return bootstrap;
@@ -66,6 +67,7 @@ public class NettyConfig {
 
     @Bean(name = "workerGroup", destroyMethod = "shutdownGracefully")
     public NioEventLoopGroup workerGroup() {
+        //源码内部默认取的是 2*n,  N=CPU数量 , 此处注意生产应该以压测结果为准。
         return new NioEventLoopGroup(workerCount);
     }
 

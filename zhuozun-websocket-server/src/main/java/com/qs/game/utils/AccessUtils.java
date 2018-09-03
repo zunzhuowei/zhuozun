@@ -117,7 +117,7 @@ public class AccessUtils {
      * @param json 请求json
      * @return ReqEntity
      */
-    private static ReqEntity getReqEntity(String json) {
+    public static ReqEntity getReqEntity(String json) {
         log.info("HandlerUtils getReqEntity --::{}", json);
         ReqEntity reqEntity;
         try {

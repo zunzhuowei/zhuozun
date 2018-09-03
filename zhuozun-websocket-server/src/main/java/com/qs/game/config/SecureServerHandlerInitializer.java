@@ -20,6 +20,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +50,8 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
     @Autowired
     private Global global;
 
+    private static final EventExecutorGroup group = new DefaultEventExecutorGroup(16);
+
 
 //    public SecureServerHandlerInitializer(Global global, SslContext context) {
 //        this.global = global;
@@ -71,12 +75,12 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(64 * 1024));
         pipeline.addLast(new IdleStateHandler(10, 0, 0));
-        pipeline.addLast(heartbeatHandler); //心跳
+        pipeline.addLast(group, heartbeatHandler); //心跳
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpRequestHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
-        pipeline.addLast(accessHandler); //访问权限认证
-        pipeline.addLast(businessHandler);
+        pipeline.addLast(group, accessHandler); //访问权限认证
+        pipeline.addLast(group, businessHandler);
 
 
         String type = "JKS";

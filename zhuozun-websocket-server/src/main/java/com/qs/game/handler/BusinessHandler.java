@@ -1,6 +1,10 @@
 package com.qs.game.handler;
 
+import com.qs.game.business.BusinessThreadUtil;
 import com.qs.game.common.Global;
+import com.qs.game.model.base.ReqEntity;
+import com.qs.game.model.base.ReqErrEntity;
+import com.qs.game.utils.AccessUtils;
 import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -34,7 +38,11 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         log.info("BusinessHandler channelRead0 {},{}", ctx, msg);
-        Channel incoming = ctx.channel();
+        String msgText = msg.text();
+        ReqEntity reqEntity = AccessUtils.getReqEntity(msgText);
+        BusinessThreadUtil.doBusiness(ctx, msg, reqEntity);
+
+        /*Channel incoming = ctx.channel();
         String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
         String token = ctx.channel().attr(Global.attrToken).get(); //在channel中设置attr
         String uid = ctx.channel().attr(Global.attrUid).get(); //userId
@@ -51,7 +59,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
                 sb.append(incoming.remoteAddress()).append("->").append(msg.text());
                 log.info("channelRead02222 :: {}", sb.toString());
             }
-        }
+        }*/
     }
 
     @Override

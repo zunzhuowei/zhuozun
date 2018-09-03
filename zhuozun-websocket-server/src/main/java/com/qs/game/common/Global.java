@@ -2,6 +2,7 @@ package com.qs.game.common;
 
 
 import com.qs.game.cache.CacheKey;
+import com.qs.game.model.base.ReqEntity;
 import com.qs.game.service.IRedisService;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -31,6 +32,7 @@ public class Global {
     public static final AttributeKey<String> attrToken = AttributeKey.valueOf("netty.channel.token"); //token
     public static final AttributeKey<String> attrSkey = AttributeKey.valueOf("netty.channel.sKey"); //signKey
     public static final AttributeKey<String> attrUid = AttributeKey.valueOf("netty.channel.uId"); //userId
+    public static final AttributeKey<ReqEntity> REQUEST_ENTITY = AttributeKey.valueOf("netty.channel.reqEntity"); //reqEntity
 
     /**
      * 当前在线人员

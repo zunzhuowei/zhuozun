@@ -118,8 +118,14 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                 if (CMD.LOGIN.VALUE.equals(cmd)) { //登录成功添加到在线组
                     global.add2ChannelGroup(reqErrEntity.getuId(), ctx.channel());
                 }
+                if (CMD.LOGOUT.VALUE.equals(cmd)) { //退出登录
+                    global.delChannelFromGroup(reqErrEntity.getuId(), ctx.channel());
+                    ctx.channel().close();
+                    break;
+                }
                 ctx.channel().attr(Global.attrToken).set(reqEntity.getToken()); //在channel中设置attr
                 ctx.channel().attr(Global.attrUid).set(String.valueOf(reqErrEntity.getuId())); //userId
+                //ctx.channel().attr(Global.REQUEST_ENTITY).set(reqEntity); //reqEntity
                 ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
                 break;
             }

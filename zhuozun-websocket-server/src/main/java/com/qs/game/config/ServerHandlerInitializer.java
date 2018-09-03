@@ -18,6 +18,10 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -38,6 +42,9 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
 //        this.global = global;
 //    }
 
+    private static final EventExecutorGroup group = new DefaultEventExecutorGroup(16);
+    //p.addLast(group, "handler", new HttpHelloWorldServerHandler2());//业务线程独立的线程池
+
     @Autowired
     private AccessHandler accessHandler;
 
@@ -53,15 +60,23 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         ChannelPipeline pipeline = ch.pipeline();
         //处理日志
         pipeline.addLast(new LoggingHandler(LogLevel.TRACE));
+        /*
+    保持客户端与服务器端连接的方案常用的有3种
+        1.长连接，也就是客户端与服务器端一直保持连接，适用于客户端比较少的情况。
+        2.定时段连接，比如在某一天的凌晨建立连接，适用于对实时性要求不高的情况。
+        3.设置连接超时，比如超过1分钟没有传输数据就断开连接，等下次需要的时候再建立连接，这种方案比较常用。
+         */
+        //pipeline.addLast(new ReadTimeoutHandler(120));//服务器端设置超时时间,单位：秒
+        //pipeline.addLast(new WriteTimeoutHandler(10));//服务器端设置超时时间,单位：秒
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(64 * 1024));
         pipeline.addLast(new IdleStateHandler(10, 0, 0));
-        pipeline.addLast(heartbeatHandler); //心跳
+        pipeline.addLast(group, heartbeatHandler); //心跳
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpRequestHandler());
         pipeline.addLast(new WebSocketServerProtocolHandler(StrConst.SLASH));
-        pipeline.addLast(accessHandler); //访问权限认证
-        pipeline.addLast(businessHandler);
+        pipeline.addLast(group, accessHandler); //访问权限认证
+        pipeline.addLast(group, businessHandler);
     }
 
 }
