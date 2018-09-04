@@ -13,9 +13,9 @@ import java.security.NoSuchAlgorithmException;
  */
 public class SHA1Utils {
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         System.out.println(getSha1("你若安好，便是晴天"));
-    }
+    }*/
 
     public static String getSha1(String str) {
         if (null == str || 0 == str.length()) {

@@ -18,7 +18,7 @@ public class DesUtils {
     }
 
     // 测试
-    public static void main(String args[]) {
+/*    public static void main(String args[]) {
         // 待加密内容
         String str = "cryptology中国";
         // 密码，长度要是8的倍数
@@ -33,7 +33,7 @@ public class DesUtils {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-    }
+    }*/
 
     // 直接将如上内容解密
 

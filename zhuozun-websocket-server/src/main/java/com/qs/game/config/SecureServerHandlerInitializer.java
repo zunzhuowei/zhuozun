@@ -69,6 +69,7 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
+      /*
         ChannelPipeline pipeline = ch.pipeline();
         //处理日志
         pipeline.addLast(new LoggingHandler(LogLevel.TRACE));
@@ -99,6 +100,7 @@ public class SecureServerHandlerInitializer extends ChannelInitializer<SocketCha
         SSLEngine engine = context.newEngine(ch.alloc());
         engine.setUseClientMode(false);
         pipeline.addFirst(new SslHandler(engine));
+        */
     }
 
    /* @Bean

@@ -1,6 +1,5 @@
 package com.qs.game.config;
 
-import org.springframework.context.annotation.Configuration;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,9 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import sun.plugin2.message.Conversation;
-import sun.plugin2.message.HeartbeatMessage;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;

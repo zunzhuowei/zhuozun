@@ -57,14 +57,17 @@
                 <executions>
                     <execution>
                         <goals>
+                            <!--可以把依赖的包都打包到生成的Jar包中-->
                             <goal>repackage</goal>
                             <goal>build-info</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- 指定该Main Class为全局的唯一入口 -->
                     <mainClass>com.qs.game.AdminServerApp</mainClass>
                     <addResources>false</addResources>
+                    <layout>ZIP</layout>
                 </configuration>
             </plugin>
         </plugins>

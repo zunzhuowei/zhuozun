@@ -11,6 +11,7 @@ import com.qs.game.constant.SystemConst;
 import com.qs.game.enum0.Code;
 import com.qs.game.model.user.User;
 import com.qs.game.service.IIndexService;
+import com.qs.game.utils.AuthUtils;
 import com.qs.game.utils.MD5Utils;
 import com.qs.game.utils.WebContextUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +59,8 @@ public class IndexServiceImpl implements IIndexService {
                         String dbPassword = user.getPassword();
                         dbPassword = MD5Utils.getMD5Code(dbPassword);
                         if (StringUtils.equals(dbPassword, password)) {//密码相同
-                            String newToken = JWTUtils.createToken(user.getId());
+                            String sKey = AuthUtils.createPassWord(16);
+                            String newToken = JWTUtils.createToken(user.getId(), sKey);
                             result.put(SecurityConstants.DEFAULT_TOKEN_NAME, newToken);
                             result.put(SystemConst.user, user.setPassword(dbPassword));
                             return BaseResult.getBuilder().setSuccess(true)
@@ -94,7 +96,8 @@ public class IndexServiceImpl implements IIndexService {
     //生成新token
     private BaseResult createNewToken(User user, String password, Map<String, Object> result) {
         if (StringUtils.equals(user.getPassword(), password)) {
-            String newToken = JWTUtils.createToken(user.getId());
+            String sKey = AuthUtils.createPassWord(16);
+            String newToken = JWTUtils.createToken(user.getId(), sKey);
             result.put(SecurityConstants.DEFAULT_TOKEN_NAME, newToken);
             String dbPw = user.getPassword();
             dbPw = MD5Utils.getMD5Code(dbPw);

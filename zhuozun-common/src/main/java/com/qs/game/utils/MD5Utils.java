@@ -12,9 +12,9 @@ import java.security.MessageDigest;
 public class MD5Utils {
 
     // test
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         System.out.println(getMD5Code("你若安好，便是晴天"));
-    }
+    }*/
 
     private MD5Utils() {
     }

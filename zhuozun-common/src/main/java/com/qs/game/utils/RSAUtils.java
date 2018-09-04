@@ -21,7 +21,7 @@ import javax.crypto.Cipher;
 public class RSAUtils {
 
 
-    public static void main(String[] args) throws Exception {
+/*    public static void main(String[] args) throws Exception {
         Map<String, Key> keyMap = initKey();
         String publicKey = getPublicKey(keyMap);
         String privateKey = getPrivateKey(keyMap);
@@ -51,7 +51,7 @@ public class RSAUtils {
         System.out.println("-----------------------------------");
         System.out.println(new String(decryptByPrivateKey));
 
-    }
+    }*/
 
     public static final String KEY_ALGORITHM = "RSA";
     public static final String SIGNATURE_ALGORITHM = "MD5withRSA";

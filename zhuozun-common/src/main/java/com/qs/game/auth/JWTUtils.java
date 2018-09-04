@@ -218,7 +218,7 @@ public class JWTUtils {
         return claim.asString();
     }
 
-    public static void main(String[] args) throws Exception {
+   /* public static void main(String[] args) throws Exception {
         String token = JWTUtils.createToken(100L, "aa");
         System.out.println("token = " + token);
         Map<String, Claim> claimMap = JWTUtils.verifyToken(token + 1);
@@ -242,5 +242,5 @@ public class JWTUtils {
                 + simpleDateFormat.format(decodedJWT.getExpiresAt()));
         System.out.println("\"token length\" = "
                 + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBUFAiLCJhdWQiOiJBUFAiLCJpc3MiOiJTZXJ2aWNlIiwic0tleSI6ImFhIiwiZXhwIjoxNTM2NDY0MzUzLCJ1c2VySWQiOiIxMDAiLCJpYXQiOjE1MzU2MDAzNTN9.hSuCRIkR42eWRrOkmX0u9e-c6XOEo_aaWs5UTa08rfQ".length());
-    }
+    }*/
 }

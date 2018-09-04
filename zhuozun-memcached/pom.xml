@@ -38,6 +38,17 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <!--被打包项目必须配置项-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!--配置为执行-->
+                    <classifier>exec</classifier>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
