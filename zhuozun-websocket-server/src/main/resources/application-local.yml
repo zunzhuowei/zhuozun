@@ -40,7 +40,7 @@ spring:
   freemarker:
     suffix: .ftl
   redis:
-    database: 14
+    database: 6 # 14
     host: 192.168.1.128
     port: 6379
     password:
