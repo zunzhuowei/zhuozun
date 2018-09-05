@@ -158,10 +158,6 @@
         };
         ws.onmessage = function (event) {
             if (event.data === "HB") {
-                ws.send("OK");
-                return;
-            }
-            if (event.data === "OK") {
                 console.log("server HB!");
                 //如果获取到消息，心跳检测重置
                 //拿到任何消息都说明当前连接是正常的
@@ -218,7 +214,7 @@
 
     //心跳检测
     var heartCheck = {
-        timeout: 60000,//60秒
+        timeout: 3000,//3秒
         timeoutObj: null,
         reset: function(){
             clearTimeout(this.timeoutObj);

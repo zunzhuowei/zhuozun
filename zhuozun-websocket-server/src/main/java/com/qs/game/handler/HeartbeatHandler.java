@@ -2,6 +2,7 @@ package com.qs.game.handler;
 
 import com.qs.game.common.Global;
 import com.qs.game.service.IRedisService;
+import com.qs.game.utils.HeartBeatUtils;
 import io.netty.channel.*;
 import io.netty.channel.socket.ChannelInputShutdownReadComplete;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * 心跳操作
@@ -75,8 +78,9 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
             String clientMsg = ((TextWebSocketFrame) msg).text();
             if ("HB".equals(clientMsg)) {
                 String uid = ctx.channel().attr(Global.attrUid).get();
-                Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
-                log.error("client request heart beat ---------::{}", clientMsg);
+                //Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
+                log.debug("client request heart beat ---------::{}", clientMsg);
+                HeartBeatUtils.heartBeats.put(uid, new Date().getTime());
                 //客户端请求心跳
                 ctx.writeAndFlush(new TextWebSocketFrame("HB"));//.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                 ReferenceCountUtil.release(msg); //释放资源

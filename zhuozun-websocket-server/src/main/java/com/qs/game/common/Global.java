@@ -77,10 +77,27 @@ public class Global {
         return Objects.isNull(context) ? null : context.channel().id();
     }
 
+    /**
+     *  获取 ChannelHandlerContext
+     * @param uId 用户mid
+     * @return ChannelHandlerContext
+     */
     public ChannelHandlerContext getChannelHandlerContext(String uId) {
         String key = this.getOnlineUserKeyByUid(uId);
         ChannelHandlerContext context = sessionRepo.get(key);
         return Objects.isNull(context) ? null : context;
+    }
+
+    /**
+     * 关闭 channel 和 删除session
+     * @param uId 用户id
+     */
+    public void closeAndDelSession(String uId) {
+        ChannelHandlerContext context = this.getChannelHandlerContext(uId);
+        if (Objects.nonNull(context)) {
+            context.channel().close();
+        }
+        this.delCtxFromSessionRepo(uId);
     }
 
     /**
@@ -177,7 +194,7 @@ public class Global {
      * @param uId 用户id
      * @return 缓存key
      */
-    private String getOnlineUserKeyByUid(String uId) {
+    public String getOnlineUserKeyByUid(String uId) {
         return USER_ID + uId;
     }
 
