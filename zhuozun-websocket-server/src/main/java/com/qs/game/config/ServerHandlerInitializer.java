@@ -70,7 +70,7 @@ public class ServerHandlerInitializer extends ChannelInitializer<SocketChannel> 
         //pipeline.addLast(new WriteTimeoutHandler(10));//服务器端设置超时时间,单位：秒
         pipeline.addLast(new HttpServerCodec());
         pipeline.addLast(new HttpObjectAggregator(64 * 1024));
-        pipeline.addLast(new IdleStateHandler(125, 0, 0));
+        //pipeline.addLast(new IdleStateHandler(5, 0, 0));
         pipeline.addLast(group, heartbeatHandler); //心跳
         pipeline.addLast(new ChunkedWriteHandler());
         pipeline.addLast(new HttpRequestHandler());

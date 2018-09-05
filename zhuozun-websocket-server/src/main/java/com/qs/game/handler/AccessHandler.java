@@ -7,10 +7,7 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.ReqErrEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.utils.AccessUtils;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
@@ -35,10 +32,6 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
 
     private final boolean autoRelease = true;
 
-//    public AccessHandler(Global global) {
-//        this.global = global;
-//        this.autoRelease = true;
-//    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -49,14 +42,12 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestUri(),
                     ((WebSocketServerProtocolHandler.HandshakeComplete) evt).selectedSubprotocol());
             // 获取token中的签名秘钥返回给客户端
-            String sKey =  ctx.channel().attr(Global.attrSkey).get();
+            //String sKey =  ctx.channel().attr(Global.attrSkey).get();
             ctx.channel().writeAndFlush(new TextWebSocketFrame(
                     RespEntity.getBuilder().setCmd(CMD.HAND_SHAKE)
-                            .setErr(ERREnum.SUCCESS).setContent(sKey).buildJsonStr()
+                            .setErr(ERREnum.SUCCESS).buildJsonStr()
             ));
-
             ctx.pipeline().remove(HttpRequestHandler.class);//其除掉，因为后面不会接收任何http请求
-            //global.sendMsg2All(new TextWebSocketFrame("Client " + ctx.channel() + " joined"));//发消息给全组成员
         } else if (evt instanceof SslHandshakeCompletionEvent) {
             ctx.pipeline().remove(SslHandler.class);//其除掉，因为后面不会接收任何http请求
 
@@ -77,19 +68,17 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        ctx.fireChannelInactive();
+        //ctx.fireChannelInactive();
         String uid = ctx.channel().attr(Global.attrUid).get();
+        global.delCtxFromSessionRepo(uid);
+        channel.close();
         log.info("Client: {} : {} 掉线", channel.remoteAddress(), uid);
-        global.delChannelFromGroup(uid, channel); //掉线剔除
     }
 
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - "  + channel.remoteAddress() + " 加入"));
-//        String uid = ctx.channel().attr(Global.attrUid).get();
-//        global.add2ChannelGroup(uid, channel);//加入在线组
         log.info("Client: {} 加入", channel.remoteAddress());
     }
 
@@ -98,9 +87,9 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         Channel incoming = ctx.channel();
-        //global.sendMsg2All(new TextWebSocketFrame("[SERVER] - " + incoming.remoteAddress() + " 离开"));
         String uid = ctx.channel().attr(Global.attrUid).get();
-        global.delChannelFromGroup(uid, incoming);
+        global.delCtxFromSessionRepo(uid);
+        incoming.close();
         log.info("Client: {} : {} 离开", incoming.remoteAddress(), uid);
     }
 
@@ -114,18 +103,17 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         switch (errEnum) {
             case SUCCESS: //成功通过请求
             {
+                String uid = ctx.channel().attr(Global.attrUid).get();
+                log.info("AccessHandler channelRead0 uid ---::{}", uid);
                 Integer cmd = reqEntity.getCmd();
                 if (CMD.LOGIN.VALUE.equals(cmd)) { //登录成功添加到在线组
-                    global.add2ChannelGroup(reqErrEntity.getuId(), ctx.channel());
+                    global.add2SessionRepo(uid, ctx);
                 }
                 if (CMD.LOGOUT.VALUE.equals(cmd)) { //退出登录
-                    global.delChannelFromGroup(reqErrEntity.getuId(), ctx.channel());
+                    global.delCtxFromSessionRepo(uid);
                     ctx.channel().close();
                     break;
                 }
-                ctx.channel().attr(Global.attrToken).set(reqEntity.getToken()); //在channel中设置attr
-                ctx.channel().attr(Global.attrUid).set(String.valueOf(reqErrEntity.getuId())); //userId
-                //ctx.channel().attr(Global.REQUEST_ENTITY).set(reqEntity); //reqEntity
                 ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
                 break;
             }

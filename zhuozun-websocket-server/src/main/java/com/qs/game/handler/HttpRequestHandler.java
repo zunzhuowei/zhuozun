@@ -127,7 +127,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 return;
             }
             //把attr放入context中到下一个handler中处理
-            ctx.channel().attr(Global.attrSkey).set(jwtEntity.getSKey()); //signKey
+            //ctx.channel().attr(Global.attrSkey).set(jwtEntity.getSKey()); //signKey
+            ctx.channel().attr(Global.attrUid).set(String.valueOf(tokenUid)); //user_id
 
             //一定要把原请求uri后面的参数去掉，否则不能完成握手.
             FullHttpRequest retain = request.setUri(uri).retain();

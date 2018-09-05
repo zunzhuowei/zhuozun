@@ -17,12 +17,6 @@ public class ReqEntity implements Serializable {
 
     private Integer cmd;
 
-    private String token;
-
-    private String sign;
-
-    private Long stamp;
-
     private Map<String, Object> params;
 
     public static void main(String[] args) {
@@ -31,11 +25,7 @@ public class ReqEntity implements Serializable {
         req.put("user", "zhansgan");
         req.put("passwore", "dasfa");
         req.put("sex", "1");
-        reqEntity.setCmd(1000)
-                .setToken("abcdefg")
-                .setSign("aaaa")
-                .setStamp(new Date().getTime() / 1000)
-                .setParams(req);
+        reqEntity.setCmd(1000).setParams(req);
         String json = JSONObject.toJSONString(reqEntity);
         System.out.println("reqEntity = " + json);
         ReqEntity reqEntity1 = JSONObject.parseObject(json, ReqEntity.class);

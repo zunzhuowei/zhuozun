@@ -15,4 +15,6 @@ public interface ICoreService {
     boolean checkParams(Core core);
 
 
+    //void login()
+
 }

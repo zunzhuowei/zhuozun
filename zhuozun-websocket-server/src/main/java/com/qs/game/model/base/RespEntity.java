@@ -26,7 +26,7 @@ public class RespEntity<T> implements Serializable {
 
     private T content; //返回内容
 
-    private String comment; //说明
+    //private String comment; //说明
 
 
     private RespEntity(){}
@@ -43,9 +43,9 @@ public class RespEntity<T> implements Serializable {
         return content;
     }
 
-    public String getComment() {
-        return comment;
-    }
+//    public String getComment() {
+//        return comment;
+//    }
 
 
     public static class Builder {
@@ -63,8 +63,8 @@ public class RespEntity<T> implements Serializable {
 
         public Builder setErr(ERREnum errEnum) {
             respEntity.err = errEnum.CODE;
-            if (StringUtils.isBlank(respEntity.comment))
-                respEntity.comment = errEnum.MSG;
+//            if (StringUtils.isBlank(respEntity.comment))
+//                respEntity.comment = errEnum.MSG;
             return this;
         }
 
@@ -73,24 +73,24 @@ public class RespEntity<T> implements Serializable {
             return this;
         }
 
-        public Builder setComment(String comment) {
-            respEntity.comment = comment;
-            return this;
-        }
+//        public Builder setComment(String comment) {
+//            respEntity.comment = comment;
+//            return this;
+//        }
 
 
         //构建对象
         public RespEntity build() {
             String content = Objects.isNull(respEntity.content) ? null : JSON.toJSONString(respEntity.content, true);
-            log.info("RespEntityv-----------::cmd:{},err:{},comment:{},\ncontent:\n{}",
-                    respEntity.cmd, respEntity.err, respEntity.comment, content);
+            log.info("RespEntityv-----------::cmd:{},err:{},\ncontent:\n{}",
+                    respEntity.cmd, respEntity.err, content);
             return respEntity;
         }
 
         public String buildJsonStr() {
             String content = Objects.isNull(respEntity.content) ? null : JSON.toJSONString(respEntity.content, true);
-            log.info("RespEntity-----------::cmd:{},err:{},comment:{},\ncontent:\n{}",
-                    respEntity.cmd, respEntity.err, respEntity.comment, content);
+            log.info("RespEntity-----------::cmd:{},err:{},\ncontent:\n{}",
+                    respEntity.cmd, respEntity.err, content);
             return JSON.toJSONString(respEntity);
         }
 
@@ -105,7 +105,7 @@ public class RespEntity<T> implements Serializable {
     //获取建造器
     public static Builder getBuilder() {
         Builder builder = new Builder();
-        builder.setRespEntity(new RespEntity());
+        builder.setRespEntity(new RespEntity().setContent("{}"));
         return builder;
     }
 

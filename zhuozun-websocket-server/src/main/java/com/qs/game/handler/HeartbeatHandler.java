@@ -1,12 +1,8 @@
 package com.qs.game.handler;
 
-import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Global;
 import com.qs.game.service.IRedisService;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import io.netty.channel.socket.ChannelInputShutdownReadComplete;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
@@ -44,7 +40,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
             Long incr = redisService.incrOne(key + longId);
             if (incr > 5) { //5次心跳不响应则，剔除在线组
                 String uid = ctx.channel().attr(Global.attrUid).get();
-                boolean b = global.delChannelFromGroup(uid, ctx.channel());
+                boolean b = global.delCtxFromSessionRepo(uid, ctx.channel());
                 Long del = redisService.del(key + longId);
                 log.info("channel id {} is death ! uid = {} , result = {} , del = {}", longId, uid, b, del);
                 return;
@@ -53,14 +49,16 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                     .addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
             */
 
-            IdleState state = ((IdleStateEvent) evt).state();
-            if (state == IdleState.READER_IDLE) {
-                String longId = ctx.channel().id().asLongText();
-                String uid = ctx.channel().attr(Global.attrUid).get();
-                //oolean b = global.delChannelFromGroup(uid, ctx.channel());
-                //ctx.channel().close();
-                //log.info("channel id {} is death ! uid = {} , result = {} ", longId, uid, b);
-            }
+//            IdleState state = ((IdleStateEvent) evt).state();
+//            if (state == IdleState.READER_IDLE) {
+//                Channel channel = ctx.channel();
+//                String longId = channel.id().asLongText();
+//                String uid = channel.attr(Global.attrUid).get();
+//                boolean b = global.delCtxFromSessionRepo(uid, ctx);
+//                channel.close();
+//                log.error("channel id {} is death ! uid = {} , result = {} ", longId, uid, b);
+//            }
+//            Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
 
         } else if (evt instanceof SslHandshakeCompletionEvent) { //ssl 事件
             log.info("HeartbeatHandler userEventTriggered SslHandshakeCompletionEvent --::{}", evt);
@@ -75,20 +73,12 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof TextWebSocketFrame) {
             String clientMsg = ((TextWebSocketFrame) msg).text();
-            if ("OK".equals(clientMsg)) {
-                //可以根据心跳判断处理业务
-                String key = CacheKey.RedisPrefix.USER_HEART_BEAT.KEY;
-                String longId = ctx.channel().id().asLongText();
-                Long incr = redisService.del(key + longId);
-                //客户端响应服务端的心跳
-                log.info("client response server heart beat ---------::{} , {}", clientMsg, incr);
-                ReferenceCountUtil.release(msg); //释放资源
-
-            } else if ("HB".equals(clientMsg)) {
-                log.info("client request heart beat ---------::{}", clientMsg);
+            if ("HB".equals(clientMsg)) {
+                String uid = ctx.channel().attr(Global.attrUid).get();
+                Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
+                log.error("client request heart beat ---------::{}", clientMsg);
                 //客户端请求心跳
-                ctx.writeAndFlush(new TextWebSocketFrame("OK"))
-                        .addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+                ctx.writeAndFlush(new TextWebSocketFrame("HB"));//.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                 ReferenceCountUtil.release(msg); //释放资源
             } else {
                 ctx.fireChannelRead(((TextWebSocketFrame) msg).retain());

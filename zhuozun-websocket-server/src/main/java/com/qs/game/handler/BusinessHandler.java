@@ -30,6 +30,9 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     @Autowired
     private Global global;
 
+    @Autowired
+    private BusinessThreadUtil businessThreadUtil;
+
 //    public BusinessHandler(Global global) {
 //        this.global = global;
 //    }
@@ -40,26 +43,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
         log.info("BusinessHandler channelRead0 {},{}", ctx, msg);
         String msgText = msg.text();
         ReqEntity reqEntity = AccessUtils.getReqEntity(msgText);
-        BusinessThreadUtil.doBusiness(ctx, msg, reqEntity);
-
-        /*Channel incoming = ctx.channel();
-        String incomingId = HandlerUtils.getClientShortIdByChannel(incoming);
-        String token = ctx.channel().attr(Global.attrToken).get(); //在channel中设置attr
-        String uid = ctx.channel().attr(Global.attrUid).get(); //userId
-
-        for (Channel channel : Global.getChannelGroup()) {
-            String groupClientId = HandlerUtils.getClientShortIdByChannel(channel);
-            if (StringUtils.equals(incomingId, groupClientId)) {
-                channel.writeAndFlush(new TextWebSocketFrame(msg.text()));
-            }else {
-                //发送给指定的
-                channel.writeAndFlush(new TextWebSocketFrame(msg.text()));
-
-                StringBuffer sb = new StringBuffer();
-                sb.append(incoming.remoteAddress()).append("->").append(msg.text());
-                log.info("channelRead02222 :: {}", sb.toString());
-            }
-        }*/
+        businessThreadUtil.doBusiness(ctx, msg, reqEntity);
     }
 
     @Override
