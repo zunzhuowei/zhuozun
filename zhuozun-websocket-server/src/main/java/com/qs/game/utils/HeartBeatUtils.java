@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * Created by zun.wei on 2018/9/5 19:42.
- * Description:
+ * Description: 心跳机制工具类
  */
 @Component
 @Slf4j

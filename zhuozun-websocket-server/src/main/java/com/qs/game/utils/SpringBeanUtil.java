@@ -1,8 +1,11 @@
 package com.qs.game.utils;
 
+import com.qs.game.service.ICMDService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -59,6 +62,13 @@ public class SpringBeanUtil {
      */
     public static <T> T getBean(String name, Class<T> clazz) {
         return getApplicationContext().getBean(name, clazz);
+    }
+
+    /**
+     *  获取容器中所有的 @Service 的bean
+     */
+    public static Map<String, ICMDService> getCMDServiceBeans() {
+        return getApplicationContext().getBeansOfType(ICMDService.class);
     }
 
 }

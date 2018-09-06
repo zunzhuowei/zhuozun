@@ -40,7 +40,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        log.info("BusinessHandler channelRead0 {},{}", ctx, msg);
+        log.debug("BusinessHandler channelRead0 {},{}", ctx, msg);
         String msgText = msg.text();
         ReqEntity reqEntity = AccessUtils.getReqEntity(msgText);
         businessThreadUtil.doBusiness(ctx, msg, reqEntity);
@@ -48,7 +48,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("BusinessHandler ctx = [" + ctx + "]");
+        log.debug("BusinessHandler ctx = [" + ctx + "]");
         super.channelActive(ctx);
     }
 

@@ -50,7 +50,7 @@ public class AccessUtils {
             cmdSet = Arrays.stream(CMD.values()).map(CMD::getVALUE).collect(Collectors.toSet());
         //校验命令是否存在
         boolean isContain = cmdSet.contains(reqCmd);
-        log.info("AccessUtils checkReqEntity VALUE --::{}", isContain);
+        log.debug("AccessUtils checkReqEntity isContain cmd --::{}", isContain);
         //校验空参数
         if (!isContain){
             return new ReqErrEntity(ERREnum.ILLEGAL_REQUEST_1, reqEntity);

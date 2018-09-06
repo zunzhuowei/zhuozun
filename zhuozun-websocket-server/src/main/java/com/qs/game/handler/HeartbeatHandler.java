@@ -1,21 +1,17 @@
 package com.qs.game.handler;
 
-import com.qs.game.common.Global;
-import com.qs.game.service.IRedisService;
-import com.qs.game.utils.HeartBeatUtils;
-import io.netty.channel.*;
+import com.qs.game.business.BusinessThreadUtil;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.ChannelInputShutdownReadComplete;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
-import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 /**
  * 心跳操作
@@ -28,10 +24,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
 
     @Autowired
-    private IRedisService redisService;
-
-    @Autowired
-    private Global global;
+    private BusinessThreadUtil businessThreadUtil;
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -75,18 +68,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof TextWebSocketFrame) {
-            String clientMsg = ((TextWebSocketFrame) msg).text();
-            if ("HB".equals(clientMsg)) {
-                String uid = ctx.channel().attr(Global.attrUid).get();
-                //Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
-                log.debug("client request heart beat ---------::{}", clientMsg);
-                HeartBeatUtils.heartBeats.put(uid, new Date().getTime());
-                //客户端请求心跳
-                ctx.writeAndFlush(new TextWebSocketFrame("HB"));//.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-                ReferenceCountUtil.release(msg); //释放资源
-            } else {
-                ctx.fireChannelRead(((TextWebSocketFrame) msg).retain());
-            }
+            businessThreadUtil.heartbeat(ctx, msg);
         } else {
             super.channelRead(ctx, msg);
         }

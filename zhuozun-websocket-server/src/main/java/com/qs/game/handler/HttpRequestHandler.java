@@ -31,12 +31,13 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     private final boolean autoRelease;
 
-    private IRedisService redisService;
+    private static IRedisService redisService;
 
     public HttpRequestHandler() {
         this.wsUri = StrConst.SLASH;
         this.autoRelease = true;
-        redisService = SpringBeanUtil.getBean("redisService", IRedisService.class);
+        if (Objects.isNull(redisService))
+            redisService = SpringBeanUtil.getBean("redisService", IRedisService.class);
     }
 
     @Override
