@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qs.game.mapper.game.KunGoldLogMapper">
+  <resultMap id="BaseResultMap" type="com.qs.game.model.game.KunGoldLog">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="mid" jdbcType="INTEGER" property="mid" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="gold" jdbcType="BIGINT" property="gold" />
+    <result column="nowgold" jdbcType="BIGINT" property="nowgold" />
+    <result column="action" jdbcType="TINYINT" property="action" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="date" jdbcType="DATE" property="date" />
+    <result column="date_time" jdbcType="TIMESTAMP" property="dateTime" />
+    <result column="ext1" jdbcType="VARCHAR" property="ext1" />
+    <result column="ext2" jdbcType="VARCHAR" property="ext2" />
+    <result column="ext3" jdbcType="VARCHAR" property="ext3" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, mid, type, gold, nowgold, action, time, date, date_time, ext1, ext2, ext3
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from kun_gold_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from kun_gold_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.qs.game.model.game.KunGoldLog">
+    insert into kun_gold_log (id, mid, type, 
+      gold, nowgold, action, 
+      time, date, date_time, 
+      ext1, ext2, ext3)
+    values (#{id,jdbcType=INTEGER}, #{mid,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, 
+      #{gold,jdbcType=BIGINT}, #{nowgold,jdbcType=BIGINT}, #{action,jdbcType=TINYINT}, 
+      #{time,jdbcType=INTEGER}, #{date,jdbcType=DATE}, #{dateTime,jdbcType=TIMESTAMP}, 
+      #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.qs.game.model.game.KunGoldLog">
+    insert into kun_gold_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="mid != null">
+        mid,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="gold != null">
+        gold,
+      </if>
+      <if test="nowgold != null">
+        nowgold,
+      </if>
+      <if test="action != null">
+        action,
+      </if>
+      <if test="time != null">
+        time,
+      </if>
+      <if test="date != null">
+        date,
+      </if>
+      <if test="dateTime != null">
+        date_time,
+      </if>
+      <if test="ext1 != null">
+        ext1,
+      </if>
+      <if test="ext2 != null">
+        ext2,
+      </if>
+      <if test="ext3 != null">
+        ext3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="mid != null">
+        #{mid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="gold != null">
+        #{gold,jdbcType=BIGINT},
+      </if>
+      <if test="nowgold != null">
+        #{nowgold,jdbcType=BIGINT},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=TINYINT},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        #{date,jdbcType=DATE},
+      </if>
+      <if test="dateTime != null">
+        #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ext1 != null">
+        #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null">
+        #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null">
+        #{ext3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qs.game.model.game.KunGoldLog">
+    update kun_gold_log
+    <set>
+      <if test="mid != null">
+        mid = #{mid,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="gold != null">
+        gold = #{gold,jdbcType=BIGINT},
+      </if>
+      <if test="nowgold != null">
+        nowgold = #{nowgold,jdbcType=BIGINT},
+      </if>
+      <if test="action != null">
+        action = #{action,jdbcType=TINYINT},
+      </if>
+      <if test="time != null">
+        time = #{time,jdbcType=INTEGER},
+      </if>
+      <if test="date != null">
+        date = #{date,jdbcType=DATE},
+      </if>
+      <if test="dateTime != null">
+        date_time = #{dateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ext1 != null">
+        ext1 = #{ext1,jdbcType=VARCHAR},
+      </if>
+      <if test="ext2 != null">
+        ext2 = #{ext2,jdbcType=VARCHAR},
+      </if>
+      <if test="ext3 != null">
+        ext3 = #{ext3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qs.game.model.game.KunGoldLog">
+    update kun_gold_log
+    set mid = #{mid,jdbcType=INTEGER},
+      type = #{type,jdbcType=TINYINT},
+      gold = #{gold,jdbcType=BIGINT},
+      nowgold = #{nowgold,jdbcType=BIGINT},
+      action = #{action,jdbcType=TINYINT},
+      time = #{time,jdbcType=INTEGER},
+      date = #{date,jdbcType=DATE},
+      date_time = #{dateTime,jdbcType=TIMESTAMP},
+      ext1 = #{ext1,jdbcType=VARCHAR},
+      ext2 = #{ext2,jdbcType=VARCHAR},
+      ext3 = #{ext3,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -19,6 +19,7 @@ public interface CacheKey {
     String tokenPrefix = "token:";
     String userIdPrefix = "userId:";
     String userHB = "userHB:";
+    String userKunPool = "userKunPool:";
 
     enum Redis{
         USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
@@ -57,6 +58,7 @@ public interface CacheKey {
         TOKEN_PREFIX(tokenPrefix, "token前缀!"),
         USER_ID_PREFIX(userIdPrefix, "用户id前缀!"),
         USER_HEART_BEAT(userHB, "websocket client 心跳!"),
+        USER_KUN_POOL(userKunPool, "用户鲲池!"),
         ;
 
         public String KEY;
