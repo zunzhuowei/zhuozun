@@ -1,4 +1,4 @@
-## zhuozun
+## zhuozun-dev
   此项目基于spring boot 构建的 spring could 微服务架构的系统，目前包含了eureka发现服务、config配置服务
   、监控系统admin、其他服务会根据业余时间不定时更新添加。
   
