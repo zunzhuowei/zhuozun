@@ -23,7 +23,7 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
     public Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
         Integer cmd = reqEntity.getCmd();
         return () -> ctx.writeAndFlush(new TextWebSocketFrame(
-                RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).setContent(msg.text()).buildJsonStr()));
+                RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).buildJsonStr()));
     }
 
 
