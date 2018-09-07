@@ -19,4 +19,4 @@
 
 # 引用监控限制内容Map <Key String>
 info:
-  spring-cloud-version: "@spring.cloud.verion@"
+  spring-cloud-version: "@spring.cloud.version@"

@@ -19,4 +19,4 @@
 info:
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-cloud-version: "@spring.cloud.verion@"
+  spring-cloud-version: "@spring.cloud.version@"

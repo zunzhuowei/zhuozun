@@ -62,6 +62,6 @@ info:
   company.name: qs.game
   build.artifactId: "@project.artifactId@"
   build.version: "@project.version@"
-  spring-cloud-version: "@spring.cloud.verion@"
+  spring-cloud-version: "@spring.cloud.version@"
 
 # https://www.jianshu.com/p/222fe9f2a564
