@@ -11,7 +11,7 @@ import com.qs.game.handler.HttpRequestHandler;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.ReqErrEntity;
 import com.qs.game.model.base.RespEntity;
-import com.qs.game.model.sys.Kun;
+import com.qs.game.model.sys.Kuns;
 import com.qs.game.service.ICMDService;
 import com.qs.game.service.ICoreService;
 import com.qs.game.service.IRedisService;
@@ -160,7 +160,7 @@ public class CoreServiceImpl implements ICoreService {
             String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid; //玩家key
             if (Objects.nonNull(index)) {
                 //获取玩家鲲池
-                Map<Integer, Kun> kunMap = gameManager.getMemoryKunPool(mid, index);
+                Map<Integer, Kuns> kunMap = gameManager.getMemoryKunPool(mid, index);
                 String kunCache = JSONObject.toJSONString(kunMap);
                 //TODO 刷新缓存与持久化
                 redisService.set(kunKey, kunCache);

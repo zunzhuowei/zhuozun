@@ -1,15 +1,10 @@
 package com.qs.game.utils;
 
-import com.alibaba.fastjson.JSONObject;
-import com.qs.game.business.BusinessThreadUtil;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Global;
-import com.qs.game.config.GameManager;
 import com.qs.game.constant.StrConst;
-import com.qs.game.model.sys.Kun;
 import com.qs.game.service.ICoreService;
 import com.qs.game.service.IRedisService;
-import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Created by zun.wei on 2018/9/5 19:42.
