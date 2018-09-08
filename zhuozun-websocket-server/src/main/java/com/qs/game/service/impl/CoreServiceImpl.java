@@ -1,26 +1,38 @@
 package com.qs.game.service.impl;
 
-import com.qs.game.common.*;
+import com.alibaba.fastjson.JSONObject;
+import com.qs.game.cache.CacheKey;
+import com.qs.game.common.CMD;
+import com.qs.game.common.ERREnum;
+import com.qs.game.common.Global;
+import com.qs.game.config.GameManager;
 import com.qs.game.constant.StrConst;
 import com.qs.game.handler.HttpRequestHandler;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.ReqErrEntity;
 import com.qs.game.model.base.RespEntity;
+import com.qs.game.model.sys.Kun;
 import com.qs.game.service.ICMDService;
 import com.qs.game.service.ICoreService;
+import com.qs.game.service.IRedisService;
 import com.qs.game.utils.AccessUtils;
-import com.qs.game.utils.HeartBeatUtils;
-import com.qs.game.utils.SpringBeanUtil;
+import com.qs.game.utils.SchedulingUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+
+import static com.qs.game.common.CMD.CLOSE_SERVER;
+import static com.qs.game.common.CMD.LOGIN;
+import static com.qs.game.common.CMD.LOGOUT;
+import static com.qs.game.common.ERREnum.ILLEGAL_REQUEST_2;
 
 /**
  * 核心业务层接口实现类
@@ -33,28 +45,19 @@ public class CoreServiceImpl implements ICoreService {
     @Autowired
     private Global global;
 
-    //命令路由业务集合
-    private static final Map<Integer, ICMDService> COMMAND_CMD_SERVICE = new ConcurrentHashMap<>();
+    @Autowired
+    private GameManager gameManager;
+
+    @Autowired
+    private IRedisService redisService;
+
 
     @Override
     public Runnable CmdRouter(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
         Integer cmd = reqEntity.getCmd(); //请求命令
         String uid = ctx.channel().attr(Global.attrUid).get(); //管道中的用户mid
         log.info("BusinessThreadUtil CmdRouter uid,cmd ---::{},{}", uid, cmd);
-
-        if (COMMAND_CMD_SERVICE.isEmpty()) {
-            Map<String, ICMDService> service = SpringBeanUtil.getCMDServiceBeans();
-            service.entrySet().parallelStream()
-                    .filter(e -> e.getValue().getClass().isAnnotationPresent(CommandService.class))
-                    .map(Map.Entry::getValue)
-                    .collect(Collectors.toSet())
-                    .forEach(e -> {
-                        CommandService command = e.getClass().getAnnotation(CommandService.class);
-                        CMD reqCmd = command.value();
-                        COMMAND_CMD_SERVICE.put(reqCmd.VALUE, e);
-                    });
-        }
-
+        initRouter();
         //执行业务逻辑
         ICMDService icmdService = COMMAND_CMD_SERVICE.get(cmd);
         return Objects.isNull(icmdService) ? null : icmdService.execute(ctx, msg, reqEntity);
@@ -81,41 +84,53 @@ public class CoreServiceImpl implements ICoreService {
     @Override
     public Runnable accessChannelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
         return () -> {
-            //1）消息验证
-            String msgText = msg.text();
-            ReqErrEntity reqErrEntity = AccessUtils.checkAndGetReqEntity(msgText);
-            ERREnum errEnum = reqErrEntity.getErrEnum();
-            ReqEntity reqEntity = reqErrEntity.getReqEntity();
-            switch (errEnum) {
-                case SUCCESS: //成功通过请求
-                {
-                    String uid = ctx.channel().attr(Global.attrUid).get();
-                    log.info("AccessHandler channelRead0 uid ---::{}", uid);
-                    Integer cmd = reqEntity.getCmd();
-                    if (CMD.LOGIN.VALUE.equals(cmd)) { //登录成功添加到在线组
-                        global.add2SessionRepo(uid, ctx);
+            String isClose = redisService.get(CacheKey.Redis.CLOSE_GAME_SERVER.KEY);
+            //判断是否停服
+            if (StringUtils.equals(StrConst.ONE, isClose)) {
+                ctx.channel().writeAndFlush(new TextWebSocketFrame(
+                        RespEntity.getBuilder()
+                                .setCmd(CLOSE_SERVER)
+                                .setErr(ILLEGAL_REQUEST_2)
+                                .buildJsonStr()
+                ));
+                ctx.channel().close();
+            } else {
+                //1）消息验证
+                String msgText = msg.text();
+                ReqErrEntity reqErrEntity = AccessUtils.checkAndGetReqEntity(msgText);
+                ERREnum errEnum = reqErrEntity.getErrEnum();
+                ReqEntity reqEntity = reqErrEntity.getReqEntity();
+                switch (errEnum) {
+                    case SUCCESS: //成功通过请求
+                    {
+                        String uid = ctx.channel().attr(Global.attrUid).get();
+                        log.info("AccessHandler channelRead0 uid ---::{}", uid);
+                        Integer cmd = reqEntity.getCmd();
+                        if (LOGIN.VALUE.equals(cmd)) { //登录成功添加到在线组
+                            global.add2SessionRepo(uid, ctx);
+                        }
+                        if (LOGOUT.VALUE.equals(cmd)) { //退出登录
+                            global.delCtxFromSessionRepo(uid);
+                            ctx.channel().close();
+                            break;
+                        }
+                        ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+                        break;
                     }
-                    if (CMD.LOGOUT.VALUE.equals(cmd)) { //退出登录
-                        global.delCtxFromSessionRepo(uid);
+                    default: {
+                        ctx.channel().writeAndFlush(new TextWebSocketFrame(
+                                RespEntity.getBuilder()
+                                        .setCmd(Objects.nonNull(reqEntity) ? reqEntity.getCmd() : null)
+                                        .setErr(errEnum).setContent(msgText).buildJsonStr()
+                        ));
                         ctx.channel().close();
                         break;
                     }
-                    ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
-                    break;
                 }
-                default: {
-                    ctx.channel().writeAndFlush(new TextWebSocketFrame(
-                            RespEntity.getBuilder()
-                                    .setCmd(Objects.nonNull(reqEntity) ? reqEntity.getCmd() : null)
-                                    .setErr(errEnum).setContent(msgText).buildJsonStr()
-                    ));
-                    ctx.channel().close();
-                    break;
-                }
-            }
 
-            //2）取消消息验证
-            //ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+                //2）取消消息验证
+                //ctx.fireChannelRead(msg.retain());//msg.retain() 保留msg到下一个handler中处理
+            }
         };
     }
 
@@ -127,12 +142,30 @@ public class CoreServiceImpl implements ICoreService {
                 String uid = ctx.channel().attr(Global.attrUid).get();
                 //Global.getSessionRepo().forEach((key, value) -> System.out.println("key = " + key + "  --  " + value));
                 log.debug("client request heart beat ---------::{}", clientMsg);
-                HeartBeatUtils.heartBeats.put(uid, new Date().getTime());
+                SchedulingUtils.heartBeats.put(uid, new Date().getTime());
                 //客户端请求心跳
                 ctx.writeAndFlush(new TextWebSocketFrame(StrConst.HB));//.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
                 ReferenceCountUtil.release(msg); //释放资源
             } else {
                 ctx.fireChannelRead(((TextWebSocketFrame) msg).retain());
+            }
+        };
+    }
+
+    @Override
+    public Runnable handlerRemoved(String mid) {
+        return () -> {
+            //获取存储位置
+            Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
+            String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid; //玩家key
+            if (Objects.nonNull(index)) {
+                //获取玩家鲲池
+                Map<Integer, Kun> kunMap = gameManager.getMemoryKunPool(mid, index);
+                String kunCache = JSONObject.toJSONString(kunMap);
+                //TODO 刷新缓存与持久化
+                redisService.set(kunKey, kunCache);
+                //移除内存中的玩家鲲池机器索引
+                gameManager.removeMemoryKunPool(mid, index);
             }
         };
     }

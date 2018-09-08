@@ -40,18 +40,6 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            //            WebSocketServerProtocolHandler.HandshakeComplete complete = (WebSocketServerProtocolHandler.HandshakeComplete) evt;
-//            log.info("AccessHandler userEventTriggered handshake evt = {},|{},|{}",
-//                    ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestHeaders(),
-//                    ((WebSocketServerProtocolHandler.HandshakeComplete) evt).requestUri(),
-//                    ((WebSocketServerProtocolHandler.HandshakeComplete) evt).selectedSubprotocol());
-            // 获取token中的签名秘钥返回给客户端
-            //String sKey =  ctx.channel().attr(Global.attrSkey).get();
-//            ctx.channel().writeAndFlush(new TextWebSocketFrame(
-//                    RespEntity.getBuilder().setCmd(CMD.HAND_SHAKE)
-//                            .setErr(ERREnum.SUCCESS).buildJsonStr()
-//            ));
-//            ctx.pipeline().remove(HttpRequestHandler.class);
             businessThreadUtil.handshake(ctx, evt);
         } else if (evt instanceof SslHandshakeCompletionEvent) {
             ctx.pipeline().remove(SslHandler.class);//其除掉，因为后面不会接收任何http请求
@@ -72,7 +60,6 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        //ctx.fireChannelInactive();
         String uid = ctx.channel().attr(Global.attrUid).get();
         global.delCtxFromSessionRepo(uid);
         channel.close();
@@ -95,6 +82,8 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         global.delCtxFromSessionRepo(uid);
         incoming.close();
         log.info("Client: {} : {} 离开", incoming.remoteAddress(), uid);
+        // channel 关闭的时候需要把玩家内存中的数据刷到缓存 or DB
+        businessThreadUtil.handlerRemoved(uid);
     }
 
     @Override

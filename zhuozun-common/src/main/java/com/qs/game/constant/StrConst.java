@@ -36,4 +36,7 @@ public interface StrConst {
     String ON = "on";
 
     String HB = "HB"; // 心跳包
+
+    String ONE = "1";
+
 }
