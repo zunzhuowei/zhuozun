@@ -1,13 +1,32 @@
 package com.qs.game.service;
 
+import com.qs.game.common.CommandService;
 import com.qs.game.model.base.ReqEntity;
+import com.qs.game.utils.SpringBeanUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * 核心业务层接口
  */
 public interface ICoreService {
+
+    //命令路由业务集合
+    Map<Integer, ICMDService> COMMAND_CMD_SERVICE = new ConcurrentHashMap<>();
+
+    default void initRouter() {
+        if (COMMAND_CMD_SERVICE.isEmpty()) {
+            SpringBeanUtil.getCMDServiceBeans().entrySet().parallelStream()
+                    .filter(e -> e.getValue().getClass().isAnnotationPresent(CommandService.class))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toSet())
+                    .forEach(e -> COMMAND_CMD_SERVICE.put(e.getClass().getAnnotation(CommandService.class).value().VALUE, e));
+        }
+    }
 
     /**
      *  根据请求命令 路由分发请求
@@ -44,5 +63,11 @@ public interface ICoreService {
      * @param msg 请求消息
      */
     Runnable heartbeat(ChannelHandlerContext ctx, Object msg);
+
+    /**
+     * 当玩家掉线离开时处理业务
+     * @param mid 玩家mid
+     */
+    Runnable handlerRemoved(String mid);
 
 }

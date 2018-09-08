@@ -6,6 +6,7 @@ import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Constants;
 import com.qs.game.common.Global;
 import com.qs.game.constant.StrConst;
+import com.qs.game.model.base.RespEntity;
 import com.qs.game.service.IRedisService;
 import com.qs.game.utils.SpringBeanUtil;
 import io.netty.channel.Channel;
@@ -13,6 +14,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.qs.game.common.CMD.CLOSE_SERVER;
+import static com.qs.game.common.ERREnum.ILLEGAL_REQUEST_2;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -44,13 +49,26 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
         String srcUir = request.uri();
         String uri = StringUtils.substringBefore(srcUir, Constants.QUESTION_MARK);
-        if (wsUri.equalsIgnoreCase(uri)) {
-            //1 token 认证,如果认证不过，则不进行websocket通信。
-            this.authenticationToken(ctx, request, uri);
 
-            //2 不认证token
-            //FullHttpRequest retain = request.setUri(uri).retain();
-            //ctx.fireChannelRead(retain);
+        if (wsUri.equalsIgnoreCase(uri)) {
+            String isClose = redisService.get(CacheKey.Redis.CLOSE_GAME_SERVER.KEY);
+            //判断是否停服
+            if (StringUtils.equals(StrConst.ONE, isClose)) {
+                ctx.channel().writeAndFlush(new TextWebSocketFrame(
+                        RespEntity.getBuilder()
+                                .setCmd(CLOSE_SERVER)
+                                .setErr(ILLEGAL_REQUEST_2)
+                                .buildJsonStr()
+                ));
+                ctx.channel().close();
+            } else {
+                //1 token 认证,如果认证不过，则不进行websocket通信。
+                this.authenticationToken(ctx, request, uri);
+
+                //2 不认证token
+                //FullHttpRequest retain = request.setUri(uri).retain();
+                //ctx.fireChannelRead(retain);
+            }
         } else {
             ctx.close();
         }

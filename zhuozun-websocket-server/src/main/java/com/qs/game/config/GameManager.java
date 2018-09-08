@@ -162,6 +162,20 @@ public interface GameManager {
         return storage.get(Integer.valueOf(mid));
     }
 
+    /**
+     * 获取内存中玩家对应的鲲池
+     * @param mid 玩家id
+     * @param index 存储鲲池的storage 的下标
+     */
+    default void removeMemoryKunPool(String mid, Integer index) {
+        //根据索引下标获取存储玩家鲲池库
+        Map<Integer, Map<Integer, Kun>> storage = this.getKunStorageByIndex(index);
+        //移除玩家鲲池在缓存中的存储
+        storage.remove(Integer.valueOf(mid));
+        //移除鲲存储索引表
+        this.getUserKunPoolPosition().remove(Integer.valueOf(mid));
+    }
+
 
     /**
      * 保存到内存中

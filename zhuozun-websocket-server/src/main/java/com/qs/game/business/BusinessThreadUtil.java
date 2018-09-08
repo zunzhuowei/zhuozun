@@ -28,6 +28,10 @@ public class BusinessThreadUtil {
             new ThreadPoolExecutor(12, 16, 0L,
                     TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100000));//CPU核数4-10倍
 
+    public static ExecutorService getExecutor() {
+        return executor;
+    }
+
     //启动线程
     private void run(Runnable runnable) {
         if (Objects.nonNull(runnable)) executor.submit(runnable);
@@ -58,5 +62,8 @@ public class BusinessThreadUtil {
         this.run(coreService.CmdRouter(ctx, msg, reqEntity));
     }
 
-
+    //当玩家掉线离开时处理业务
+    public void handlerRemoved(String uid) {
+        this.run(coreService.handlerRemoved(uid));
+    }
 }

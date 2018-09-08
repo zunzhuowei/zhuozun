@@ -1,7 +1,17 @@
 package com.qs.game.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.qs.game.business.BusinessThreadUtil;
+import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Global;
+import com.qs.game.config.GameManager;
+import com.qs.game.constant.StrConst;
+import com.qs.game.model.sys.Kun;
+import com.qs.game.service.ICoreService;
+import com.qs.game.service.IRedisService;
+import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -9,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -24,11 +35,12 @@ import java.util.stream.Collectors;
  *     （6）initialDelay：表示延迟多久再第一次执行任务，参数类型为long，单位ms；
  *     （7）initialDelayString：与initialDelay的含义一样，只是将参数类型变为String；
  *     （8）zone：时区，默认为当前时区，一般没有用到。
- * Description: 心跳机制工具类
+ *
+ * Description: 定时任务工具类
  */
 @Component
 @Slf4j
-public class HeartBeatUtils {
+public class SchedulingUtils {
 
     private static long oneMinute = 60000; //一分钟
 
@@ -39,7 +51,16 @@ public class HeartBeatUtils {
     @Autowired
     private Global global;
 
+    @Autowired
+    private IRedisService redisService;
 
+    @Autowired
+    private ICoreService coreService;
+
+
+    /**
+     * 删除死链接
+     */
     //cron = "0/5 * * * * *",
     @Scheduled(fixedDelay = 5000)
     public void deleteDeadChannels() {
@@ -60,6 +81,28 @@ public class HeartBeatUtils {
         log.info("HeartBeatUtils deleteDeadChannels ---::{}", hb);
         global.closeAndDelSession(hb.getKey()); // 移除session
         heartBeats.remove(hb.getKey()); //移除心跳
+    }
+
+
+    /**
+     * 停服,把缓存中的玩家数据持久化
+     */
+    @Scheduled(fixedDelay = 5000)
+    public void closeServer() {
+        String isClose = redisService.get(CacheKey.Redis.CLOSE_GAME_SERVER.KEY);
+        if (StringUtils.equals(StrConst.ONE, isClose) && !Global.getSessionRepo().isEmpty()) {
+            //获取在线的所有玩家
+            Global.getSessionRepo().forEach((key, context) -> {
+                //String mid = context.channel().attr(Global.attrUid).get();
+                //存储内存中的玩家数据
+                //BusinessThreadUtil.getExecutor().submit(coreService.handlerRemoved(mid));
+                //关闭连接的会触发handlerRemoved 的清除玩家内存数据
+                context.channel().close();
+            });
+            //清除所有的玩家session
+            Global.getSessionRepo().clear();
+        }
+
     }
 
 }

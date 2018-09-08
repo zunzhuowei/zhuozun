@@ -29,7 +29,7 @@ public class Global {
      */
     //private static ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    private static final Map<String, ChannelHandlerContext> sessionRepo = new ConcurrentHashMap<>();
+    private static final Map<String, ChannelHandlerContext> sessionRepo = new ConcurrentHashMap<>(20000);
     private static final String USER_ID = "userId:";
 
     public static Map<String, ChannelHandlerContext> getSessionRepo() {
@@ -204,11 +204,19 @@ public class Global {
      * @param message 发送的消息
      * @param times 重试次数
      */
-    private void reTrySendMsg(ChannelFuture channelFuture, TextWebSocketFrame message, int times) {
-        boolean su = channelFuture.channel().writeAndFlush(message).isSuccess();
-        if (!su) {
-            if (times > 0)
-                reTrySendMsg(channelFuture, message, --times);
+    private void reTrySendMsg(ChannelFuture channelFuture, TextWebSocketFrame message, int times)
+            throws InterruptedException {
+        if (times != 1) {
+            boolean su = channelFuture.channel().writeAndFlush(message).isSuccess();
+            if (!su) {
+                if (times > 0) {
+                    Thread.sleep(2000);
+                    reTrySendMsg(channelFuture, message, --times);
+                }
+            }
+        } else {
+            channelFuture.channel().writeAndFlush(message)
+                .addListener(ChannelFutureListener.CLOSE_ON_FAILURE).isSuccess();
         }
     }
 

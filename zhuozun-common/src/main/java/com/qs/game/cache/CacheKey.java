@@ -20,6 +20,9 @@ public interface CacheKey {
     String userIdPrefix = "userId:";
     String userHB = "userHB:";
     String userKunPool = "userKunPool:";
+    String closeGameServer = "closeGameServer";
+
+
 
     enum Redis{
         USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
@@ -27,24 +30,12 @@ public interface CacheKey {
         CACHE_PROVIDER_IS_CLUSTER_LOCK(isClusterLock, "redis 分布式lock是否开启了"),
         CACHE_PROVIDER_SERVER_ID_KEY(serverIdKey, "mq 服务名缓存"),
         CACHE_PROVIDER_DISTRIBUTION_RESULT(distributionResult, "消息分配结果缓存"),
+        CLOSE_GAME_SERVER(closeGameServer, "关闭服务，阻止所有链接"),
         ;
 
         public String KEY;
         public String COMMENT;
         Redis(String key,String comment) {
-            this.KEY = key;
-            this.COMMENT = comment;
-        }
-    }
-
-    enum Memcached{
-        USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
-        PRODUCT_CENTER_GET_GOODS_BRAND_BY_ID(getGoodsBrandById, "产品中心根据id获取品牌"),
-        ;
-
-        public String KEY;
-        public String COMMENT;
-        Memcached(String key,String comment) {
             this.KEY = key;
             this.COMMENT = comment;
         }
@@ -69,5 +60,24 @@ public interface CacheKey {
         }
     }
 
+
+
+
+    enum Memcached{
+        USER_CENTER_GET_USER_BY_ID(getUserById, "用户中心根据id获取用户"),
+        PRODUCT_CENTER_GET_GOODS_BRAND_BY_ID(getGoodsBrandById, "产品中心根据id获取品牌"),
+        ;
+
+        public String KEY;
+        public String COMMENT;
+        Memcached(String key,String comment) {
+            this.KEY = key;
+            this.COMMENT = comment;
+        }
+    }
+
+    enum MemcachedPrefix{
+
+    }
 
 }
