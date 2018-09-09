@@ -1,5 +1,10 @@
 package com.qs.game.service;
 
+import com.qs.game.model.sys.Kuns;
+import com.qs.game.model.sys.Pool;
+
+import java.util.Map;
+
 /**
  * Created by zun.wei on 2018/9/6 13:49.
  * Description: 登录命令业务接口
@@ -32,6 +37,14 @@ public interface ILoginCMDService extends ICMDService{
      * @param mid 玩家mid
      * @return 鲲池数据json数据
      */
-    String getPlayerKunPool(String mid);
+    String getPlayerKunPoolCells(String mid);
+
+    /**
+     * 获取玩家鲲池数据
+     * @param mid 玩家mid
+     * @return 鲲池 数据
+     */
+    Pool getPlayerKunPool(String mid);
 
 }
+

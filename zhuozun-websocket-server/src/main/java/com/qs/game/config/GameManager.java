@@ -1,9 +1,10 @@
 package com.qs.game.config;
 
 import com.qs.game.model.sys.Kuns;
+import com.qs.game.model.sys.Pool;
+import com.qs.game.model.sys.PoolCell;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -12,31 +13,34 @@ import java.util.concurrent.ConcurrentHashMap;
 public interface GameManager {
 
     //初始化用户鲲池
-    Map<Integer, Kuns> INIT_KUN_POOL = new HashMap<>(16); //鲲池
+    //Map<Integer, Kuns> INIT_KUN_POOL = new HashMap<>(16); //鲲池
+    Pool POOL = new Pool();
 
 
     //获取用户初始化鲲池
-    default Map<Integer, Kuns> getInitKunPool() {
-        if (INIT_KUN_POOL.isEmpty()) {
+    default Pool getInitKunPool() {
+        if (Objects.isNull(POOL.getPoolCells()) || POOL.getPoolCells().isEmpty()) {
+            List<PoolCell> cells = new ArrayList<>(16);
             //初始化鲲池
-            INIT_KUN_POOL.put(1, new Kuns().setGold(1).setWork(0).setTime(0).setType(1));
-            INIT_KUN_POOL.put(2, new Kuns().setGold(1).setWork(0).setTime(0).setType(1));
-            INIT_KUN_POOL.put(3, new Kuns().setGold(1).setWork(0).setTime(0).setType(1));
-            INIT_KUN_POOL.put(4, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(5, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(6, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(7, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(8, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(9, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(10, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(11, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(12, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(13, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(14, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(15, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
-            INIT_KUN_POOL.put(16, new Kuns().setGold(0).setWork(0).setTime(0).setType(0));
+            cells.add(new PoolCell().setNo(1).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
+            cells.add(new PoolCell().setNo(2).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
+            cells.add(new PoolCell().setNo(3).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
+            cells.add(new PoolCell().setNo(4).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(5).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(6).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(7).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(8).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(9).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(10).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(11).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(12).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(13).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(14).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(15).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            cells.add(new PoolCell().setNo(16).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
+            POOL.setPoolCells(cells);
         }
-        return INIT_KUN_POOL;
+        return POOL;
     }
 
 
@@ -51,26 +55,26 @@ public interface GameManager {
 
     // 用户鲲真正存储的内存
     // key : player id   value : user kun pool
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_1 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_2 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_3 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_4 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_5 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_6 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_7 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_8 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_9 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_10 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_11 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_12 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_13 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_14 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_15 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_16 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_17 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_18 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_19 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<Integer, Map<Integer, Kuns>> KUN_POOL_STORAGE_20 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_1 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_2 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_3 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_4 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_5 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool> KUN_POOL_STORAGE_6 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_7 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_8 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_9 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_10 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_11 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_12 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_13 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_14 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_15 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_16 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_17 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_18 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_19 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, Pool>  KUN_POOL_STORAGE_20 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
 
 
     default Map<Integer, Integer> getUserKunPoolPosition() {
@@ -103,7 +107,7 @@ public interface GameManager {
     }
 
     // 获取真正存储的位置
-    default Map<Integer, Map<Integer, Kuns>> getKunStorageByIndex(Integer storageIndex) {
+    default Map<String, Pool> getKunStorageByIndex(Integer storageIndex) {
         switch (storageIndex) {
             case 1:
                 return KUN_POOL_STORAGE_1;
@@ -157,9 +161,9 @@ public interface GameManager {
      * @param index 存储鲲池的storage 的下标
      * @return 玩家鲲池
      */
-    default Map<Integer, Kuns> getMemoryKunPool(String mid, Integer index) {
-        Map<Integer, Map<Integer, Kuns>> storage = this.getKunStorageByIndex(index);
-        return storage.get(Integer.valueOf(mid));
+    default Pool getMemoryKunPool(String mid, Integer index) {
+        Map<String, Pool> storage = this.getKunStorageByIndex(index);
+        return storage.get(mid);
     }
 
     /**
@@ -169,9 +173,9 @@ public interface GameManager {
      */
     default void removeMemoryKunPool(String mid, Integer index) {
         //根据索引下标获取存储玩家鲲池库
-        Map<Integer, Map<Integer, Kuns>> storage = this.getKunStorageByIndex(index);
+        Map<String, Pool> storage = this.getKunStorageByIndex(index);
         //移除玩家鲲池在缓存中的存储
-        storage.remove(Integer.valueOf(mid));
+        storage.remove(mid);
         //移除鲲存储索引表
         this.getUserKunPoolPosition().remove(Integer.valueOf(mid));
     }
@@ -180,17 +184,17 @@ public interface GameManager {
     /**
      * 保存到内存中
      * @param mid 玩家mid
-     * @param kunMap 玩家对应的鲲池
+     * @param pool 玩家对应的鲲池
      */
-    default void storageOnMemory(String mid, Map<Integer, Kuns> kunMap) {
+    default void storageOnMemory(String mid, Pool pool) {
         //获取内存存储位置下标
         Integer index = this.getStorageIndex();
         //设置用户对应的存储下标
         this.getUserKunPoolPosition().put(Integer.valueOf(mid), index);
         //获取存储单元
-        Map<Integer, Map<Integer, Kuns>> storage = this.getKunStorageByIndex(index);
+        Map<String, Pool> storage = this.getKunStorageByIndex(index);
         //存储单元中存储玩家的鲲池
-        storage.put(Integer.valueOf(mid), kunMap);
+        storage.put(mid, pool);
     }
 
 }

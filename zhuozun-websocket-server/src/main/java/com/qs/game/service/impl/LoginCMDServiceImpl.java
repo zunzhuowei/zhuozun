@@ -1,6 +1,5 @@
 package com.qs.game.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.qs.game.business.BusinessThreadUtil;
 import com.qs.game.cache.CacheKey;
@@ -13,6 +12,7 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.UserKunGold;
 import com.qs.game.model.sys.Kuns;
+import com.qs.game.model.sys.Pool;
 import com.qs.game.service.ILoginCMDService;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
@@ -55,11 +55,11 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = ctx.channel().attr(Global.attrUid).get(); //管道中的用户mid
             //获取玩家鲲池
-            String kunCache = this.getPlayerKunPool(mid);
+            String poolCells = this.getPlayerKunPoolCells(mid);
             Map<String, Object> content = new HashMap<>();
-            content.put("pool", kunCache);
-            content.put("gold", this.getPlayerGold(mid));
-            content.put("goldSpeed", this.getPlayerGoldSpeedByKunPoolJson(kunCache));
+            content.put("pool", poolCells); //玩家鲲池
+            content.put("gold", this.getPlayerGold(mid)); //玩家金币
+            content.put("goldSpeed", this.getPlayerGoldSpeedByMid(mid)); //玩家产金币速度
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).setContent(content).buildJsonStr();
             global.sendMsg2One(resultStr, mid);
         });
@@ -78,8 +78,12 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
 
     @Override
     public long getPlayerGoldSpeedByMid(String mid) {
-        String kunPoolJson = this.getPlayerKunPool(mid);
-        return this.getPlayerGoldSpeedByKunPoolJson(kunPoolJson);
+        Pool pool = this.getPlayerKunPool(mid);
+        return Objects.isNull(pool) ? 0L :
+                pool.getPoolCells().stream()
+                        .filter(e -> e.getKuns().getType() > 0 && e.getKuns().getWork() > 1)
+                        .map(e -> e.getKuns().getGold())
+                        .reduce((e1, e2) -> e1 + e2).orElse(0L);
     }
 
 
@@ -118,32 +122,40 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
     }
 
     @Override
-    public String getPlayerKunPool(String mid) {
-        String kunPool = null;
+    public String getPlayerKunPoolCells(String mid) {
+        Pool pool = this.getPlayerKunPool(mid);
+        return JSONObject.toJSONString(pool.getPoolCells());
+    }
+
+    @Override
+    public Pool getPlayerKunPool(String mid) {
         //查看内存中是否已经保存了该玩家的鲲池数据下标
         Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
         if (Objects.nonNull(index)) {
             //从内存中取出玩家鲲池信息
-            Map<Integer, Kuns> kunMap = gameManager.getMemoryKunPool(mid, index);
-            kunPool = JSONObject.toJSONString(kunMap);
+            return gameManager.getMemoryKunPool(mid, index);
         } else {
             String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
             //缓存中的鲲池
-            kunPool = redisService.get(kunKey);
-            if (StringUtils.isBlank(kunPool)) {
+            String kunPoolJson = redisService.get(kunKey);
+            if (StringUtils.isBlank(kunPoolJson)) {
                 //初始化鲲池
-                Map<Integer, Kuns> kunMap = gameManager.getInitKunPool();
-                kunPool = JSONObject.toJSONString(kunMap);
-                redisService.set(kunKey, kunPool);
+                Pool pool = gameManager.getInitKunPool();
+                kunPoolJson = JSONObject.toJSONString(pool.getPoolCells());
+                //保存到缓存中
+                redisService.set(kunKey, kunPoolJson);
                 //保存到内存中
-                gameManager.storageOnMemory(mid, kunMap);
+                gameManager.storageOnMemory(mid, pool);
+                return pool;
             } else {
-                Map<Integer, Kuns> kunMap = JSONObject.parseObject(kunPool, Map.class);
-                gameManager.storageOnMemory(mid, kunMap);
+                //解析缓存中的鲲池数据
+                Pool pool = JSONObject.parseObject(kunPoolJson, Pool.class);
+                //保存到内存中
+                gameManager.storageOnMemory(mid, pool);
+                return pool;
             }
         }
-        return kunPool;
-    }
 
+    }
 
 }
