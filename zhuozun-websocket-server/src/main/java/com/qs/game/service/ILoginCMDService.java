@@ -46,5 +46,12 @@ public interface ILoginCMDService extends ICMDService{
      */
     Pool getPlayerKunPool(String mid);
 
+    /**
+     * 保存鲲池
+     * @param mid 玩家mid
+     * @param pool 鲲池
+     * @return success or fail
+     */
+    boolean savePool(String mid, Pool pool);
 }
 

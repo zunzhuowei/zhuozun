@@ -63,6 +63,8 @@ public class HttpClientConfig {
         httpClientConnectionManager.setMaxTotal(maxTotal);
         //并发数
         httpClientConnectionManager.setDefaultMaxPerRoute(defaultMaxPerRoute);
+        //停用后验证 时长
+        httpClientConnectionManager.setValidateAfterInactivity(socketTimeout);
         return httpClientConnectionManager;
     }
 
@@ -111,8 +113,7 @@ public class HttpClientConfig {
         return builder
                 .setConnectTimeout(connectTimeout)
                 .setConnectionRequestTimeout(connectionRequestTimeout)
-                .setSocketTimeout(socketTimeout)
-                .setStaleConnectionCheckEnabled(staleConnectionCheckEnabled);
+                .setSocketTimeout(socketTimeout);
     }
 
     /**

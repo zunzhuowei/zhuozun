@@ -1,5 +1,7 @@
 package com.qs.game.config;
 
+import com.qs.game.common.KunGold;
+import com.qs.game.common.KunType;
 import com.qs.game.model.sys.Kuns;
 import com.qs.game.model.sys.Pool;
 import com.qs.game.model.sys.PoolCell;
@@ -20,11 +22,11 @@ public interface GameManager {
     //获取用户初始化鲲池
     default Pool getInitKunPool() {
         if (Objects.isNull(POOL.getPoolCells()) || POOL.getPoolCells().isEmpty()) {
-            List<PoolCell> cells = new ArrayList<>(16);
+            List<PoolCell> cells = new LinkedList<>();
             //初始化鲲池
-            cells.add(new PoolCell().setNo(1).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
-            cells.add(new PoolCell().setNo(2).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
-            cells.add(new PoolCell().setNo(3).setKuns(new Kuns().setGold(1).setWork(0).setTime(0).setType(1)));
+            cells.add(new PoolCell().setNo(1).setKuns(new Kuns().setGold(KunGold.goldByType(KunType.TYPE_1)).setWork(0).setTime(0).setType(KunType.TYPE_1)));
+            cells.add(new PoolCell().setNo(2).setKuns(new Kuns().setGold(KunGold.goldByType(KunType.TYPE_1)).setWork(0).setTime(0).setType(KunType.TYPE_1)));
+            cells.add(new PoolCell().setNo(3).setKuns(new Kuns().setGold(KunGold.goldByType(KunType.TYPE_1)).setWork(0).setTime(0).setType(KunType.TYPE_1)));
             cells.add(new PoolCell().setNo(4).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
             cells.add(new PoolCell().setNo(5).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));
             cells.add(new PoolCell().setNo(6).setKuns(new Kuns().setGold(0).setWork(0).setTime(0).setType(0)));

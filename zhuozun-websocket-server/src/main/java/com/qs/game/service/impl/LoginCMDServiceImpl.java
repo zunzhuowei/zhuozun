@@ -53,7 +53,7 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
     public Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
         Future future = BusinessThreadUtil.getExecutor().submit(() -> {
             Integer cmd = reqEntity.getCmd();
-            String mid = ctx.channel().attr(Global.attrUid).get(); //管道中的用户mid
+            String mid = this.getPlayerId(ctx); //管道中的用户mid
             //获取玩家鲲池
             String poolCells = this.getPlayerKunPoolCells(mid);
             Map<String, Object> content = new HashMap<>();
@@ -137,25 +137,35 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
         } else {
             String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
             //缓存中的鲲池
-            String kunPoolJson = redisService.get(kunKey);
-            if (StringUtils.isBlank(kunPoolJson)) {
+            String poolJson = redisService.get(kunKey);
+            if (StringUtils.isBlank(poolJson)) {
                 //初始化鲲池
                 Pool pool = gameManager.getInitKunPool();
-                kunPoolJson = JSONObject.toJSONString(pool.getPoolCells());
+                poolJson = JSONObject.toJSONString(pool);
                 //保存到缓存中
-                redisService.set(kunKey, kunPoolJson);
+                redisService.set(kunKey, poolJson);
                 //保存到内存中
                 gameManager.storageOnMemory(mid, pool);
                 return pool;
             } else {
                 //解析缓存中的鲲池数据
-                Pool pool = JSONObject.parseObject(kunPoolJson, Pool.class);
+                Pool pool = JSONObject.parseObject(poolJson, Pool.class);
                 //保存到内存中
                 gameManager.storageOnMemory(mid, pool);
                 return pool;
             }
         }
+    }
 
+    @Override
+    public boolean savePool(String mid,Pool pool) {
+        String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
+        String poolJson = JSONObject.toJSONString(pool);
+        //保存到缓存中
+        boolean b = redisService.set(kunKey, poolJson);
+        //保存到内存中
+        gameManager.storageOnMemory(mid, pool);
+        return b;
     }
 
 }
