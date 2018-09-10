@@ -2,7 +2,9 @@ package com.qs.game.service;
 
 import com.qs.game.model.sys.Kuns;
 import com.qs.game.model.sys.Pool;
+import com.qs.game.model.sys.PoolCell;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,32 +28,18 @@ public interface ILoginCMDService extends ICMDService{
     long getPlayerGoldSpeedByKunPoolJson(String kunPoolJson);
 
     /**
-     *  获取玩家的金币数
-     * @param mid 玩家mid
-     * @return 金币数
+     * 获取玩家鲲池数据json
+     * @param mid
+     * @return
      */
-    long getPlayerGold(String mid);
+    String getPlayerKunPoolCellsJson(String mid);
 
     /**
      *  获取玩家鲲池数据
      * @param mid 玩家mid
      * @return 鲲池数据json数据
      */
-    String getPlayerKunPoolCells(String mid);
+    List<PoolCell> getPlayerKunPoolCells(String mid);
 
-    /**
-     * 获取玩家鲲池数据
-     * @param mid 玩家mid
-     * @return 鲲池 数据
-     */
-    Pool getPlayerKunPool(String mid);
-
-    /**
-     * 保存鲲池
-     * @param mid 玩家mid
-     * @param pool 鲲池
-     * @return success or fail
-     */
-    boolean savePool(String mid, Pool pool);
 }
 

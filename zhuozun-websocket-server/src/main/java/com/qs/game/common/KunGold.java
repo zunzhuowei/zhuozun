@@ -6,7 +6,7 @@ package com.qs.game.common;
 public interface KunGold {
 
 
-    static int goldByType(int kunType) {
+    static long goldByType(int kunType) {
         switch (kunType) {
             case KunType.TYPE_1:
                 return 10;

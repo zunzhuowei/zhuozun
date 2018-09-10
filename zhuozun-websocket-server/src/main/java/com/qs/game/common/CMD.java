@@ -10,6 +10,11 @@ public enum CMD {
     LOGIN(CmdValue.LOGIN, "登录命令"),
     LOGOUT(CmdValue.LOGOUT, "登出命令"),
     MERGE(CmdValue.MERGE, "鲲合并命令"),
+    MOVE(CmdValue.MOVE, "鲲移动命令"),
+    WORK(CmdValue.WORK, "把鲲放到海里"),
+    UN_WORK(CmdValue.UN_WORK, "把鲲收回池里"),
+    NEW(CmdValue.NEW, "创建一个新对象"),
+    DELETE(CmdValue.DELETE, "删除一个对象"),
     ;
 
     public Integer VALUE; //命令值

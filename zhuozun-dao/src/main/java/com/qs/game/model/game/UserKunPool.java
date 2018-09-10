@@ -1,7 +1,12 @@
 package com.qs.game.model.game;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
+@Data
+@Accessors(chain = true)
 public class UserKunPool implements Serializable {
     private Long id;
 
@@ -21,77 +26,4 @@ public class UserKunPool implements Serializable {
 
     private String ext3;
 
-    private static final long serialVersionUID = 1L;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getMid() {
-        return mid;
-    }
-
-    public void setMid(Integer mid) {
-        this.mid = mid;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
-    public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
-    public Integer getIsRun() {
-        return isRun;
-    }
-
-    public void setIsRun(Integer isRun) {
-        this.isRun = isRun;
-    }
-
-    public Integer getRunTime() {
-        return runTime;
-    }
-
-    public void setRunTime(Integer runTime) {
-        this.runTime = runTime;
-    }
-
-    public String getExt1() {
-        return ext1;
-    }
-
-    public void setExt1(String ext1) {
-        this.ext1 = ext1 == null ? null : ext1.trim();
-    }
-
-    public String getExt2() {
-        return ext2;
-    }
-
-    public void setExt2(String ext2) {
-        this.ext2 = ext2 == null ? null : ext2.trim();
-    }
-
-    public String getExt3() {
-        return ext3;
-    }
-
-    public void setExt3(String ext3) {
-        this.ext3 = ext3 == null ? null : ext3.trim();
-    }
 }

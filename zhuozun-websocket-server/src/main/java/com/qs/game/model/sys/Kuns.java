@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class Kuns implements Serializable {
 
-    private long gold; //每秒产生的金币数
+    //private long gold; //每秒产生的金币数
 
     private long time; //呆在海里的开始时间戳
 

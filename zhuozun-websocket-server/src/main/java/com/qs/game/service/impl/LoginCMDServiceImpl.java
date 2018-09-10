@@ -3,16 +3,15 @@ package com.qs.game.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.qs.game.business.BusinessThreadUtil;
 import com.qs.game.cache.CacheKey;
-import com.qs.game.common.CMD;
-import com.qs.game.common.CommandService;
-import com.qs.game.common.ERREnum;
-import com.qs.game.common.Global;
+import com.qs.game.common.*;
 import com.qs.game.config.GameManager;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.UserKunGold;
 import com.qs.game.model.sys.Kuns;
 import com.qs.game.model.sys.Pool;
+import com.qs.game.model.sys.PoolCell;
+import com.qs.game.service.ICommonService;
 import com.qs.game.service.ILoginCMDService;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
@@ -24,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -38,16 +38,10 @@ import java.util.concurrent.Future;
 public class LoginCMDServiceImpl implements ILoginCMDService {
 
     @Autowired
-    private IRedisService redisService;
-
-    @Autowired
-    private GameManager gameManager;
-
-    @Autowired
     private Global global;
 
     @Resource
-    private IUserKunGoldService userKunGoldService;
+    private ICommonService commonService;
 
     @Override
     public Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
@@ -55,12 +49,13 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             //获取玩家鲲池
-            String poolCells = this.getPlayerKunPoolCells(mid);
+            List<PoolCell> poolCells = this.getPlayerKunPoolCells(mid);
             Map<String, Object> content = new HashMap<>();
             content.put("pool", poolCells); //玩家鲲池
-            content.put("gold", this.getPlayerGold(mid)); //玩家金币
-            content.put("goldSpeed", this.getPlayerGoldSpeedByMid(mid)); //玩家产金币速度
-            String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).setContent(content).buildJsonStr();
+            content.put("gold", commonService.getPlayerGold(mid)); //玩家金币
+            //content.put("goldSpeed", this.getPlayerGoldSpeedByMid(mid)); //玩家产金币速度
+            String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS)
+                    .setContent(content).buildJsonStr();
             global.sendMsg2One(resultStr, mid);
         });
         try {
@@ -78,11 +73,11 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
 
     @Override
     public long getPlayerGoldSpeedByMid(String mid) {
-        Pool pool = this.getPlayerKunPool(mid);
+        Pool pool = commonService.getPlayerKunPool(mid);
         return Objects.isNull(pool) ? 0L :
                 pool.getPoolCells().stream()
                         .filter(e -> e.getKuns().getType() > 0 && e.getKuns().getWork() > 1)
-                        .map(e -> e.getKuns().getGold())
+                        .map(e -> KunGold.goldByType(e.getKuns().getType()))
                         .reduce((e1, e2) -> e1 + e2).orElse(0L);
     }
 
@@ -98,74 +93,21 @@ public class LoginCMDServiceImpl implements ILoginCMDService {
                     //筛选出不是空的坑位 并且 正在工作的鲲
                     .filter(e -> e.getType() > 0 && e.getWork() > 0)
                     //把符合条件的鲲每秒产金币数合并统计
-                    .map(Kuns::getGold)
+                    .map(e -> KunGold.goldByType(e.getType()))
                     .reduce((e1, e2) -> e1 + e2).orElse(0L);
         }
     }
 
     @Override
-    public long getPlayerGold(String mid) {
-        String goldKey = CacheKey.RedisPrefix.USER_KUN_GOLD.KEY + mid;
-        String goldStr = redisService.get(goldKey);
-        if (Objects.isNull(goldStr)) {
-            UserKunGold userKunGold = userKunGoldService.selectByPrimaryKey(Long.valueOf(mid));
-            if (Objects.nonNull(userKunGold)) {
-                Long gold = userKunGold.getGold();
-                redisService.set(goldKey, gold);
-                return gold;
-            } else {
-                return 0L;
-            }
-        } else {
-            return Long.parseLong(goldStr);
-        }
-    }
-
-    @Override
-    public String getPlayerKunPoolCells(String mid) {
-        Pool pool = this.getPlayerKunPool(mid);
+    public String getPlayerKunPoolCellsJson(String mid) {
+        Pool pool = commonService.getPlayerKunPool(mid);
         return JSONObject.toJSONString(pool.getPoolCells());
     }
 
     @Override
-    public Pool getPlayerKunPool(String mid) {
-        //查看内存中是否已经保存了该玩家的鲲池数据下标
-        Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
-        if (Objects.nonNull(index)) {
-            //从内存中取出玩家鲲池信息
-            return gameManager.getMemoryKunPool(mid, index);
-        } else {
-            String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
-            //缓存中的鲲池
-            String poolJson = redisService.get(kunKey);
-            if (StringUtils.isBlank(poolJson)) {
-                //初始化鲲池
-                Pool pool = gameManager.getInitKunPool();
-                poolJson = JSONObject.toJSONString(pool);
-                //保存到缓存中
-                redisService.set(kunKey, poolJson);
-                //保存到内存中
-                gameManager.storageOnMemory(mid, pool);
-                return pool;
-            } else {
-                //解析缓存中的鲲池数据
-                Pool pool = JSONObject.parseObject(poolJson, Pool.class);
-                //保存到内存中
-                gameManager.storageOnMemory(mid, pool);
-                return pool;
-            }
-        }
-    }
-
-    @Override
-    public boolean savePool(String mid,Pool pool) {
-        String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
-        String poolJson = JSONObject.toJSONString(pool);
-        //保存到缓存中
-        boolean b = redisService.set(kunKey, poolJson);
-        //保存到内存中
-        gameManager.storageOnMemory(mid, pool);
-        return b;
+    public List<PoolCell> getPlayerKunPoolCells(String mid) {
+        Pool pool = commonService.getPlayerKunPool(mid);
+        return pool.getPoolCells();
     }
 
 }

@@ -105,7 +105,7 @@ public class RespEntity<T> implements Serializable {
     //获取建造器
     public static Builder getBuilder() {
         Builder builder = new Builder();
-        builder.setRespEntity(new RespEntity().setContent("{}"));
+        builder.setRespEntity(new RespEntity<>().setContent(new Object()));
         return builder;
     }
 
