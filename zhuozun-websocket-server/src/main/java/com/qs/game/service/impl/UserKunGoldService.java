@@ -17,7 +17,6 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-//@Transactional
 public class UserKunGoldService extends AbstractBaseService<UserKunGold, Long> implements IUserKunGoldService {
 
     @Resource

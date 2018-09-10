@@ -2,6 +2,7 @@ package com.qs.game.core.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.qs.game.cache.CacheKey;
+import com.qs.game.common.game.KunGold;
 import com.qs.game.config.game.GameManager;
 import com.qs.game.model.game.UserKunGold;
 import com.qs.game.model.game.Kuns;
@@ -10,11 +11,15 @@ import com.qs.game.model.game.PoolCell;
 import com.qs.game.core.ICommonService;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
+import com.qs.game.service.IUserKunPoolService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,8 +34,11 @@ public class CommonService implements ICommonService {
     @Autowired
     private IRedisService redisService;
 
-    @Resource
+    @Autowired
     private IUserKunGoldService userKunGoldService;
+
+    @Autowired
+    private IUserKunPoolService userKunPoolService;
 
     @Autowired
     private GameManager gameManager;
@@ -46,7 +54,7 @@ public class CommonService implements ICommonService {
         poolCells.add(pc.setKuns(updateKuns));
         pool.setPoolCells(poolCells);
         //把更新后的鲲池保存
-        this.savePool(mid, pool);
+        this.savePool2CacheAndMemory(mid, pool);
         return pool;
     }
 
@@ -69,7 +77,7 @@ public class CommonService implements ICommonService {
         poolCells.add(pc.setKuns(updateKuns));
         srcPool.setPoolCells(poolCells);
         //把更新后的鲲池保存
-        this.savePool(mid, srcPool);
+        this.savePool2CacheAndMemory(mid, srcPool);
         return srcPool;
     }
 
@@ -135,7 +143,7 @@ public class CommonService implements ICommonService {
     }
 
     @Override
-    public boolean savePool(String mid, Pool pool) {
+    public boolean savePool2CacheAndMemory(String mid, Pool pool) {
         String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
         String poolJson = JSONObject.toJSONString(pool);
         //保存到缓存中
@@ -146,7 +154,28 @@ public class CommonService implements ICommonService {
     }
 
 
+    public boolean savePoolPersistence(String mid) {
+        //获取当前的玩家当前的池
+        Pool pool = this.getPlayerKunPool(mid);
+        List<PoolCell> poolCells = pool.getPoolCells();
+        long nowTime = new Date().getTime() / 1000;
+        long productGold = poolCells.stream().map(PoolCell::getKuns)
+                .filter(e -> e.getType() > 0 && e.getWork() > 0)
+                .map(e -> (nowTime - e.getTime()) * KunGold.goldByType(e.getType()))
+                .reduce((e1, e2) -> e1 + e2).orElse(0L);
+
+        return false;
+    }
+
     //TODO 添加记录玩家离线时候根据内存鲲池数据持久化数据。
 
+
+   /* public static void main(String[] args) throws ParseException {
+        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+        long nowTime = fastDateFormat.parse("2018-09-10 23:57:01").getTime() / 1000;
+        long beginTime = fastDateFormat.parse("2018-09-10 23:57:00").getTime() / 1000;
+        System.out.println("nowTime = " + (nowTime - beginTime));
+
+    }*/
 
 }

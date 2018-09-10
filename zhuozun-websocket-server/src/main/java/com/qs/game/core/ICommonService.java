@@ -75,6 +75,6 @@ public interface ICommonService {
      * @param pool 鲲池
      * @return success or fail
      */
-    boolean savePool(String mid, Pool pool);
+    boolean savePool2CacheAndMemory(String mid, Pool pool);
 
 }

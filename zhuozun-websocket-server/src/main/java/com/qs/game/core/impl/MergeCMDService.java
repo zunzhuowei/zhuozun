@@ -96,7 +96,7 @@ public class MergeCMDService implements IMergeCMDService {
             poolCells.add(toCell.setKuns(toCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
 
             //保存鲲池
-            commonService.savePool(mid, pool.setPoolCells(poolCells));
+            commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
 
             //TODO 要不要去维护这次合并前产生的金币到持久化呢？
 
