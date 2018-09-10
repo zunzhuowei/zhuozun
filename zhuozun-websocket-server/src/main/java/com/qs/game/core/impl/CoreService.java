@@ -38,7 +38,7 @@ import static com.qs.game.common.ERREnum.ILLEGAL_REQUEST_2;
  */
 @Slf4j
 @Service
-public class CoreServiceImpl implements ICoreService {
+public class CoreService implements ICoreService {
 
 
     @Autowired

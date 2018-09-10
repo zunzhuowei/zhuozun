@@ -23,7 +23,7 @@ import java.util.Objects;
  * Description: 公共业务接口
  */
 @Service
-public class CommonServiceImpl implements ICommonService {
+public class CommonService implements ICommonService {
 
 
     @Autowired

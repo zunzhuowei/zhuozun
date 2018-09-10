@@ -22,7 +22,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @CommandService(CMD.DELETE)
-public class DeleteCMDServiceImpl implements IDeleteCMDService {
+public class DeleteCMDService implements IDeleteCMDService {
 
 
     @Autowired

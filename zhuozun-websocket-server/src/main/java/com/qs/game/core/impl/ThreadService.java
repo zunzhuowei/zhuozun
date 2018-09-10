@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-public class ThreadServiceImpl implements IThreadService {
+public class ThreadService implements IThreadService {
 
     @Autowired
     private ICoreService coreService;

@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @CommandService(CMD.LOGIN)
-public class LoginCMDServiceImpl implements ILoginCMDService {
+public class LoginCMDService implements ILoginCMDService {
 
     @Autowired
     private Global global;

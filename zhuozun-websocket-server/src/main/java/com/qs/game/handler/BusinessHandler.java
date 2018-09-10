@@ -1,6 +1,6 @@
 package com.qs.game.handler;
 
-import com.qs.game.core.impl.ThreadServiceImpl;
+import com.qs.game.core.impl.ThreadService;
 import com.qs.game.common.netty.Global;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.utils.AccessUtils;
@@ -28,7 +28,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     private Global global;
 
     @Autowired
-    private ThreadServiceImpl businessThreadUtil;
+    private ThreadService threadService;
 
 //    public BusinessHandler(Global global) {
 //        this.global = global;
@@ -40,7 +40,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
         log.debug("BusinessHandler channelRead0 {},{}", ctx, msg);
         String msgText = msg.text();
         ReqEntity reqEntity = AccessUtils.getReqEntity(msgText);
-        businessThreadUtil.doBusiness(ctx, msg, reqEntity);
+        threadService.doBusiness(ctx, msg, reqEntity);
     }
 
     @Override

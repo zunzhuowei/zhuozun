@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @CommandService(CMD.MERGE)
-public class MergeCMDServiceImpl implements IMergeCMDService {
+public class MergeCMDService implements IMergeCMDService {
 
 
     @Autowired

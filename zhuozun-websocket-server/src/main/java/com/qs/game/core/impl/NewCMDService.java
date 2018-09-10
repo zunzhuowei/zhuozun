@@ -6,7 +6,7 @@ import com.qs.game.common.netty.Global;
 import com.qs.game.core.IThreadService;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.core.ILoginCMDService;
-import com.qs.game.core.IMoveCMDService;
+import com.qs.game.core.IWorkCMDService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +18,11 @@ import java.util.concurrent.Future;
 
 /**
  * Created by zun.wei on 2018/9/9.
- * 移动鲲命令接口实现类
+ * 创建一个新对象命令接口实现类
  */
 @Slf4j
-@CommandService(CMD.MOVE)
-public class MoveCMDServiceImpl implements IMoveCMDService {
+@CommandService(CMD.NEW)
+public class NewCMDService implements IWorkCMDService {
 
 
     @Autowired
