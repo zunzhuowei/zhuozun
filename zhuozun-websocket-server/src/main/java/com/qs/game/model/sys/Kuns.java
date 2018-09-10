@@ -11,13 +11,13 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-public class Kun implements Serializable {
+public class Kuns implements Serializable {
 
     private long gold; //每秒产生的金币数
 
-    private long timeStamp; //呆在群里的开始时间戳
+    private long time; //呆在海里的开始时间戳
 
-    private int position; // 鲲所在位置，0家里或者1海里
+    private int work; // 鲲所在位置，0家里或者1海里
 
     private int type; //鲲的类型,0不存在，1+ 表示其他类型
 

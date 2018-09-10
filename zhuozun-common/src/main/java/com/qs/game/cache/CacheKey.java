@@ -21,6 +21,7 @@ public interface CacheKey {
     String userHB = "userHB:";
     String userKunPool = "userKunPool:";
     String closeGameServer = "closeGameServer";
+    String userKunGold = "userKunGold:";
 
 
 
@@ -50,6 +51,7 @@ public interface CacheKey {
         USER_ID_PREFIX(userIdPrefix, "用户id前缀!"),
         USER_HEART_BEAT(userHB, "websocket client 心跳!"),
         USER_KUN_POOL(userKunPool, "用户鲲池!"),
+        USER_KUN_GOLD(userKunGold, "用户拥有的游戏币!"),
         ;
 
         public String KEY;

@@ -10,6 +10,7 @@ public interface CmdValue {
     int HAND_SHAKE = 999; //连接握手命令
     int LOGIN = 1000; //登录命令,
     int LOGOUT = 1001; //登出命令
+    int MERGE = 1002; //鲲合并命令
 
 
 }

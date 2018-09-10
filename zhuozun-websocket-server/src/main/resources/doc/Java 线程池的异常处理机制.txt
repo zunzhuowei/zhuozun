@@ -1,0 +1,148 @@
+一、前言
+线程池技术是服务器端开发中常用的技术。不论是直接还是间接，各种服务器端功能的执行总是离不开线程池的调度。关于线程池的各种文章，多数是关注任务的创建和执行方面，对于异常处理和任务取消（包括线程池关闭）关注的偏少。
+
+接下来，本文将从 Java 原生线程、两种主要线程池 ThreadPoolExecutor 和 ScheduledThreadPoolExecutor 这三方面介绍 Java 中线程的异常处理机制。
+
+二、Thread
+在谈线程池的异常处理之前，我们先来看 Java 中线程中的异常是如何被处理的。大家都知道如何创建一个线程任务：
+
+代码1
+
+Thread t = new Thread(() -> System.out.println("Execute in a thread"));
+t.start();
+为了简化代码，这里使用了 Java 8 的 Lambda 表达式。() -> System.out.println("Execute in a thread") 等同于在 Runnable 中执行 System.out.println 方法。后面不再解释。
+
+如果这个任务抛出了异常，那又会怎样：
+
+代码2
+
+Thread t = new Thread(() -> System.out.println(1 / 0));
+t.start();
+如果我们执行上面这段代码，会在控制台上看到异常输出。可能多数同学会对此不会觉得问题，但是问题在于，通常情况下绝大多数线上应用不会将控制台作为日志输出地址，而是另有日志输出。这种情况下，上面的代码所抛出异常便会丢失。
+
+那为了将异常输出到日志中，我们会这样写代码：
+
+代码3
+
+Thread t = new Thread(() -> {
+    try {
+        System.out.println(1 / 0);
+    } catch (Exception e) {
+        LOGGER.error(e.getMessage(), e);
+    }
+});
+t.start();
+这样我们就能异常栈输出到日志中，而不是控制台，从而避免异常的丢失。
+
+过了一段时间，问题又来了，可能好多线程任务默认的异常处理机制都是相同的。比如都是将异常输出到日志文件。按照上面的写法会造成重复代码。虽然重复的不多，但是有代码洁癖的小伙伴可能也会觉得不舒服。
+
+那我们该如何解决这个问题呢？其实 JDK 已经为我们想到了，Thread 类中有个接口 UncaughtExceptionHandler。通过实现这个接口，并调用 Thread.setUncaughtExceptionHandler(UncaughtExceptionHandler) 方法，我们就能为一个线程设置默认的异常处理机制，避免重复的 try...catch 了。
+
+除此以外，我们还可以通过 Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler) 设置全局的默认异常处理机制。此外，ThreadGroup 也实现了 UncaughtExceptionHandler 接口，所以通过 ThreadGroup 还可以为一组线程设置默认的异常处理机制。
+
+其实，之所以代码2在执行之后我们能在控制台上看到异常，也是因为 UncaughtExceptionHandler 机制。ThreadGroup 默认提供了异常处理机制如下：
+
+代码4
+
+public void uncaughtException(Thread t, Throwable e) {
+    if (parent != null) {
+        parent.uncaughtException(t, e);
+    } else {
+        Thread.UncaughtExceptionHandler ueh =
+            Thread.getDefaultUncaughtExceptionHandler();
+        if (ueh != null) {
+            ueh.uncaughtException(t, e);
+        } else if (!(e instanceof ThreadDeath)) {
+            // 最终执行如下代码
+            System.err.print("Exception in thread \""
+                             + t.getName() + "\" ");
+            e.printStackTrace(System.err);
+        }
+    }
+}
+三、ThreadPoolExecutor
+在 Java 5 发布之后，线程池便开始越来越广泛地用于创建并发任务。多数时候，当说到 Java 的线程池时，我们一般指的就是 ThreadPoolExecutor。那在 ThreadPoolExecutor 中是如何处理异常的呢？
+
+代码5
+
+Executors.newSingleThreadExecutor().execute(() -> {
+    throw new RuntimeException("My runtime exception");
+});
+上面的代码的异常处理机制其实同直接使用 Thread 是一样的。所以也有同样的问题，异常信息无法反映在日志文件中。解决这个问题的方法同上一节一样：在每个 Runnable 中编写 try ... catch 语句；或者使用 UncaughtExceptionHandler 机制。
+
+我们先来看如何为线程池中的工作线程设置 UncaughtExceptionHandler。
+
+为线程池工作线程设置 UncaughtExceptionHandler
+简单来说，就是通过 ThreadFactory。通过 ThreadPoolExecutor 的构造函数和 Executors 中的工具方法，我们都可以为新创建的线程池设置 ThreadFactory。
+
+ThreadFactory 是个接口，它只定义了一个方法 Thread newThread(Runnable r)。在这个方法中，我们可以为新创建出来的线程设置 UncaughtExceptionHandler。当然，这样写起来显得很麻烦，好在 Apache Commons 和 Google Guava 这两个最有名的 Java 工具类库都为我们提供了相应的类库以简化配置 ThreadFactory 的工作。下面以 Apache Commons 提供的 BasicThreadFactoryBuilder 为例
+
+代码6
+
+ThreadFactory executorThreadFactory = new BasicThreadFactory.Builder()
+        .namingPattern("task-scanner-executor-%d")
+        .uncaughtExceptionHandler(new LogUncaughtExceptionHandler(LOGGER))
+        .build();
+Executors.newSingleThreadExecutor(executorThreadFactory);
+UncaughtExceptionHandler 一定起作用吗？
+此话怎讲呢？其实 ThreadPoolExecutor 为执行并发任务提供了两种方法：execute(Runnable) 和 submit(Callable/Runnable)。之前的代码示例只演示了执行 execute(Runnable) 时的情况。那在设置了默认的 UncaughtExceptionHandler 之后，当执行 submit(Callable/Runnable) 方法，抛出抛异常之后有会如何？
+
+看下面的代码
+
+代码7
+
+ThreadFactory threadFactory = new ThreadFactoryBuilder()
+        .setUncaughtExceptionHandler(new LogExceptionHandler())
+        .build();
+Executors.newSingleThreadExecutor(threadFactory)
+        .submit(() -> {
+            throw new RuntimeException("test");
+        });
+上面的程序执行完之后，不会在控制台或日志中看到任何输出，虽然设置了 UncaughtExceptionHandler。要弄清原因，就要看一下 ThreadPoolExecutor 的源代码
+
+代码8
+
+public Future<?> submit(Runnable task) {
+    if (task == null) throw new NullPointerException();
+    RunnableFuture<Void> ftask = newTaskFor(task, null);
+    execute(ftask);
+    return ftask;
+}
+submit 方法是调用 execute 实现任务执行的。但是在调用 execute 之前，任务会被封装进 FutureTask 类中，然后最终工作线程执行的是 FutureTask 中的 run 方法。
+
+代码9：FutureTask.run
+
+try {
+    result = c.call();
+    ran = true;
+} catch (Throwable ex) {
+    result = null;
+    ran = false;
+    setException(ex);
+}
+
+protected void setException(Throwable t) {
+    if (UNSAFE.compareAndSwapInt(this, stateOffset, NEW, COMPLETING)) {
+        outcome = t;
+        UNSAFE.putOrderedInt(this, stateOffset, EXCEPTIONAL); // final state
+        finishCompletion();
+    }
+}
+由上面的代码可以看出，不同于直接调用 execute 方法，调用 submit 方法后，如果任务抛出异常，会被 setException 方法赋给代表执行结果的 outcome 变量，而不会继续抛出。因此，UncaughtExceptionHandler 也没有机会处理。
+
+如果想知道 submit 的执行结果是成功还是失败，必须调用 Future.get() 方法。
+
+UncaughtExceptionHandler 是否适合在线程池中使用
+从上面的分析中可以看出，使用 UncaughtExceptionHandler，可以处理到使用 execute 方法执行任务所抛出的异常，但是对 submit 方法无效。那如果只是用 execute 方法，我们是否可以通过设置 UncaughtExceptionHandler 从而添加一种默认的异常处理机制，以避免重复的 try...catch 代码呢？
+
+答案是不能。原因在于，如果在执行 execute 方法时不在 Runnable.run 方法中写 try...catch 方法，自然异常会交由 UncaughtExceptionHandler 处理，但是，在这之前，线程的工作线程会因为异常而退出。虽然线程池会创建一个新的工作线程，但是如果这个步骤反复执行，效率自然会下降很多。
+
+四、ScheduledThreadPoolExecutor
+ScheduledThreadPoolExecutor 是另一种常用的线程池，常用了执行延迟任务或定时任务。常用的方法为 scheduleXXX 系列。那在这个线程池中异常是如何处理的呢？
+
+其实，如果看过前面的部分，到这里也基本能猜出来了。ScheduledThreadPoolExecutor 用来封装任务的是 ScheduledFutureTask。ScheduledFutureTask 是 FutureTask 的子类，所以，异常也会被复制给 outcome。
+
+但是，这里还是有一些差异的。在使用 ThreadPoolExecutor.submit 和 ScheduledThreadPoolExecutor.schedule 方法时，我们可以通过这两个方法返回的 Future 来获得执行结果，这包括正常结果，也包括异常结果。但是，对于 ScheduledThreadPoolExecutor.scheduleWithFixedDelay 和 scheduleAtFixedRate 这两个方法，其返回的 Future 只会用来取消任务，而不是得到结果。原因也很容易理解，因为这两个方法执行的是定时任务，是反复执行的。这也是为什么这两个方法的任务定义使用了 Runnable 接口，而不是有返回值的 Callable 接口。因此，对于这两个方法来说，在 Runnable.run 方法中加 try...catch 是必须的，否则很有可能出错了却毫不知情。
+
+五、结论
+在 Thread 中，我们可以通过 UncaughtExceptionHandler 来实现默认的异常处理机制。但是在使用 ThreadPoolExecutor 和 ScheduledThreadPoolExecutor 这两个 JDK 最主要的线程池时，使用 UncaughtExceptionHandler 是不合适的。所以，try...catch 往往是不可避免的，否则你的任务很有可能失败的悄无声息。

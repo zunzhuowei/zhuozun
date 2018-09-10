@@ -1,5 +1,6 @@
 package com.qs.game.service;
 
+import com.qs.game.common.Global;
 import com.qs.game.model.base.ReqEntity;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -18,5 +19,14 @@ public interface ICMDService {
      * @return Runnable
      */
     Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity);
+
+    /**
+     *  获取玩家mid
+     * @param ctx ChannelHandlerContext
+     * @return 玩家mid
+     */
+    default String getPlayerId(ChannelHandlerContext ctx) {
+        return ctx.channel().attr(Global.attrUid).get();
+    }
 
 }
