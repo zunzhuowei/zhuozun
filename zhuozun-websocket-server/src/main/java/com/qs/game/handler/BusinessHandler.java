@@ -1,18 +1,15 @@
 package com.qs.game.handler;
 
-import com.qs.game.business.BusinessThreadUtil;
-import com.qs.game.common.Global;
+import com.qs.game.core.impl.ThreadServiceImpl;
+import com.qs.game.common.netty.Global;
 import com.qs.game.model.base.ReqEntity;
-import com.qs.game.model.base.ReqErrEntity;
 import com.qs.game.utils.AccessUtils;
-import com.qs.game.utils.HandlerUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -31,7 +28,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<TextWebSocketFr
     private Global global;
 
     @Autowired
-    private BusinessThreadUtil businessThreadUtil;
+    private ThreadServiceImpl businessThreadUtil;
 
 //    public BusinessHandler(Global global) {
 //        this.global = global;

@@ -1,9 +1,9 @@
 package com.qs.game.utils;
 
 import com.qs.game.cache.CacheKey;
-import com.qs.game.common.Global;
+import com.qs.game.common.netty.Global;
 import com.qs.game.constant.StrConst;
-import com.qs.game.service.ICoreService;
+import com.qs.game.core.ICoreService;
 import com.qs.game.service.IRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -1,14 +1,11 @@
 package com.qs.game.handler;
 
-import com.qs.game.business.BusinessThreadUtil;
-import com.qs.game.common.CMD;
-import com.qs.game.common.ERREnum;
-import com.qs.game.common.Global;
-import com.qs.game.model.base.ReqEntity;
-import com.qs.game.model.base.ReqErrEntity;
-import com.qs.game.model.base.RespEntity;
-import com.qs.game.utils.AccessUtils;
-import io.netty.channel.*;
+import com.qs.game.common.netty.Global;
+import com.qs.game.core.IThreadService;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
@@ -18,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 
 @Slf4j
@@ -32,7 +27,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     private Global global;
 
     @Autowired
-    private BusinessThreadUtil businessThreadUtil;
+    private IThreadService threadService;
 
     private final boolean autoRelease = true;
 
@@ -40,7 +35,7 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            businessThreadUtil.handshake(ctx, evt);
+            threadService.handshake(ctx, evt);
         } else if (evt instanceof SslHandshakeCompletionEvent) {
             ctx.pipeline().remove(SslHandler.class);//其除掉，因为后面不会接收任何http请求
         } else {
@@ -83,12 +78,12 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         incoming.close();
         log.info("Client: {} : {} 离开", incoming.remoteAddress(), uid);
         // channel 关闭的时候需要把玩家内存中的数据刷到缓存 or DB
-        businessThreadUtil.handlerRemoved(uid);
+        threadService.handlerRemoved(uid);
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        businessThreadUtil.accessChannelRead0(ctx, msg);
+        threadService.accessChannelRead0(ctx, msg);
     }
 
 

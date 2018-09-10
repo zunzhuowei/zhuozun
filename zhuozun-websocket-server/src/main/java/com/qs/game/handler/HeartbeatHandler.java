@@ -1,6 +1,6 @@
 package com.qs.game.handler;
 
-import com.qs.game.business.BusinessThreadUtil;
+import com.qs.game.core.IThreadService;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -24,7 +24,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
 
     @Autowired
-    private BusinessThreadUtil businessThreadUtil;
+    private IThreadService threadService;
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -68,7 +68,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof TextWebSocketFrame) {
-            businessThreadUtil.heartbeat(ctx, msg);
+            threadService.heartbeat(ctx, msg);
         } else {
             super.channelRead(ctx, msg);
         }

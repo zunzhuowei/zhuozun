@@ -1,9 +1,8 @@
 package com.qs.game.utils;
 
-import com.qs.game.service.ICMDService;
+import com.qs.game.core.ICMDService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
