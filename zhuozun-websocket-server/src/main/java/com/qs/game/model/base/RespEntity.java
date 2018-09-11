@@ -1,12 +1,11 @@
 package com.qs.game.model.base;
 
 import com.alibaba.fastjson.JSON;
-import com.qs.game.common.CMD;
+import com.qs.game.common.game.CMD;
 import com.qs.game.common.ERREnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -105,7 +104,7 @@ public class RespEntity<T> implements Serializable {
     //获取建造器
     public static Builder getBuilder() {
         Builder builder = new Builder();
-        builder.setRespEntity(new RespEntity().setContent("{}"));
+        builder.setRespEntity(new RespEntity<>().setContent(new Object()));
         return builder;
     }
 

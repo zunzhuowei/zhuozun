@@ -4,7 +4,7 @@ import com.qs.game.auth.JWTEntity;
 import com.qs.game.auth.JWTUtils;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.common.Constants;
-import com.qs.game.common.Global;
+import com.qs.game.common.netty.Global;
 import com.qs.game.constant.StrConst;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.service.IRedisService;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.qs.game.common.CMD.CLOSE_SERVER;
+import static com.qs.game.common.game.CMD.CLOSE_SERVER;
 import static com.qs.game.common.ERREnum.ILLEGAL_REQUEST_2;
 
 @Slf4j
