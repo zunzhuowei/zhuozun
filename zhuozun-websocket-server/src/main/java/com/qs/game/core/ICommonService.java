@@ -12,17 +12,19 @@ public interface ICommonService {
 
 
     /**
-     *  根据给定当鲲池编号和要更新的鲲和玩家id更新鲲池
-     * @param mid 玩家mid
-     * @param cellNo 鲲池编号
+     * 根据给定当鲲池编号和要更新的鲲和玩家id更新鲲池
+     *
+     * @param mid        玩家mid
+     * @param cellNo     鲲池编号
      * @param updateKuns 要更新成为的鲲池
      * @return 更新后的鲲池
      */
     Pool updatePoolByKuns(String mid, int cellNo, Kuns updateKuns);
 
     /**
-     *  根据玩家id 和鲲池单元格更新鲲池
-     * @param mid 玩家mid
+     * 根据玩家id 和鲲池单元格更新鲲池
+     *
+     * @param mid      玩家mid
      * @param poolCell 鲲池单元格
      * @return 更新后的鲲池
      */
@@ -38,10 +40,11 @@ public interface ICommonService {
     Pool updatePoolByOldPool(String mid, Pool srcPool, PoolCell poolCell);
 
     /**
-     *  根据给定鲲池和单元格编号以及要更新的鲲对象更新玩家鲲池
-     * @param mid 玩家mid
-     * @param srcPool 源鲲池
-     * @param cellNo 鲲池编号
+     * 根据给定鲲池和单元格编号以及要更新的鲲对象更新玩家鲲池
+     *
+     * @param mid        玩家mid
+     * @param srcPool    源鲲池
+     * @param cellNo     鲲池编号
      * @param updateKuns 要更新的鲲对象
      * @return 更新后的鲲池
      */
@@ -55,8 +58,9 @@ public interface ICommonService {
     long getPlayerGold(String mid);
 
     /**
-     *  添加玩家金币
-     * @param mid 玩家id
+     * 添加玩家金币,添加缓存及数据库
+     *
+     * @param mid     玩家id
      * @param addGold 添加的金币数
      * @return 玩家最新的金币
      */
@@ -64,6 +68,7 @@ public interface ICommonService {
 
     /**
      * 获取玩家鲲池数据
+     *
      * @param mid 玩家mid
      * @return 鲲池 数据
      */
@@ -71,10 +76,18 @@ public interface ICommonService {
 
     /**
      * 保存鲲池
-     * @param mid 玩家mid
+     *
+     * @param mid  玩家mid
      * @param pool 鲲池
      * @return success or fail
      */
     boolean savePool2CacheAndMemory(String mid, Pool pool);
 
+    /**
+     * 持久化玩家鲲相关信息
+     *
+     * @param mid 玩家mid
+     * @return 成功与否
+     */
+    boolean persistenceUserKunInfos(String mid);
 }

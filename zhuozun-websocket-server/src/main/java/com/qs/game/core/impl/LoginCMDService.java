@@ -21,10 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -83,10 +80,8 @@ public class LoginCMDService implements ILoginCMDService {
 
     @Override
     public long getPlayerGoldSpeedByKunPoolJson(String kunPoolJson) {
-        if (StringUtils.isBlank(kunPoolJson)) {
-            return 0L;
-        } else {
-            Map map = JSONObject.parseObject(kunPoolJson, Map.class);
+        return Optional.ofNullable(kunPoolJson).map(json -> {
+            Map map = JSONObject.parseObject(json, Map.class);
             return JSONObject.parseArray(map.values().toString(), Kuns.class)
                     .stream()
                     //筛选出不是空的坑位 并且 正在工作的鲲
@@ -94,7 +89,7 @@ public class LoginCMDService implements ILoginCMDService {
                     //把符合条件的鲲每秒产金币数合并统计
                     .map(e -> KunGold.goldByType(e.getType()))
                     .reduce((e1, e2) -> e1 + e2).orElse(0L);
-        }
+        }).orElse(0L);
     }
 
     @Override

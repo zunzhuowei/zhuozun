@@ -93,6 +93,7 @@
         #{ext3,jdbcType=VARCHAR},
       </if>
     </trim>
+    on duplicate key update type = values(type),is_run = values(is_run),run_time = values(run_time)
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.qs.game.model.game.UserKunPool">
     update user_kun_pool

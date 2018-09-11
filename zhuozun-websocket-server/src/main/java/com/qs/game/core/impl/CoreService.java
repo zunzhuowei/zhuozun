@@ -7,6 +7,7 @@ import com.qs.game.common.ERREnum;
 import com.qs.game.common.netty.Global;
 import com.qs.game.config.game.GameManager;
 import com.qs.game.constant.StrConst;
+import com.qs.game.core.ICommonService;
 import com.qs.game.handler.HttpRequestHandler;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.ReqErrEntity;
@@ -50,6 +51,8 @@ public class CoreService implements ICoreService {
     @Autowired
     private IRedisService redisService;
 
+    @Autowired
+    private ICommonService commonService;
 
     @Override
     public Runnable CmdRouter(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
@@ -153,20 +156,7 @@ public class CoreService implements ICoreService {
 
     @Override
     public Runnable handlerRemoved(String mid) {
-        return () -> {
-            //获取存储位置
-            Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
-            String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid; //玩家key
-            if (Objects.nonNull(index)) {
-                //获取玩家鲲池
-                Pool pool = gameManager.getMemoryKunPool(mid, index);
-                String poolJson = JSONObject.toJSONString(pool);
-                //TODO 刷新缓存与持久化
-                redisService.set(kunKey, poolJson);
-                //移除内存中的玩家鲲池机器索引
-                gameManager.removeMemoryKunPool(mid, index);
-            }
-        };
+        return () -> commonService.persistenceUserKunInfos(mid);
     }
 
 

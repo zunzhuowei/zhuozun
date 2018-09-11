@@ -59,6 +59,7 @@ public class MergeCMDService implements IMergeCMDService {
                 return;
             }
 
+            //获取玩家的鲲池
             Pool pool = commonService.getPlayerKunPool(mid);
             if (Objects.isNull(pool)) {
                 log.info("MergeCMDServiceImpl execute pool is null !");
@@ -90,22 +91,19 @@ public class MergeCMDService implements IMergeCMDService {
                 return ;
             }
 
+            //合并类型
             int mergeType = KunType.mergeType(fromType);
             poolCells.remove(fromIndex); //移除合并来源
             poolCells.remove(toIndex);//移除合并目的
             poolCells.add(toCell.setKuns(toCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
 
-            //保存鲲池
+            //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
-
-            //TODO 要不要去维护这次合并前产生的金币到持久化呢？
 
             //获取玩家鲲池
             Map<String, Object> content = new HashMap<>();
-            //content.put("pool", JSONObject.toJSONString(poolCells)); //玩家鲲池
-            //content.put("gold", loginCMDService.getPlayerGold(mid)); //玩家金币
-            //content.put("goldSpeed", loginCMDService.getPlayerGoldSpeedByMid(mid)); //玩家产金币速度
-            content.put("poolCell", toCell.setKuns(new Kuns().setType(mergeType).setTime(0).setWork(0)));
+            content.put("no", toCell.getNo());
+            content.put("type", mergeType);
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).setContent(content).buildJsonStr();
             global.sendMsg2One(resultStr, mid);
         });

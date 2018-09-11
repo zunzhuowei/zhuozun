@@ -75,10 +75,10 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
         Channel incoming = ctx.channel();
         String uid = ctx.channel().attr(Global.attrUid).get();
         global.delCtxFromSessionRepo(uid);
-        incoming.close();
         log.info("Client: {} : {} 离开", incoming.remoteAddress(), uid);
         // channel 关闭的时候需要把玩家内存中的数据刷到缓存 or DB
         threadService.handlerRemoved(uid);
+        incoming.close();
     }
 
     @Override
