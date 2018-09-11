@@ -21,9 +21,13 @@ public class IntUtils {
      * @return Integer from String value
      */
     public static Integer str2Int(@NonNull String strInt) {
-        //if (StringUtils.isBlank(strInt))
-        //    return null;
-        return Integer.parseInt(strInt);
+        Integer result = null;
+        try {
+            result = Integer.parseInt(strInt);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return result;
     }
 
 
@@ -33,9 +37,13 @@ public class IntUtils {
      * @return Integer from Object value
      */
     public static Integer obj2Int(@NonNull Object objInt) {
-        //if (Objects.isNull(objInt))
-        //    return null;
-        return Integer.parseInt(objInt + StringUtils.EMPTY);
+        Integer result = null;
+        try {
+            result = Integer.parseInt(objInt + StringUtils.EMPTY);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return result;
     }
 
 

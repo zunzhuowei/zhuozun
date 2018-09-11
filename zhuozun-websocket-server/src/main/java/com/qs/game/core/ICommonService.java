@@ -4,6 +4,8 @@ import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 
+import java.util.List;
+
 /**
  * Created by zun.wei on 2018/9/10 19:16.
  * Description: 公共业务接口
@@ -90,4 +92,30 @@ public interface ICommonService {
      * @return 成功与否
      */
     boolean persistenceUserKunInfos(String mid);
+
+    /**
+     * 根据鲲池单元格编号位置更新到至上次投放之后到目前为止该鲲赚到的金币
+     * @param mid 玩家Mid
+     * @param pool 鲲池
+     * @param noIndex 位置下标
+     * @return 历史总金币数
+     */
+    long updateGoldByNo(String mid, Pool pool, Integer noIndex);
+
+    /**
+     *  根据鲲池单元格编号位置更新到至上次投放之后到目前为止该鲲赚到的金币
+     * @param mid 玩家Mid
+     * @param noIndex 位置下标
+     * @return 历史总金币数
+     */
+    long updateGoldByNo(String mid, Integer noIndex);
+
+    /**
+     * 根据鲲池单元格编号位置更新到至上次投放之后到目前为止该鲲赚到的金币
+     * @param mid 玩家Mid
+     * @param poolCells 鲲池单元格列表
+     * @param noIndex 位置下标
+     * @return 历史总金币数
+     */
+    long updateGoldByNo(String mid, List<PoolCell> poolCells, Integer noIndex);
 }

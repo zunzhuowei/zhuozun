@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -183,6 +180,39 @@ public class CommonService implements ICommonService {
         userKunPoolService.insertBatch(mid, poolCells);
 
         return true;
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, Pool pool, Integer noIndex) {
+        List<PoolCell> poolCells = pool.getPoolCells();
+        //截止目前为止生产出的金币
+        return updateGoldByNo(mid, poolCells, noIndex);
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, Integer noIndex) {
+        //获取玩家的鲲池
+        Pool pool = this.getPlayerKunPool(mid);
+        return updateGoldByNo(mid, pool, noIndex);
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, List<PoolCell> poolCells, Integer noIndex) {
+        long nowTime = new Date().getTime() / 1000;
+        //截止目前为止生产出的金币
+        long productGold = Optional.ofNullable(poolCells)
+                .map(pcs -> pcs.stream()
+                        .filter(e -> Objects.equals(e.getNo(), noIndex))
+                        .map(PoolCell::getKuns)
+                        //筛选类型存在并且在工作的
+                        .filter(e -> e.getType() > 0 && e.getWork() > 0)
+                        //根据间隔时间和类型计算出没种鲲产的金币数
+                        .map(e -> (nowTime - e.getTime()) * KunGold.goldByType(e.getType()))
+                        //累加所有类型
+                        .reduce((e1, e2) -> e1 + e2).orElse(0L)
+                ).orElse(0L);
+        //添加金币,并持久化（redis 、 db）
+        return this.addPlayerGold(mid, productGold);
     }
 
 
