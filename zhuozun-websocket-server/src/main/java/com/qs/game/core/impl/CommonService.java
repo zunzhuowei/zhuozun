@@ -62,10 +62,12 @@ public class CommonService implements ICommonService {
     @Override
     public Pool updateSrcPoolByKuns(String mid, Pool srcPool, int cellNo, Kuns updateKuns) {
         return Optional.ofNullable(srcPool).map(e -> {
-            List<PoolCell> poolCells = e.getPoolCells();
-            PoolCell pc = poolCells.remove(cellNo);
-            //更新鲲池
-            poolCells.add(pc.setKuns(updateKuns));
+            List<PoolCell> poolCells = e.getPoolCells()
+                    .stream()
+                    .peek(poolCell -> {
+                        if (poolCell.getNo() == cellNo)
+                            poolCell.setKuns(updateKuns);
+                    }).collect(toList());
             e.setPoolCells(poolCells);
             //把更新后的鲲池保存
             this.savePool2CacheAndMemory(mid, e);
@@ -95,11 +97,14 @@ public class CommonService implements ICommonService {
     public Long addPlayerGold(String mid, long addGold) {
         String goldKey = CacheKey.RedisPrefix.USER_KUN_GOLD.KEY + mid;
         Long newGold = redisService.incr(goldKey, addGold);
-        UserKunGold userKunGold = userKunGoldService.selectByPrimaryKey(Long.valueOf(mid));
+        // 重复索引则更新
+        userKunGoldService.insertSelective
+                (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid)));
+        /*UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
         Optional.ofNullable(userKunGold)
                 .map(e -> userKunGoldService.updateByPrimaryKeySelective(e.setGold(newGold)))
                 .orElseGet(() -> userKunGoldService.insertSelective
-                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));
+                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));*/
         return newGold;
     }
 
@@ -167,7 +172,6 @@ public class CommonService implements ICommonService {
         String poolJson = JSONObject.toJSONString(pool, SerializerFeature.DisableCircularReferenceDetect);
         //保存到缓存中
         boolean b = redisService.set(kunKey, poolJson);
-        log.warn("savePool2CacheAndMemory ----------::", redisService.get(kunKey));
         //保存到内存中
         gameManager.storageOnMemory(mid, poolJson);
         return b;

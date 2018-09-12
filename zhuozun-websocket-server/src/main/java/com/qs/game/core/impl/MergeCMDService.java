@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * Created by zun.wei on 2018/9/9.
  * 合并鲲命令接口实现类
@@ -102,16 +104,26 @@ public class MergeCMDService implements IMergeCMDService {
 
             //合并类型
             int mergeType = KunType.mergeType(fromType);
-            poolCells.remove((int) fromIndex); //移除合并来源
-            PoolCell removeCell = poolCells.remove((int) toIndex);//移除合并目的
-            poolCells.add(removeCell.setKuns(removeCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
+            poolCells = poolCells.stream()
+                    .peek(poolCell -> {
+                        if (Objects.equals(poolCell.getNo(), fromIndex)) {
+                            poolCell.getKuns().setType(0);
+                        }
+                        if (Objects.equals(poolCell.getNo(), toIndex)) {
+                            poolCell.getKuns().setType(mergeType);
+                        }
+                    }).collect(toList());
+
+            //poolCells.remove((int) fromIndex); //移除合并来源
+            //PoolCell removeCell = poolCells.remove((int) toIndex);//移除合并目的
+            //poolCells.add(removeCell.setKuns(removeCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
 
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
 
             //获取玩家鲲池
             Map<String, Object> content = new HashMap<>();
-            content.put("no", removeCell.getNo());
+            content.put("no", toCell.getNo());
             content.put("type", mergeType);
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).setContent(content).buildJsonStr();
             global.sendMsg2One(resultStr, mid);

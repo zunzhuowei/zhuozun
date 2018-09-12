@@ -103,4 +103,12 @@
       ext3 = #{ext3,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <select id="selectByMid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_kun_gold
+        where mid = #{mid,jdbcType=BIGINT}
+    </select>
+
 </mapper>

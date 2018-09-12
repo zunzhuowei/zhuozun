@@ -94,8 +94,14 @@ public class MoveCMDService implements IMoveCMDService {
                 return;
             }
 
-            //判断新单元格位置是否为空位置
             if (Objects.isNull(toCell)) {
+                log.info("MoveCMDService execute toCell is null !");
+                return;
+            }
+
+
+            //判断新单元格位置是否为空位置
+            if (toCell.getKuns().getType() < 1) {
                 poolCells = poolCells.stream().peek(e -> {
                     if (Objects.equals(e.getNo(), fromIndex))
                         e.setNo(toIndex);

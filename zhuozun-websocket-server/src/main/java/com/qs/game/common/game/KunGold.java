@@ -13,21 +13,21 @@ public interface KunGold {
             case KunType.TYPE_2:
                 return 20;
             case KunType.TYPE_3:
-                return 40;
+                return 30;
             case KunType.TYPE_4:
-                return 80;
+                return 40;
             case KunType.TYPE_5:
-                return 160;
+                return 50;
             case KunType.TYPE_6:
-                return 32;
+                return 60;
             case KunType.TYPE_7:
-                return 64;
+                return 70;
             case KunType.TYPE_8:
-                return 125;
+                return 80;
             case KunType.TYPE_9:
-                return 256;
+                return 90;
             case KunType.TYPE_10:
-                return 512;
+                return 100;
             default:
                 return 0;
         }
