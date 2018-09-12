@@ -29,4 +29,9 @@ public class UserKunGoldService extends AbstractBaseService<UserKunGold, Long> i
     }
 
 
+    @Override
+    public UserKunGold selectByMid(Integer mid) {
+        return userKunGoldMapper.selectByMid(mid);
+    }
+
 }

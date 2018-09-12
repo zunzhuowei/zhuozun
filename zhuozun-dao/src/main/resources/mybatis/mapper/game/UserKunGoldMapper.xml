@@ -27,6 +27,7 @@
       ext1, ext2, ext3)
     values (#{id,jdbcType=BIGINT}, #{mid,jdbcType=INTEGER}, #{gold,jdbcType=BIGINT}, 
       #{ext1,jdbcType=VARCHAR}, #{ext2,jdbcType=VARCHAR}, #{ext3,jdbcType=VARCHAR})
+    on duplicate key update gold = values(gold)
   </insert>
   <insert id="insertSelective" parameterType="com.qs.game.model.game.UserKunGold">
     insert into user_kun_gold
@@ -70,6 +71,7 @@
         #{ext3,jdbcType=VARCHAR},
       </if>
     </trim>
+    on duplicate key update gold = values(gold)
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.qs.game.model.game.UserKunGold">
     update user_kun_gold
@@ -101,4 +103,12 @@
       ext3 = #{ext3,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+    <select id="selectByMid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_kun_gold
+        where mid = #{mid,jdbcType=BIGINT}
+    </select>
+
 </mapper>

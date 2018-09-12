@@ -1,18 +1,17 @@
 package com.qs.game.core.impl;
 
-import com.qs.game.common.*;
+import com.qs.game.common.ERREnum;
 import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
 import com.qs.game.common.game.KunType;
 import com.qs.game.common.netty.Global;
+import com.qs.game.core.ICommonService;
+import com.qs.game.core.IMergeCMDService;
 import com.qs.game.core.IThreadService;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
-import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
-import com.qs.game.core.ICommonService;
-import com.qs.game.core.IMergeCMDService;
 import com.qs.game.utils.IntUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -25,6 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Created by zun.wei on 2018/9/9.
@@ -66,8 +67,18 @@ public class MergeCMDService implements IMergeCMDService {
                 return;
             }
             List<PoolCell> poolCells = pool.getPoolCells();
-            int fromIndex = IntUtils.str2Int(from);
-            int toIndex = IntUtils.str2Int(to);
+            Integer fromIndex = IntUtils.str2Int(from);
+            Integer toIndex = IntUtils.str2Int(to);
+            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) {
+                log.info("MergeCMDServiceImpl execute fromIndex or toIndex is null !");
+                return;
+            }
+
+            if (fromIndex < 0 || toIndex < 0) {
+                log.info("MergeCMDServiceImpl execute fromIndex toIndex < 0 !");
+                return;
+            }
+
             PoolCell fromCell = poolCells.get(fromIndex);
             PoolCell toCell = poolCells.get(toIndex);
             int fromType = fromCell.getKuns().getType();
@@ -93,9 +104,19 @@ public class MergeCMDService implements IMergeCMDService {
 
             //合并类型
             int mergeType = KunType.mergeType(fromType);
-            poolCells.remove(fromIndex); //移除合并来源
-            poolCells.remove(toIndex);//移除合并目的
-            poolCells.add(toCell.setKuns(toCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
+            poolCells = poolCells.stream()
+                    .peek(poolCell -> {
+                        if (Objects.equals(poolCell.getNo(), fromIndex)) {
+                            poolCell.getKuns().setType(0);
+                        }
+                        if (Objects.equals(poolCell.getNo(), toIndex)) {
+                            poolCell.getKuns().setType(mergeType);
+                        }
+                    }).collect(toList());
+
+            //poolCells.remove((int) fromIndex); //移除合并来源
+            //PoolCell removeCell = poolCells.remove((int) toIndex);//移除合并目的
+            //poolCells.add(removeCell.setKuns(removeCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
 
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));

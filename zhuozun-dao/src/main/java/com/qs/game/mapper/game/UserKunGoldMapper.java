@@ -17,4 +17,12 @@ public interface UserKunGoldMapper extends IBaseMapper {
     int updateByPrimaryKeySelective(UserKunGold record);
 
     int updateByPrimaryKey(UserKunGold record);
+
+    /**
+     *  根据玩家mid 查询玩家金币数
+     * @param mid 玩家mid
+     * @return 玩家金币数
+     */
+    UserKunGold selectByMid(Integer mid);
+
 }

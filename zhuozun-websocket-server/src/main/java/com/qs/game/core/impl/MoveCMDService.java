@@ -5,12 +5,10 @@ import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
 import com.qs.game.common.netty.Global;
 import com.qs.game.core.ICommonService;
+import com.qs.game.core.IMoveCMDService;
 import com.qs.game.core.IThreadService;
 import com.qs.game.model.base.ReqEntity;
-import com.qs.game.core.ILoginCMDService;
-import com.qs.game.core.IMoveCMDService;
 import com.qs.game.model.base.RespEntity;
-import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 import com.qs.game.utils.IntUtils;
@@ -22,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -35,9 +32,6 @@ import java.util.stream.Collectors;
 @CommandService(CMD.MOVE)
 public class MoveCMDService implements IMoveCMDService {
 
-
-    @Autowired
-    private ILoginCMDService loginCMDService;
 
     @Autowired
     private Global global;
@@ -54,45 +48,62 @@ public class MoveCMDService implements IMoveCMDService {
             Map<String, Object> params = reqEntity.getParams();
             //校验参数是否为空
             if (Objects.isNull(params)) {
-                log.info("MergeCMDServiceImpl execute params is null !");
+                log.info("MoveCMDService execute params is null !");
                 return;
             }
             String fromNo = Objects.isNull(params.get("from")) ? null : params.get("from").toString();
             String toNo = Objects.isNull(params.get("to")) ? null : params.get("to").toString();
             //校验参数是否为空
             if (Objects.isNull(fromNo) || Objects.isNull(toNo)) {
-                log.info("MergeCMDServiceImpl execute from or to is null !");
+                log.info("MoveCMDService execute from or to is null !");
                 return;
             }
 
             //获取玩家的鲲池
             Pool pool = commonService.getPlayerKunPool(mid);
             if (Objects.isNull(pool)) {
-                log.info("MergeCMDServiceImpl execute pool is null !");
+                log.info("MoveCMDService execute pool is null !");
                 return;
             }
             List<PoolCell> poolCells = pool.getPoolCells();
-            int fromIndex = IntUtils.str2Int(fromNo);
-            int toIndex = IntUtils.str2Int(toNo);
+            Integer fromIndex = IntUtils.str2Int(fromNo);
+            Integer toIndex = IntUtils.str2Int(toNo);
+
+            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) {
+                log.info("MoveCMDService execute fromIndex or toIndex is null !");
+                return;
+            }
+
+            if (fromIndex < 0 || toIndex < 0) {
+                log.info("MoveCMDService execute fromIndex or toIndex less than 0 !");
+                return;
+            }
+
             PoolCell fromCell = poolCells.get(fromIndex);
             PoolCell toCell = poolCells.get(toIndex);
 
             //校验原对象单元格是否为空
             if (Objects.isNull(fromCell)) {
-                log.info("MergeCMDServiceImpl execute fromCell is null !");
+                log.info("MoveCMDService execute fromCell is null !");
                 return;
             }
 
             //判断原对象单元格鲲是否在工作
             if (fromCell.getKuns().getWork() > 0) {
-                log.info("MergeCMDServiceImpl execute fromCell.getKuns() less than 1 !");
+                log.info("MoveCMDService execute fromCell.getKuns() less than 1 !");
                 return;
             }
 
-            //判断新单元格位置是否为空位置
             if (Objects.isNull(toCell)) {
+                log.info("MoveCMDService execute toCell is null !");
+                return;
+            }
+
+
+            //判断新单元格位置是否为空位置
+            if (toCell.getKuns().getType() < 1) {
                 poolCells = poolCells.stream().peek(e -> {
-                    if (e.getNo() == fromIndex)
+                    if (Objects.equals(e.getNo(), fromIndex))
                         e.setNo(toIndex);
                 }).collect(Collectors.toList());
                 //保存鲲池到缓存和内存
@@ -105,21 +116,21 @@ public class MoveCMDService implements IMoveCMDService {
 
             // 判断两个单元格的鲲的类型是否一致
             if (fromType == toType) {
-                log.info("MergeCMDServiceImpl execute fromType equals toType !");
+                log.info("MoveCMDService execute fromType equals toType !");
                 return;
             }
 
             //判断新单元格鲲是否在工作
             if (toCell.getKuns().getWork() > 0) {
-                log.info("MergeCMDServiceImpl execute toCell.getKuns().getWork() > 0 !");
+                log.info("MoveCMDService execute toCell.getKuns().getWork() > 0 !");
                 return;
             }
 
             //如果两个单元格鲲类型不一致并且都不在工作则互换位置
             poolCells = poolCells.stream().peek(e -> {
-                if (e.getNo() == fromIndex)
+                if (Objects.equals(e.getNo(), fromIndex))
                     e.setNo(toIndex);
-                if (e.getNo() == toIndex)
+                if (Objects.equals(e.getNo(), toIndex))
                     e.setNo(fromIndex);
             }).collect(Collectors.toList());
             //保存鲲池到缓存和内存
@@ -135,7 +146,6 @@ public class MoveCMDService implements IMoveCMDService {
         }
         return null;
     }
-
 
 
 }

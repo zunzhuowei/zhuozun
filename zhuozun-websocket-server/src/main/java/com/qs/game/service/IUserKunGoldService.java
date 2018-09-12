@@ -8,6 +8,11 @@ import com.qs.game.model.game.UserKunGold;
  */
 public interface IUserKunGoldService extends IBaseService<UserKunGold, Long> {
 
-
+    /**
+     *  根据玩家mid 查询玩家金币数
+     * @param mid 玩家mid
+     * @return 玩家金币数
+     */
+    UserKunGold selectByMid(Integer mid);
 
 }

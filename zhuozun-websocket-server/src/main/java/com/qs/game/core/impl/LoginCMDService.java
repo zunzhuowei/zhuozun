@@ -6,6 +6,7 @@ import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
 import com.qs.game.common.game.KunGold;
 import com.qs.game.common.netty.Global;
+import com.qs.game.config.game.GameManager;
 import com.qs.game.core.IThreadService;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
@@ -48,6 +49,7 @@ public class LoginCMDService implements ILoginCMDService {
             List<PoolCell> poolCells = this.getPlayerKunPoolCells(mid);
             Map<String, Object> content = new HashMap<>();
             content.put("pool", poolCells); //玩家鲲池
+            content.put("num", GameManager.POOL_CELL_NUM); //鲲池单元格个数
             content.put("gold", commonService.getPlayerGold(mid)); //玩家金币
             //content.put("goldSpeed", this.getPlayerGoldSpeedByMid(mid)); //玩家产金币速度
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS)
@@ -61,11 +63,6 @@ public class LoginCMDService implements ILoginCMDService {
         }
         return null;
     }
-
-    /*
-    1.当前金币数量，
-    2。每秒产生的金币，根据鲲池中的鲲在工作的鲲的类型以及数量计算。
-     */
 
     @Override
     public long getPlayerGoldSpeedByMid(String mid) {

@@ -1,26 +1,23 @@
 package com.qs.game.core.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.common.game.KunGold;
 import com.qs.game.config.game.GameManager;
 import com.qs.game.core.ICommonService;
-import com.qs.game.model.game.Kuns;
-import com.qs.game.model.game.Pool;
-import com.qs.game.model.game.PoolCell;
-import com.qs.game.model.game.UserKunGold;
+import com.qs.game.model.game.*;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -28,6 +25,7 @@ import static java.util.stream.Collectors.toList;
  * Created by zun.wei on 2018/9/10 19:17.
  * Description: 公共业务接口
  */
+@Slf4j
 @Service
 public class CommonService implements ICommonService {
 
@@ -64,10 +62,12 @@ public class CommonService implements ICommonService {
     @Override
     public Pool updateSrcPoolByKuns(String mid, Pool srcPool, int cellNo, Kuns updateKuns) {
         return Optional.ofNullable(srcPool).map(e -> {
-            List<PoolCell> poolCells = e.getPoolCells();
-            PoolCell pc = poolCells.remove(cellNo);
-            //更新鲲池
-            poolCells.add(pc.setKuns(updateKuns));
+            List<PoolCell> poolCells = e.getPoolCells()
+                    .stream()
+                    .peek(poolCell -> {
+                        if (poolCell.getNo() == cellNo)
+                            poolCell.setKuns(updateKuns);
+                    }).collect(toList());
             e.setPoolCells(poolCells);
             //把更新后的鲲池保存
             this.savePool2CacheAndMemory(mid, e);
@@ -97,11 +97,14 @@ public class CommonService implements ICommonService {
     public Long addPlayerGold(String mid, long addGold) {
         String goldKey = CacheKey.RedisPrefix.USER_KUN_GOLD.KEY + mid;
         Long newGold = redisService.incr(goldKey, addGold);
-        UserKunGold userKunGold = userKunGoldService.selectByPrimaryKey(Long.valueOf(mid));
+        // 重复索引则更新
+        userKunGoldService.insertSelective
+                (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid)));
+        /*UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
         Optional.ofNullable(userKunGold)
                 .map(e -> userKunGoldService.updateByPrimaryKeySelective(e.setGold(newGold)))
                 .orElseGet(() -> userKunGoldService.insertSelective
-                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));
+                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));*/
         return newGold;
     }
 
@@ -111,38 +114,66 @@ public class CommonService implements ICommonService {
         Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
         return Optional.ofNullable(index)
                 //从内存中取出玩家鲲池信息
-                .map(e -> gameManager.getMemoryKunPool(mid, e))
+                .map(e -> {
+                    String json = gameManager.getMemoryKunPool(mid, e);
+                    return JSONObject.parseObject(json, Pool.class);
+                })
                 .orElseGet(() -> {
                     String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
                     //缓存中的鲲池
                     String poolJson = redisService.get(kunKey);
-                    return Optional.ofNullable(poolJson).map(e -> {
-                        //解析缓存中的鲲池数据
-                        Pool pool = JSONObject.parseObject(e, Pool.class);
-                        //保存到内存中
-                        gameManager.storageOnMemory(mid, pool);
-                        return pool;
-                    }).orElseGet(() -> {
-                        //初始化鲲池
-                        Pool pool = gameManager.getInitKunPool();
-                        String initPoolJson = JSONObject.toJSONString(pool);
-                        //保存到缓存中
-                        redisService.set(kunKey, initPoolJson);
-                        //保存到内存中
-                        gameManager.storageOnMemory(mid, pool);
-                        return pool;
-                    });
+                    return Optional.ofNullable(poolJson)
+                            .map(e -> JSONObject.parseObject(poolJson, Pool.class))
+                            .orElseGet(() -> {
+                                //如果缓存中没有数据查询数据库
+                                List<PoolCell> poolCells = this.getPoolCellsFromDB(mid);
+                                return new Pool().setPoolCells(poolCells);
+                            });
                 });
+    }
+
+    @Override
+    public List<PoolCell> getPoolCellsFromDB(String mid) {
+        List<UserKunPool> UserKunPools = userKunPoolService.queryListByMid(Integer.valueOf(mid));
+        return Optional.ofNullable(UserKunPools)
+                .map(j -> {
+                    if (j.isEmpty()) {
+                        return this.getInitPool(mid).getPoolCells();
+                    } else {
+                        return j.stream().map(m ->
+                                new PoolCell().setNo(m.getPosition())
+                                        .setKuns(new Kuns().setTime(m.getRunTime())
+                                                .setWork(m.getIsRun()).setType(m.getType())))
+                                .collect(toList());
+                    }
+                }).orElseGet(() -> {
+                    Pool initKunPool = this.getInitPool(mid);
+                    return initKunPool.getPoolCells();
+                });
+    }
+
+    //获取初始化鲲池
+    @Override
+    public Pool getInitPool(String mid) {
+        String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
+        //如果数据库也不存在则，初始化鲲池
+        Pool initKunPool = gameManager.getInitKunPool();
+        String initPoolJson = JSONObject.toJSONString(initKunPool, SerializerFeature.DisableCircularReferenceDetect);
+        //保存到缓存中
+        redisService.set(kunKey, initPoolJson);
+        //保存到内存中
+        gameManager.storageOnMemory(mid, initPoolJson);
+        return initKunPool;
     }
 
     @Override
     public boolean savePool2CacheAndMemory(String mid, Pool pool) {
         String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
-        String poolJson = JSONObject.toJSONString(pool);
+        String poolJson = JSONObject.toJSONString(pool, SerializerFeature.DisableCircularReferenceDetect);
         //保存到缓存中
         boolean b = redisService.set(kunKey, poolJson);
         //保存到内存中
-        gameManager.storageOnMemory(mid, pool);
+        gameManager.storageOnMemory(mid, poolJson);
         return b;
     }
 
@@ -183,6 +214,39 @@ public class CommonService implements ICommonService {
         userKunPoolService.insertBatch(mid, poolCells);
 
         return true;
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, Pool pool, Integer noIndex) {
+        List<PoolCell> poolCells = pool.getPoolCells();
+        //截止目前为止生产出的金币
+        return updateGoldByNo(mid, poolCells, noIndex);
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, Integer noIndex) {
+        //获取玩家的鲲池
+        Pool pool = this.getPlayerKunPool(mid);
+        return updateGoldByNo(mid, pool, noIndex);
+    }
+
+    @Override
+    public long updateGoldByNo(String mid, List<PoolCell> poolCells, Integer noIndex) {
+        long nowTime = new Date().getTime() / 1000;
+        //截止目前为止生产出的金币
+        long productGold = Optional.ofNullable(poolCells)
+                .map(pcs -> pcs.stream()
+                        .filter(e -> Objects.equals(e.getNo(), noIndex))
+                        .map(PoolCell::getKuns)
+                        //筛选类型存在并且在工作的
+                        .filter(e -> e.getType() > 0 && e.getWork() > 0)
+                        //根据间隔时间和类型计算出没种鲲产的金币数
+                        .map(e -> (nowTime - e.getTime()) * KunGold.goldByType(e.getType()))
+                        //累加所有类型
+                        .reduce((e1, e2) -> e1 + e2).orElse(0L)
+                ).orElse(0L);
+        //添加金币,并持久化（redis 、 db）
+        return this.addPlayerGold(mid, productGold);
     }
 
 
