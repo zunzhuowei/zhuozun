@@ -3,6 +3,7 @@ package com.qs.game.core.impl;
 import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
 import com.qs.game.common.netty.Global;
+import com.qs.game.core.ICommonService;
 import com.qs.game.core.IThreadService;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.core.IDeleteCMDService;
@@ -26,7 +27,7 @@ public class DeleteCMDService implements IDeleteCMDService {
 
 
     @Autowired
-    private ILoginCMDService loginCMDService;
+    private ICommonService commonService;
 
     @Autowired
     private Global global;

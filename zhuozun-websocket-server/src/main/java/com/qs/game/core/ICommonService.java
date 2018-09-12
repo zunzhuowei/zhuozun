@@ -5,6 +5,7 @@ import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zun.wei on 2018/9/10 19:16.
@@ -132,4 +133,21 @@ public interface ICommonService {
      * @return 历史总金币数
      */
     long updateGoldByNo(String mid, List<PoolCell> poolCells, Integer noIndex);
+
+    /**
+     * 获取前端参数中传过来的鲲的下标
+     * @param clzz 调用的class，用于日志输出
+     * @param params 参数
+     * @param paramName 参数名字
+     * @return 下标
+     */
+    Integer getAndCheckKunIndex(Class clzz, Map<String, Object> params, String paramName);
+
+    /**
+     *  获取并检验鲲池
+     * @param clzz 调用的class，用于日志输出
+     * @param mid 玩家mid
+     * @return 玩家鲲池
+     */
+    Pool getAndCheckPool(Class clzz, String mid);
 }

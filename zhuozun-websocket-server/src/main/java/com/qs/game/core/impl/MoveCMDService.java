@@ -11,7 +11,6 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
-import com.qs.game.utils.IntUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
@@ -46,38 +45,15 @@ public class MoveCMDService implements IMoveCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
-            //校验参数是否为空
-            if (Objects.isNull(params)) {
-                log.info("MoveCMDService execute params is null !");
-                return;
-            }
-            String fromNo = Objects.isNull(params.get("from")) ? null : params.get("from").toString();
-            String toNo = Objects.isNull(params.get("to")) ? null : params.get("to").toString();
-            //校验参数是否为空
-            if (Objects.isNull(fromNo) || Objects.isNull(toNo)) {
-                log.info("MoveCMDService execute from or to is null !");
-                return;
-            }
+            Integer fromIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "from");
+            Integer toIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "to");
+            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getPlayerKunPool(mid);
-            if (Objects.isNull(pool)) {
-                log.info("MoveCMDService execute pool is null !");
-                return;
-            }
+            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            if (Objects.isNull(pool)) return;
+
             List<PoolCell> poolCells = pool.getPoolCells();
-            Integer fromIndex = IntUtils.str2Int(fromNo);
-            Integer toIndex = IntUtils.str2Int(toNo);
-
-            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) {
-                log.info("MoveCMDService execute fromIndex or toIndex is null !");
-                return;
-            }
-
-            if (fromIndex < 0 || toIndex < 0) {
-                log.info("MoveCMDService execute fromIndex or toIndex less than 0 !");
-                return;
-            }
 
             PoolCell fromCell = poolCells.get(fromIndex);
             PoolCell toCell = poolCells.get(toIndex);

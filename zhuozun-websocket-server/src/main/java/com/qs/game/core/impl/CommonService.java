@@ -10,6 +10,7 @@ import com.qs.game.model.game.*;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
+import com.qs.game.utils.IntUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -249,6 +250,58 @@ public class CommonService implements ICommonService {
         return this.addPlayerGold(mid, productGold);
     }
 
+    @Override
+    public Integer getAndCheckKunIndex(Class clzz, Map<String, Object> params, String paramName) {
+        String className = clzz.getSimpleName();
+        if (Objects.isNull(params)) {
+            log.info("{} execute params is null !", className);
+            return null;
+        }
+        String no = Objects.isNull(params.get(paramName)) ? null : params.get(paramName).toString();
+        //校验参数是否为空
+        if (Objects.isNull(no)) {
+            log.info("{} execute {} is null !", className, paramName);
+            return null;
+        }
+
+        Integer noIndex = IntUtils.str2Int(no);
+        if (Objects.isNull(noIndex)) {
+            log.info("{} execute noIndex is null !", className);
+            return null;
+        }
+
+        //判断下标不能小于零
+        if (noIndex < 0) {
+            log.info("{} execute noIndex < 0 !", className);
+            return null;
+        }
+
+        //判断下标不能超过鲲池限制大小
+        if (noIndex > GameManager.POOL_CELL_NUM - 1) {
+            log.info("{} execute noIndex > {} !", className, GameManager.POOL_CELL_NUM - 1);
+            return null;
+        }
+        return noIndex;
+    }
+
+    @Override
+    public Pool getAndCheckPool(Class clzz, String mid) {
+        String className = clzz.getSimpleName();
+        Pool pool = this.getPlayerKunPool(mid);
+        if (Objects.isNull(pool)) {
+            log.info("{} execute pool is null !", className);
+            return null;
+        }
+        if (Objects.isNull(pool.getPoolCells()) || pool.getPoolCells().isEmpty()) {
+            log.info("{} execute pool getPoolCells() or empty is null !", className);
+            return null;
+        }
+        if (pool.getPoolCells().size() != GameManager.POOL_CELL_NUM) {
+            log.info("{} execute pool getPoolCells() size not equals {} !", className, GameManager.POOL_CELL_NUM);
+            return null;
+        }
+        return pool;
+    }
 
    /* public static void main(String[] args) throws ParseException {
         FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");

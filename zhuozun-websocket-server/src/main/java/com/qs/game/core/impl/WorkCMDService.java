@@ -11,7 +11,6 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
-import com.qs.game.utils.IntUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
@@ -45,34 +44,12 @@ public class WorkCMDService implements IWorkCMDService {
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
             //校验参数是否为空
-            if (Objects.isNull(params)) {
-                log.info("WorkCMDService execute params is null !");
-                return;
-            }
-            String no = Objects.isNull(params.get("no")) ? null : params.get("no").toString();
-            //校验参数是否为空
-            if (Objects.isNull(no)) {
-                log.info("MoveCMDService execute no is null !");
-                return;
-            }
-
-            Integer noIndex = IntUtils.str2Int(no);
-            if (Objects.isNull(noIndex)) {
-                log.info("MoveCMDService execute noIndex is null !");
-                return;
-            }
-
-            if (noIndex < 0) {
-                log.info("MoveCMDService execute noIndex < 0 !");
-                return;
-            }
+            Integer noIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "no");
+            if (noIndex == null) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getPlayerKunPool(mid);
-            if (Objects.isNull(pool)) {
-                log.info("MoveCMDService execute pool is null !");
-                return;
-            }
+            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            if (Objects.isNull(pool)) return;
 
             long nowTime = new Date().getTime() / 1000;
 

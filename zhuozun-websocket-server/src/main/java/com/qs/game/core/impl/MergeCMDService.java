@@ -12,7 +12,6 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
-import com.qs.game.utils.IntUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
@@ -49,43 +48,24 @@ public class MergeCMDService implements IMergeCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
-            if (Objects.isNull(params)) {
-                log.info("MergeCMDServiceImpl execute params is null !");
-                return;
-            }
-            String from = Objects.isNull(params.get("from")) ? null : params.get("from").toString();
-            String to = Objects.isNull(params.get("to")) ? null : params.get("to").toString();
-            if (Objects.isNull(from) || Objects.isNull(to)) {
-                log.info("MergeCMDServiceImpl execute from or to is null !");
-                return;
-            }
+
+            Integer fromIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "from");
+            Integer toIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "to");
+            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getPlayerKunPool(mid);
-            if (Objects.isNull(pool)) {
-                log.info("MergeCMDServiceImpl execute pool is null !");
-                return;
-            }
-            List<PoolCell> poolCells = pool.getPoolCells();
-            Integer fromIndex = IntUtils.str2Int(from);
-            Integer toIndex = IntUtils.str2Int(to);
-            if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) {
-                log.info("MergeCMDServiceImpl execute fromIndex or toIndex is null !");
-                return;
-            }
+            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            if (Objects.isNull(pool)) return;
 
-            if (fromIndex < 0 || toIndex < 0) {
-                log.info("MergeCMDServiceImpl execute fromIndex toIndex < 0 !");
-                return;
-            }
+            List<PoolCell> poolCells = pool.getPoolCells();
 
             PoolCell fromCell = poolCells.get(fromIndex);
             PoolCell toCell = poolCells.get(toIndex);
             int fromType = fromCell.getKuns().getType();
             int toType = toCell.getKuns().getType();
-            //校验鲲的类型是否一致
-            if (fromType != toType) {
-                log.info("MergeCMDServiceImpl execute fromType not equals toType !");
+            //校验鲲的类型是否一致,并判断是否存在
+            if (fromType != toType || fromType < 1) {
+                log.info("MergeCMDService execute fromType not equals toType !");
                 String resultStr = RespEntity.getBuilder().setCmd(cmd)
                         .setErr(ERREnum.ILLEGAL_REQUEST_3).buildJsonStr();
                 global.sendMsg2One(resultStr, mid);
@@ -95,7 +75,7 @@ public class MergeCMDService implements IMergeCMDService {
             int toWork = toCell.getKuns().getWork();
             // 校验鲲是否在鲲池中，如果在海里则不可以合并
             if (fromWork != 0 || toWork != 0) {
-                log.info("MergeCMDServiceImpl execute work = {}", fromWork, toWork);
+                log.info("MergeCMDService execute work = {}", fromWork, toWork);
                 String resultStr = RespEntity.getBuilder().setCmd(cmd)
                         .setErr(ERREnum.ILLEGAL_REQUEST_3).buildJsonStr();
                 global.sendMsg2One(resultStr, mid);
