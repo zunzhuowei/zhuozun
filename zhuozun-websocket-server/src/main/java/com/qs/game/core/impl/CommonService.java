@@ -1,17 +1,17 @@
 package com.qs.game.core.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qs.game.cache.CacheKey;
 import com.qs.game.common.game.KunGold;
 import com.qs.game.config.game.GameManager;
 import com.qs.game.core.ICommonService;
-import com.qs.game.model.game.Kuns;
-import com.qs.game.model.game.Pool;
-import com.qs.game.model.game.PoolCell;
-import com.qs.game.model.game.UserKunGold;
+import com.qs.game.model.game.*;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -25,6 +25,7 @@ import static java.util.stream.Collectors.toList;
  * Created by zun.wei on 2018/9/10 19:17.
  * Description: 公共业务接口
  */
+@Slf4j
 @Service
 public class CommonService implements ICommonService {
 
@@ -108,38 +109,67 @@ public class CommonService implements ICommonService {
         Integer index = gameManager.getUserKunPoolPosition().get(Integer.valueOf(mid));
         return Optional.ofNullable(index)
                 //从内存中取出玩家鲲池信息
-                .map(e -> gameManager.getMemoryKunPool(mid, e))
+                .map(e -> {
+                    String json = gameManager.getMemoryKunPool(mid, e);
+                    return JSONObject.parseObject(json, Pool.class);
+                })
                 .orElseGet(() -> {
                     String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
                     //缓存中的鲲池
                     String poolJson = redisService.get(kunKey);
-                    return Optional.ofNullable(poolJson).map(e -> {
-                        //解析缓存中的鲲池数据
-                        Pool pool = JSONObject.parseObject(e, Pool.class);
-                        //保存到内存中
-                        gameManager.storageOnMemory(mid, pool);
-                        return pool;
-                    }).orElseGet(() -> {
-                        //初始化鲲池
-                        Pool pool = gameManager.getInitKunPool();
-                        String initPoolJson = JSONObject.toJSONString(pool);
-                        //保存到缓存中
-                        redisService.set(kunKey, initPoolJson);
-                        //保存到内存中
-                        gameManager.storageOnMemory(mid, pool);
-                        return pool;
-                    });
+                    return Optional.ofNullable(poolJson)
+                            .map(e -> JSONObject.parseObject(poolJson, Pool.class))
+                            .orElseGet(() -> {
+                                //如果缓存中没有数据查询数据库
+                                List<PoolCell> poolCells = this.getPoolCellsFromDB(mid);
+                                return new Pool().setPoolCells(poolCells);
+                            });
                 });
+    }
+
+    @Override
+    public List<PoolCell> getPoolCellsFromDB(String mid) {
+        List<UserKunPool> UserKunPools = userKunPoolService.queryListByMid(Integer.valueOf(mid));
+        return Optional.ofNullable(UserKunPools)
+                .map(j -> {
+                    if (j.isEmpty()) {
+                        return this.getInitPool(mid).getPoolCells();
+                    } else {
+                        return j.stream().map(m ->
+                                new PoolCell().setNo(m.getPosition())
+                                        .setKuns(new Kuns().setTime(m.getRunTime())
+                                                .setWork(m.getIsRun()).setType(m.getType())))
+                                .collect(toList());
+                    }
+                }).orElseGet(() -> {
+                    Pool initKunPool = this.getInitPool(mid);
+                    return initKunPool.getPoolCells();
+                });
+    }
+
+    //获取初始化鲲池
+    @Override
+    public Pool getInitPool(String mid) {
+        String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
+        //如果数据库也不存在则，初始化鲲池
+        Pool initKunPool = gameManager.getInitKunPool();
+        String initPoolJson = JSONObject.toJSONString(initKunPool, SerializerFeature.DisableCircularReferenceDetect);
+        //保存到缓存中
+        redisService.set(kunKey, initPoolJson);
+        //保存到内存中
+        gameManager.storageOnMemory(mid, initPoolJson);
+        return initKunPool;
     }
 
     @Override
     public boolean savePool2CacheAndMemory(String mid, Pool pool) {
         String kunKey = CacheKey.RedisPrefix.USER_KUN_POOL.KEY + mid;
-        String poolJson = JSONObject.toJSONString(pool);
+        String poolJson = JSONObject.toJSONString(pool, SerializerFeature.DisableCircularReferenceDetect);
         //保存到缓存中
         boolean b = redisService.set(kunKey, poolJson);
+        log.warn("savePool2CacheAndMemory ----------::", redisService.get(kunKey));
         //保存到内存中
-        gameManager.storageOnMemory(mid, pool);
+        gameManager.storageOnMemory(mid, poolJson);
         return b;
     }
 

@@ -4,6 +4,7 @@ import com.qs.game.cache.CacheKey;
 import com.qs.game.common.netty.Global;
 import com.qs.game.constant.StrConst;
 import com.qs.game.core.ICoreService;
+import com.qs.game.enum0.DateEnum;
 import com.qs.game.service.IRedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +71,8 @@ public class SchedulingUtils {
      * @param hb key : 游戏id；value ：客户端心跳时间戳
      */
     private void removeSession(Map.Entry<String, Long> hb) {
-        log.info("HeartBeatUtils deleteDeadChannels ---::{}", hb);
+        log.info("HeartBeatUtils deleteDeadChannels ---::{},{}", hb
+                , DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date(hb.getValue())));
         global.closeAndDelSession(hb.getKey()); // 移除session
         heartBeats.remove(hb.getKey()); //移除心跳
     }

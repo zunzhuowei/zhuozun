@@ -62,6 +62,11 @@ public class WorkCMDService implements IWorkCMDService {
                 return;
             }
 
+            if (noIndex < 0) {
+                log.info("MoveCMDService execute noIndex < 0 !");
+                return;
+            }
+
             //获取玩家的鲲池
             Pool pool = commonService.getPlayerKunPool(mid);
             if (Objects.isNull(pool)) {

@@ -74,6 +74,11 @@ public class MoveCMDService implements IMoveCMDService {
                 return;
             }
 
+            if (fromIndex < 0 || toIndex < 0) {
+                log.info("MoveCMDService execute fromIndex or toIndex less than 0 !");
+                return;
+            }
+
             PoolCell fromCell = poolCells.get(fromIndex);
             PoolCell toCell = poolCells.get(toIndex);
 

@@ -1,5 +1,7 @@
 package com.qs.game.config.game;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qs.game.common.game.KunType;
 import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
@@ -16,6 +18,7 @@ public interface GameManager {
     //初始化用户鲲池
     //Map<Integer, Kuns> INIT_KUN_POOL = new HashMap<>(16); //鲲池
     Pool POOL = new Pool();
+    int POOL_CELL_NUM = 12; //鲲池单元格个数
 
 
     //获取用户初始化鲲池
@@ -56,26 +59,26 @@ public interface GameManager {
 
     // 用户鲲真正存储的内存
     // key : player id   value : user kun pool
-     Map<String, Pool> KUN_POOL_STORAGE_1 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool> KUN_POOL_STORAGE_2 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool> KUN_POOL_STORAGE_3 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool> KUN_POOL_STORAGE_4 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool> KUN_POOL_STORAGE_5 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool> KUN_POOL_STORAGE_6 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_7 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_8 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_9 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_10 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_11 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_12 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_13 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_14 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_15 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_16 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_17 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_18 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_19 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
-     Map<String, Pool>  KUN_POOL_STORAGE_20 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_1 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_2 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_3 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_4 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_5 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String> KUN_POOL_STORAGE_6 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_7 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_8 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_9 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_10 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_11 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_12 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_13 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_14 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_15 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_16 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_17 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_18 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_19 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
+     Map<String, String>  KUN_POOL_STORAGE_20 = new ConcurrentHashMap<>(POOL_STORAGE_CAPACITY);
 
 
     default Map<Integer, Integer> getUserKunPoolPosition() {
@@ -108,7 +111,7 @@ public interface GameManager {
     }
 
     // 获取真正存储的位置
-    default Map<String, Pool> getKunStorageByIndex(Integer storageIndex) {
+    default Map<String, String> getKunStorageByIndex(Integer storageIndex) {
         switch (storageIndex) {
             case 1:
                 return KUN_POOL_STORAGE_1;
@@ -162,8 +165,8 @@ public interface GameManager {
      * @param index 存储鲲池的storage 的下标
      * @return 玩家鲲池
      */
-    default Pool getMemoryKunPool(String mid, Integer index) {
-        Map<String, Pool> storage = this.getKunStorageByIndex(index);
+    default String getMemoryKunPool(String mid, Integer index) {
+        Map<String, String> storage = this.getKunStorageByIndex(index);
         return storage.get(mid);
     }
 
@@ -174,7 +177,7 @@ public interface GameManager {
      */
     default void removeMemoryKunPool(String mid, Integer index) {
         //根据索引下标获取存储玩家鲲池库
-        Map<String, Pool> storage = this.getKunStorageByIndex(index);
+        Map<String, String> storage = this.getKunStorageByIndex(index);
         //移除玩家鲲池在缓存中的存储
         storage.remove(mid);
         //移除鲲存储索引表
@@ -193,9 +196,25 @@ public interface GameManager {
         //设置用户对应的存储下标
         this.getUserKunPoolPosition().put(Integer.valueOf(mid), index);
         //获取存储单元
-        Map<String, Pool> storage = this.getKunStorageByIndex(index);
+        Map<String, String> storage = this.getKunStorageByIndex(index);
         //存储单元中存储玩家的鲲池
-        storage.put(mid, pool);
+        storage.put(mid, JSONObject.toJSONString(pool, SerializerFeature.DisableCircularReferenceDetect));
+    }
+
+    /**
+     *  保存到内存中
+     * @param mid 玩家mid
+     * @param poolJson 玩家对应的鲲池JSON
+     */
+    default void storageOnMemory(String mid, String poolJson) {
+        //获取内存存储位置下标
+        Integer index = this.getStorageIndex();
+        //设置用户对应的存储下标
+        this.getUserKunPoolPosition().put(Integer.valueOf(mid), index);
+        //获取存储单元
+        Map<String, String> storage = this.getKunStorageByIndex(index);
+        //存储单元中存储玩家的鲲池
+        storage.put(mid, poolJson);
     }
 
 }

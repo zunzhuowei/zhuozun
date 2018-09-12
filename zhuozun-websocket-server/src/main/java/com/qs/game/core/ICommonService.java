@@ -77,6 +77,20 @@ public interface ICommonService {
     Pool getPlayerKunPool(String mid);
 
     /**
+     * 从数据库中获取玩家的鲲池单元格列表并保存到缓存中
+     * @param mid 玩家mid
+     * @return 鲲池单元格列表
+     */
+    List<PoolCell> getPoolCellsFromDB(String mid);
+
+    /**
+     * 获取初始化鲲池
+     * @param mid 玩家mid
+     * @return 初始化的鲲池
+     */
+    Pool getInitPool(String mid);
+
+    /**
      * 保存鲲池
      *
      * @param mid  玩家mid
