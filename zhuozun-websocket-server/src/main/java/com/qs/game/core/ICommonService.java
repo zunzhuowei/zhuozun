@@ -1,5 +1,6 @@
 package com.qs.game.core;
 
+import com.qs.game.model.game.GoldDto;
 import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
@@ -107,6 +108,23 @@ public interface ICommonService {
      * @return 成功与否
      */
     boolean persistenceUserKunInfos(String mid);
+
+    /**
+     *  重设鲲池中工作的鲲的工作时间，并且获取鲲池单元格列表
+     * @param poolCells 鲲池单元格列表
+     * @param nowTime 当前时间戳 / 1000
+     * @return 重设后的鲲池单元格列表
+     */
+    List<PoolCell> getPoolCellsAndResetWorkTime(List<PoolCell> poolCells, long nowTime);
+
+    /**
+     *  获取一段时间产生的金币及累加后的最新金币数，并把产出的金币持久化
+     * @param mid 玩家mid
+     * @param poolCells 鲲池单元格
+     * @param nowTime 当前时间戳 / 1000
+     * @return 原金币数 + 这短时间产生金币数 的最新金币额
+     */
+    GoldDto getPeriodTimeAndSrcGold(String mid, List<PoolCell> poolCells, long nowTime);
 
     /**
      * 根据鲲池单元格编号位置更新到至上次投放之后到目前为止该鲲赚到的金币

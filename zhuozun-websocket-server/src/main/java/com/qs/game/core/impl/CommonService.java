@@ -12,7 +12,6 @@ import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
 import com.qs.game.utils.IntUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -101,11 +100,13 @@ public class CommonService implements ICommonService {
         // 重复索引则更新
         userKunGoldService.insertSelective
                 (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid)));
-        /*UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
-        Optional.ofNullable(userKunGold)
-                .map(e -> userKunGoldService.updateByPrimaryKeySelective(e.setGold(newGold)))
-                .orElseGet(() -> userKunGoldService.insertSelective
-                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));*/
+        //如果缓存丢失，查询数据库
+        if (addGold == newGold) {
+            UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
+            if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0) {
+                newGold = userKunGold.getGold();
+            }
+        }
         return newGold;
     }
 
@@ -186,6 +187,35 @@ public class CommonService implements ICommonService {
         List<PoolCell> poolCells = pool.getPoolCells();
         long nowTime = new Date().getTime() / 1000;
         //截止目前为止生产出的金币
+        this.getPeriodTimeAndSrcGold(mid, poolCells, nowTime);
+
+        //更改每只鲲的工作时间
+        poolCells = this.getPoolCellsAndResetWorkTime(poolCells, nowTime);
+
+        //持久化到缓存中
+        this.savePool2CacheAndMemory(mid, new Pool().setPoolCells(poolCells));
+
+        //持久化到db
+        userKunPoolService.insertBatch(mid, poolCells);
+
+        return true;
+    }
+
+    @Override
+    public List<PoolCell> getPoolCellsAndResetWorkTime(List<PoolCell> poolCells, long nowTime) {
+        poolCells = Optional.ofNullable(poolCells)
+                //重置工作时间为当前时间
+                .map(e -> e.stream().peek(i -> {
+                    //只更新存在的类型和正在工作的鲲
+                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0)
+                        i.setKuns(i.getKuns().setTime(nowTime));
+                }).collect(toList()))
+                .orElseGet(ArrayList::new);
+        return poolCells;
+    }
+
+    @Override
+    public GoldDto getPeriodTimeAndSrcGold(String mid, List<PoolCell> poolCells, long nowTime) {
         long productGold = Optional.ofNullable(poolCells)
                 .map(pcs -> pcs.stream().map(PoolCell::getKuns)
                         //筛选类型存在并且在工作的
@@ -196,25 +226,7 @@ public class CommonService implements ICommonService {
                         .reduce((e1, e2) -> e1 + e2).orElse(0L)
                 ).orElse(0L);
         //添加金币,并持久化（redis 、 db）
-        long nowGold = this.addPlayerGold(mid, productGold);
-
-        //更改每只鲲的工作时间
-        poolCells = Optional.ofNullable(poolCells)
-                //重置工作时间为当前时间
-                .map(e -> e.stream().peek(i -> {
-                    //只更新存在的类型和正在工作的鲲
-                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0)
-                        i.setKuns(i.getKuns().setTime(nowTime));
-                }).collect(toList()))
-                .orElseGet(ArrayList::new);
-
-        //持久化到缓存中
-        this.savePool2CacheAndMemory(mid, new Pool().setPoolCells(poolCells));
-
-        //持久化到db
-        userKunPoolService.insertBatch(mid, poolCells);
-
-        return true;
+        return new GoldDto().setAddGold(productGold).setNewGold(this.addPlayerGold(mid, productGold));
     }
 
     @Override
