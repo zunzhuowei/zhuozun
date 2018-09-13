@@ -13,6 +13,7 @@ import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -78,7 +79,7 @@ public class WorkCMDService implements IWorkCMDService {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return () -> ReferenceCountUtil.release(msg);
     }
 
 

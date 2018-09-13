@@ -15,6 +15,7 @@ import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Created by zun.wei on 2018/9/9.
@@ -66,7 +68,11 @@ public class NewCMDService implements IWorkCMDService {
 
             //调用一次新增，添加一只最小的鲲
             int type = KunType.TYPE_1;
-            poolCells.add(new PoolCell().setNo(noIndex).setKuns(new Kuns().setWork(0).setTime(0).setType(type)));
+            poolCells = poolCells.stream().peek(e -> {
+                if (Objects.equals(e.getNo(), noIndex)) {
+                    e.setKuns(e.getKuns().setType(type).setWork(0).setTime(0));
+                }
+            }).collect(Collectors.toList());
 
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
@@ -84,7 +90,7 @@ public class NewCMDService implements IWorkCMDService {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return () -> ReferenceCountUtil.release(msg);
     }
 
 

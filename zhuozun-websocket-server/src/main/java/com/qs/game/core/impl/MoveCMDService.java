@@ -13,12 +13,12 @@ import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -78,12 +78,11 @@ public class MoveCMDService implements IMoveCMDService {
 
             //判断新单元格位置是否为空位置
             if (toCell.getKuns().getType() < 1) {
-                poolCells = poolCells.stream().peek(e -> {
-                    if (Objects.equals(e.getNo(), fromIndex))
-                        e.setNo(toIndex);
-                }).collect(Collectors.toList());
+                poolCells = this.switchNo(fromIndex, toIndex, fromCell, toCell, poolCells);
                 //保存鲲池到缓存和内存
                 commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
+                String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).buildJsonStr();
+                global.sendMsg2One(resultStr, mid);
                 return;
             }
 
@@ -103,12 +102,7 @@ public class MoveCMDService implements IMoveCMDService {
             }
 
             //如果两个单元格鲲类型不一致并且都不在工作则互换位置
-            poolCells = poolCells.stream().peek(e -> {
-                if (Objects.equals(e.getNo(), fromIndex))
-                    e.setNo(toIndex);
-                if (Objects.equals(e.getNo(), toIndex))
-                    e.setNo(fromIndex);
-            }).collect(Collectors.toList());
+            poolCells = this.switchNo(fromIndex, toIndex, fromCell, toCell, poolCells);
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
 
@@ -120,7 +114,25 @@ public class MoveCMDService implements IMoveCMDService {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return () -> ReferenceCountUtil.release(msg);
+    }
+
+    //更换位置
+    private List<PoolCell> switchNo(Integer fromIndex, Integer toIndex,
+                                    PoolCell fromCell, PoolCell toCell, List<PoolCell> poolCells) {
+        PoolCell targetFrom = new PoolCell();
+        PoolCell targetTo = new PoolCell();
+        BeanUtils.copyProperties(fromCell, targetFrom);
+        BeanUtils.copyProperties(toCell, targetTo);
+        poolCells = poolCells.stream().map(e -> {
+            if (Objects.equals(e.getNo(), fromIndex))
+                return e.setKuns(targetTo.getKuns());
+            if (Objects.equals(e.getNo(), toIndex))
+                return e.setKuns(targetFrom.getKuns());
+            return e;
+        }).collect(Collectors.toList());
+        //.sorted(Comparator.comparingInt(PoolCell::getNo))
+        return poolCells;
     }
 
 

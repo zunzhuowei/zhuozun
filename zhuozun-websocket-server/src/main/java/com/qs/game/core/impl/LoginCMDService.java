@@ -17,6 +17,7 @@ import com.qs.game.core.ICommonService;
 import com.qs.game.core.ILoginCMDService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class LoginCMDService implements ILoginCMDService {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return () -> ReferenceCountUtil.release(msg);
     }
 
     @Override
