@@ -25,13 +25,6 @@ public interface ILoginCMDService extends ICMDService{
     long getPlayerGoldSpeedByKunPoolJson(String kunPoolJson);
 
     /**
-     * 获取玩家鲲池数据json
-     * @param mid
-     * @return
-     */
-    String getPlayerKunPoolCellsJson(String mid);
-
-    /**
      *  获取玩家鲲池数据
      * @param mid 玩家mid
      * @return 鲲池数据json数据

@@ -10,8 +10,9 @@ import com.qs.game.model.game.*;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
+import com.qs.game.utils.IntUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -96,15 +97,30 @@ public class CommonService implements ICommonService {
     @Transactional(propagation = Propagation.REQUIRED)
     public Long addPlayerGold(String mid, long addGold) {
         String goldKey = CacheKey.RedisPrefix.USER_KUN_GOLD.KEY + mid;
+        if (addGold == 0) {
+            String nowGold = redisService.get(goldKey);
+            if (StringUtils.isNotBlank(nowGold)) {
+                return Long.parseLong(nowGold);
+            } else {
+                UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
+                if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0L) {
+                    return userKunGold.getGold();
+                } else {
+                    return 0L;
+                }
+            }
+        }
         Long newGold = redisService.incr(goldKey, addGold);
         // 重复索引则更新
         userKunGoldService.insertSelective
                 (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid)));
-        /*UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
-        Optional.ofNullable(userKunGold)
-                .map(e -> userKunGoldService.updateByPrimaryKeySelective(e.setGold(newGold)))
-                .orElseGet(() -> userKunGoldService.insertSelective
-                        (new UserKunGold().setGold(newGold).setMid(Integer.parseInt(mid))));*/
+        //如果缓存丢失，查询数据库
+        if (addGold == newGold) {
+            UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
+            if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0L) {
+                newGold = userKunGold.getGold();
+            }
+        }
         return newGold;
     }
 
@@ -185,6 +201,35 @@ public class CommonService implements ICommonService {
         List<PoolCell> poolCells = pool.getPoolCells();
         long nowTime = new Date().getTime() / 1000;
         //截止目前为止生产出的金币
+        GoldDto goldDto = this.getPeriodTimeAndSrcGold(mid, poolCells, nowTime);
+
+        //更改每只鲲的工作时间
+        poolCells = this.getPoolCellsAndResetWorkTime(poolCells, nowTime);
+
+        //持久化到缓存中
+        this.savePool2CacheAndMemory(mid, new Pool().setPoolCells(poolCells));
+
+        //持久化到db
+        userKunPoolService.insertBatch(mid, poolCells);
+
+        return true;
+    }
+
+    @Override
+    public List<PoolCell> getPoolCellsAndResetWorkTime(List<PoolCell> poolCells, long nowTime) {
+        poolCells = Optional.ofNullable(poolCells)
+                //重置工作时间为当前时间
+                .map(e -> e.stream().peek(i -> {
+                    //只更新存在的类型和正在工作的鲲
+                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0)
+                        i.setKuns(i.getKuns().setTime(nowTime));
+                }).collect(toList()))
+                .orElseGet(ArrayList::new);
+        return poolCells;
+    }
+
+    @Override
+    public GoldDto getPeriodTimeAndSrcGold(String mid, List<PoolCell> poolCells, long nowTime) {
         long productGold = Optional.ofNullable(poolCells)
                 .map(pcs -> pcs.stream().map(PoolCell::getKuns)
                         //筛选类型存在并且在工作的
@@ -195,25 +240,7 @@ public class CommonService implements ICommonService {
                         .reduce((e1, e2) -> e1 + e2).orElse(0L)
                 ).orElse(0L);
         //添加金币,并持久化（redis 、 db）
-        long nowGold = this.addPlayerGold(mid, productGold);
-
-        //更改每只鲲的工作时间
-        poolCells = Optional.ofNullable(poolCells)
-                //重置工作时间为当前时间
-                .map(e -> e.stream().peek(i -> {
-                    //只更新存在的类型和正在工作的鲲
-                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0)
-                        i.setKuns(i.getKuns().setTime(nowTime));
-                }).collect(toList()))
-                .orElseGet(ArrayList::new);
-
-        //持久化到缓存中
-        this.savePool2CacheAndMemory(mid, new Pool().setPoolCells(poolCells));
-
-        //持久化到db
-        userKunPoolService.insertBatch(mid, poolCells);
-
-        return true;
+        return new GoldDto().setAddGold(productGold).setNewGold(this.addPlayerGold(mid, productGold));
     }
 
     @Override
@@ -249,6 +276,58 @@ public class CommonService implements ICommonService {
         return this.addPlayerGold(mid, productGold);
     }
 
+    @Override
+    public Integer getAndCheckKunIndex(Class clzz, Map<String, Object> params, String paramName) {
+        String className = clzz.getSimpleName();
+        if (Objects.isNull(params)) {
+            log.info("{} execute params is null !", className);
+            return null;
+        }
+        String no = Objects.isNull(params.get(paramName)) ? null : params.get(paramName).toString();
+        //校验参数是否为空
+        if (Objects.isNull(no)) {
+            log.info("{} execute {} is null !", className, paramName);
+            return null;
+        }
+
+        Integer noIndex = IntUtils.str2Int(no);
+        if (Objects.isNull(noIndex)) {
+            log.info("{} execute noIndex is null !", className);
+            return null;
+        }
+
+        //判断下标不能小于零
+        if (noIndex < 0) {
+            log.info("{} execute noIndex < 0 !", className);
+            return null;
+        }
+
+        //判断下标不能超过鲲池限制大小
+        if (noIndex > GameManager.POOL_CELL_NUM - 1) {
+            log.info("{} execute noIndex > {} !", className, GameManager.POOL_CELL_NUM - 1);
+            return null;
+        }
+        return noIndex;
+    }
+
+    @Override
+    public Pool getAndCheckPool(Class clzz, String mid) {
+        String className = clzz.getSimpleName();
+        Pool pool = this.getPlayerKunPool(mid);
+        if (Objects.isNull(pool)) {
+            log.info("{} execute pool is null !", className);
+            return null;
+        }
+        if (Objects.isNull(pool.getPoolCells()) || pool.getPoolCells().isEmpty()) {
+            log.info("{} execute pool getPoolCells() or empty is null !", className);
+            return null;
+        }
+        if (pool.getPoolCells().size() != GameManager.POOL_CELL_NUM) {
+            log.info("{} execute pool getPoolCells() size not equals {} !", className, GameManager.POOL_CELL_NUM);
+            return null;
+        }
+        return pool;
+    }
 
    /* public static void main(String[] args) throws ParseException {
         FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");

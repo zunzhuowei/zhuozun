@@ -1,10 +1,12 @@
 package com.qs.game.core;
 
+import com.qs.game.model.game.GoldDto;
 import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zun.wei on 2018/9/10 19:16.
@@ -108,6 +110,23 @@ public interface ICommonService {
     boolean persistenceUserKunInfos(String mid);
 
     /**
+     *  重设鲲池中工作的鲲的工作时间，并且获取鲲池单元格列表
+     * @param poolCells 鲲池单元格列表
+     * @param nowTime 当前时间戳 / 1000
+     * @return 重设后的鲲池单元格列表
+     */
+    List<PoolCell> getPoolCellsAndResetWorkTime(List<PoolCell> poolCells, long nowTime);
+
+    /**
+     *  获取一段时间产生的金币及累加后的最新金币数，并把产出的金币持久化
+     * @param mid 玩家mid
+     * @param poolCells 鲲池单元格
+     * @param nowTime 当前时间戳 / 1000
+     * @return 原金币数 + 这短时间产生金币数 的最新金币额
+     */
+    GoldDto getPeriodTimeAndSrcGold(String mid, List<PoolCell> poolCells, long nowTime);
+
+    /**
      * 根据鲲池单元格编号位置更新到至上次投放之后到目前为止该鲲赚到的金币
      * @param mid 玩家Mid
      * @param pool 鲲池
@@ -132,4 +151,21 @@ public interface ICommonService {
      * @return 历史总金币数
      */
     long updateGoldByNo(String mid, List<PoolCell> poolCells, Integer noIndex);
+
+    /**
+     * 获取前端参数中传过来的鲲的下标
+     * @param clzz 调用的class，用于日志输出
+     * @param params 参数
+     * @param paramName 参数名字
+     * @return 下标
+     */
+    Integer getAndCheckKunIndex(Class clzz, Map<String, Object> params, String paramName);
+
+    /**
+     *  获取并检验鲲池
+     * @param clzz 调用的class，用于日志输出
+     * @param mid 玩家mid
+     * @return 玩家鲲池
+     */
+    Pool getAndCheckPool(Class clzz, String mid);
 }

@@ -3,7 +3,6 @@ package com.qs.game.core.impl;
 import com.qs.game.common.ERREnum;
 import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
-import com.qs.game.common.game.KunGold;
 import com.qs.game.common.netty.Global;
 import com.qs.game.core.ICommonService;
 import com.qs.game.core.IThreadService;
@@ -12,9 +11,9 @@ import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
-import com.qs.game.utils.IntUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,35 +45,14 @@ public class UnWorkCMDService implements IUnWorkCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
-            //校验参数是否为空
-            if (Objects.isNull(params)) {
-                log.info("WorkCMDService execute params is null !");
-                return;
-            }
-            String no = Objects.isNull(params.get("no")) ? null : params.get("no").toString();
-            //校验参数是否为空
-            if (Objects.isNull(no)) {
-                log.info("MoveCMDService execute no is null !");
-                return;
-            }
 
-            Integer noIndex = IntUtils.str2Int(no);
-            if (Objects.isNull(noIndex)) {
-                log.info("MoveCMDService execute noIndex is null !");
-                return;
-            }
-
-            if (noIndex < 0) {
-                log.info("MoveCMDService execute noIndex < 0 !");
-                return;
-            }
+            //校验参数是否为空
+            Integer noIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "no");
+            if (noIndex == null) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getPlayerKunPool(mid);
-            if (Objects.isNull(pool)) {
-                log.info("MoveCMDService execute pool is null !");
-                return;
-            }
+            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            if (Objects.isNull(pool)) return;
 
             List<PoolCell> poolCells = pool.getPoolCells();
             //添加金币,并持久化（redis 、 db）
@@ -105,7 +83,7 @@ public class UnWorkCMDService implements IUnWorkCMDService {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        return null;
+        return () -> ReferenceCountUtil.release(msg);
     }
 
 
