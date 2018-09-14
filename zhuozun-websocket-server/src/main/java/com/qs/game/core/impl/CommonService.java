@@ -12,6 +12,7 @@ import com.qs.game.service.IUserKunGoldService;
 import com.qs.game.service.IUserKunPoolService;
 import com.qs.game.utils.IntUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -96,6 +97,19 @@ public class CommonService implements ICommonService {
     @Transactional(propagation = Propagation.REQUIRED)
     public Long addPlayerGold(String mid, long addGold) {
         String goldKey = CacheKey.RedisPrefix.USER_KUN_GOLD.KEY + mid;
+        if (addGold == 0) {
+            String nowGold = redisService.get(goldKey);
+            if (StringUtils.isNotBlank(nowGold)) {
+                return Long.parseLong(nowGold);
+            } else {
+                UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
+                if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0L) {
+                    return userKunGold.getGold();
+                } else {
+                    return 0L;
+                }
+            }
+        }
         Long newGold = redisService.incr(goldKey, addGold);
         // 重复索引则更新
         userKunGoldService.insertSelective
@@ -103,7 +117,7 @@ public class CommonService implements ICommonService {
         //如果缓存丢失，查询数据库
         if (addGold == newGold) {
             UserKunGold userKunGold = userKunGoldService.selectByMid(Integer.valueOf(mid));
-            if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0) {
+            if (Objects.nonNull(userKunGold) && userKunGold.getGold() > 0L) {
                 newGold = userKunGold.getGold();
             }
         }
@@ -187,7 +201,7 @@ public class CommonService implements ICommonService {
         List<PoolCell> poolCells = pool.getPoolCells();
         long nowTime = new Date().getTime() / 1000;
         //截止目前为止生产出的金币
-        this.getPeriodTimeAndSrcGold(mid, poolCells, nowTime);
+        GoldDto goldDto = this.getPeriodTimeAndSrcGold(mid, poolCells, nowTime);
 
         //更改每只鲲的工作时间
         poolCells = this.getPoolCellsAndResetWorkTime(poolCells, nowTime);
