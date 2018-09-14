@@ -17,6 +17,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class NewCMDService implements IWorkCMDService {
             int type = KunType.TYPE_1;
             poolCells = poolCells.stream().peek(e -> {
                 if (Objects.equals(e.getNo(), noIndex)) {
-                    e.setKuns(e.getKuns().setType(type).setWork(0).setTime(0));
+                    e.setKuns(new Kuns().setType(type).setWork(0).setTime(0));
                 }
             }).collect(Collectors.toList());
 

@@ -13,6 +13,7 @@ import com.qs.game.service.IUserKunPoolService;
 import com.qs.game.utils.IntUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -62,12 +63,14 @@ public class CommonService implements ICommonService {
 
     @Override
     public Pool updateSrcPoolByKuns(String mid, Pool srcPool, int cellNo, Kuns updateKuns) {
+        Kuns kuns = new Kuns();
+        BeanUtils.copyProperties(updateKuns, kuns);
         return Optional.ofNullable(srcPool).map(e -> {
             List<PoolCell> poolCells = e.getPoolCells()
                     .stream()
                     .peek(poolCell -> {
                         if (poolCell.getNo() == cellNo)
-                            poolCell.setKuns(updateKuns);
+                            poolCell.setKuns(kuns);
                     }).collect(toList());
             e.setPoolCells(poolCells);
             //把更新后的鲲池保存
@@ -221,8 +224,11 @@ public class CommonService implements ICommonService {
                 //重置工作时间为当前时间
                 .map(e -> e.stream().peek(i -> {
                     //只更新存在的类型和正在工作的鲲
-                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0)
-                        i.setKuns(i.getKuns().setTime(nowTime));
+                    if (i.getKuns().getType() > 0 && i.getKuns().getWork() > 0) {
+                        Kuns kuns = new Kuns();
+                        BeanUtils.copyProperties(i, kuns);
+                        i.setKuns(kuns.setTime(nowTime));
+                    }
                 }).collect(toList()))
                 .orElseGet(ArrayList::new);
         return poolCells;

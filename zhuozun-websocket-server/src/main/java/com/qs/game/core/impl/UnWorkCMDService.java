@@ -9,12 +9,15 @@ import com.qs.game.core.IThreadService;
 import com.qs.game.core.IUnWorkCMDService;
 import com.qs.game.model.base.ReqEntity;
 import com.qs.game.model.base.RespEntity;
+import com.qs.game.model.game.Kun;
+import com.qs.game.model.game.Kuns;
 import com.qs.game.model.game.Pool;
 import com.qs.game.model.game.PoolCell;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -63,7 +66,9 @@ public class UnWorkCMDService implements IUnWorkCMDService {
                         Integer kNo = k.getNo();
                         if (Objects.equals(noIndex, kNo)) {
                             //把收回来的鲲设置成不工作状态
-                            k.setKuns(k.getKuns().setTime(0).setWork(0));
+                            Kuns kuns = new Kuns();
+                            BeanUtils.copyProperties(k.getKuns(), kuns);
+                            k.setKuns(kuns.setTime(0).setWork(0));
                         }
                     }).collect(toList()))
                     .orElseGet(() -> commonService.getPlayerKunPool(mid).getPoolCells());
