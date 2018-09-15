@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -44,10 +45,11 @@ public class Global {
      */
     public boolean add2SessionRepo(String uId, ChannelHandlerContext ctx) {
         ChannelHandlerContext context = this.getChannelHandlerContext(uId);
-        if (Objects.nonNull(context)) {
-            this.delCtxFromSessionRepo(uId); //先删除后插入
-            context.channel().close();
-        }
+        Optional.ofNullable(context)
+                .ifPresent(e -> {
+                    this.delCtxFromSessionRepo(uId); //先删除后插入
+                    e.channel().close();
+                });
 
         String key = this.getOnlineUserKeyByUid(uId);
         ChannelHandlerContext result = sessionRepo.put(key, ctx);
@@ -94,9 +96,7 @@ public class Global {
      */
     public void closeAndDelSession(String uId) {
         ChannelHandlerContext context = this.getChannelHandlerContext(uId);
-        if (Objects.nonNull(context)) {
-            context.channel().close();
-        }
+        Optional.ofNullable(context).ifPresent(e -> e.channel().close());
         this.delCtxFromSessionRepo(uId);
     }
 

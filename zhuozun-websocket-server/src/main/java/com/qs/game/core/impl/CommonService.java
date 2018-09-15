@@ -3,9 +3,12 @@ package com.qs.game.core.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qs.game.cache.CacheKey;
+import com.qs.game.common.ERREnum;
 import com.qs.game.common.game.KunGold;
+import com.qs.game.common.netty.Global;
 import com.qs.game.config.game.GameManager;
 import com.qs.game.core.ICommonService;
+import com.qs.game.model.base.RespEntity;
 import com.qs.game.model.game.*;
 import com.qs.game.service.IRedisService;
 import com.qs.game.service.IUserKunGoldService;
@@ -44,6 +47,9 @@ public class CommonService implements ICommonService {
     @Autowired
     private GameManager gameManager;
 
+    @Autowired
+    private Global global;
+
     @Override
     public Pool updatePoolByKuns(String mid, int cellNo, Kuns updateKuns) {
         //查询玩家鲲池
@@ -76,7 +82,7 @@ public class CommonService implements ICommonService {
             //把更新后的鲲池保存
             this.savePool2CacheAndMemory(mid, e);
             return e;
-        }).orElseGet(null);
+        }).orElse(srcPool);
     }
 
     @Override
@@ -317,7 +323,36 @@ public class CommonService implements ICommonService {
     }
 
     @Override
-    public Pool getAndCheckPool(Class clzz, String mid) {
+    public Pool getAndCheckPool(Class clzz, Integer cmd, String mid) {
+        Pool pool = this.getPool(this.getClass(), mid);
+        if (Objects.isNull(pool)) {
+            String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.ILLEGAL_REQUEST_5).buildJsonStr();
+            global.sendMsg2One(resultStr, mid);
+            return null;
+        }
+        return pool;
+    }
+
+    @Override
+    public Integer getAndCheckRequestNo(Class clzz, String paramName, Integer cmd, String mid, Map<String, Object> params) {
+        Integer noIndex = this.getAndCheckKunIndex(clzz.getClass(), params, paramName);
+        if (Objects.isNull(noIndex)) {
+            String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.ILLEGAL_REQUEST_4).buildJsonStr();
+            global.sendMsg2One(resultStr, mid);
+            return null;
+        }
+        //如果传过来的下标不在范围内
+        boolean isIndex = (0 <= noIndex) && (noIndex < GameManager.POOL_CELL_NUM);
+        if (!isIndex) {
+            String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.ILLEGAL_REQUEST_6).buildJsonStr();
+            global.sendMsg2One(resultStr, mid);
+            return null;
+        }
+        return noIndex;
+    }
+
+    @Override
+    public Pool getPool(Class clzz, String mid) {
         String className = clzz.getSimpleName();
         Pool pool = this.getPlayerKunPool(mid);
         if (Objects.isNull(pool)) {

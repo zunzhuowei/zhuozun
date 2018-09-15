@@ -50,12 +50,12 @@ public class MergeCMDService implements IMergeCMDService {
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
 
-            Integer fromIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "from");
-            Integer toIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "to");
+            Integer fromIndex = commonService.getAndCheckRequestNo(this.getClass(), "from", cmd, mid, params);
+            Integer toIndex = commonService.getAndCheckRequestNo(this.getClass(), "to", cmd, mid, params);
             if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            Pool pool = commonService.getAndCheckPool(this.getClass(), cmd, mid);
             if (Objects.isNull(pool)) return;
 
             List<PoolCell> poolCells = pool.getPoolCells();
@@ -94,10 +94,6 @@ public class MergeCMDService implements IMergeCMDService {
                             poolCell.getKuns().setType(mergeType);
                         }
                     }).collect(toList());
-
-            //poolCells.remove((int) fromIndex); //移除合并来源
-            //PoolCell removeCell = poolCells.remove((int) toIndex);//移除合并目的
-            //poolCells.add(removeCell.setKuns(removeCell.getKuns().setType(mergeType)));//添加合并后的结果到池中
 
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));

@@ -48,11 +48,11 @@ public class WorkCMDService implements IWorkCMDService {
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
             //校验参数是否为空
-            Integer noIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "no");
-            if (noIndex == null) return;
+            Integer noIndex = commonService.getAndCheckRequestNo(this.getClass(), "no", cmd, mid, params);
+            if (Objects.isNull(noIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            Pool pool = commonService.getAndCheckPool(this.getClass(),cmd, mid);
             if (Objects.isNull(pool)) return;
 
             long nowTime = new Date().getTime() / 1000;

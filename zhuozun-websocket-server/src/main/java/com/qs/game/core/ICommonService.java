@@ -167,5 +167,26 @@ public interface ICommonService {
      * @param mid 玩家mid
      * @return 玩家鲲池
      */
-    Pool getAndCheckPool(Class clzz, String mid);
+    Pool getPool(Class clzz, String mid);
+
+    /**
+     *  获取并检查前端参数中传过来的鲲的下标，如果参数校验不过则通知前端
+     * @param clzz  调用的class，用于日志输出
+     * @param paramName 参数名字
+     * @param cmd 请求命令
+     * @param mid 玩家mid
+     * @param params 参数
+     * @return 鲲池下标
+     */
+    Integer getAndCheckRequestNo(Class clzz, String paramName, Integer cmd, String mid, Map<String, Object> params);
+
+    /**
+     * 安全的获取鲲池，校验鲲池是否为空，如果为空则通知前端
+     *
+     * @param cmd 请求命令
+     * @param mid 玩家mid
+     * @return 鲲池
+     */
+    Pool getAndCheckPool(Class clzz, Integer cmd, String mid);
+
 }

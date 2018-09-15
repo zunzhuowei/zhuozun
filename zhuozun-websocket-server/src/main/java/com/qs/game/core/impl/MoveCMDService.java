@@ -45,12 +45,12 @@ public class MoveCMDService implements IMoveCMDService {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
-            Integer fromIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "from");
-            Integer toIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "to");
+            Integer fromIndex = commonService.getAndCheckRequestNo(this.getClass(), "from", cmd, mid, params);
+            Integer toIndex = commonService.getAndCheckRequestNo(this.getClass(), "to", cmd, mid, params);
             if (Objects.isNull(fromIndex) || Objects.isNull(toIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            Pool pool = commonService.getAndCheckPool(this.getClass(),cmd, mid);
             if (Objects.isNull(pool)) return;
 
             List<PoolCell> poolCells = pool.getPoolCells();
@@ -117,9 +117,9 @@ public class MoveCMDService implements IMoveCMDService {
         return () -> ReferenceCountUtil.release(msg);
     }
 
-    //更换位置
-    private List<PoolCell> switchNo(Integer fromIndex, Integer toIndex,
-                                    PoolCell fromCell, PoolCell toCell, List<PoolCell> poolCells) {
+    @Override
+    public List<PoolCell> switchNo(Integer fromIndex, Integer toIndex,
+                                   PoolCell fromCell, PoolCell toCell, List<PoolCell> poolCells) {
         PoolCell targetFrom = new PoolCell();
         PoolCell targetTo = new PoolCell();
         BeanUtils.copyProperties(fromCell, targetFrom);
