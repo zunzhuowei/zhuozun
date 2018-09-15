@@ -41,7 +41,7 @@ public class MoveCMDService implements IMoveCMDService {
 
     @Override
     public Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
-        Future future = IThreadService.executor.submit(() -> {
+        IThreadService.executor.execute(() -> {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
@@ -108,13 +108,9 @@ public class MoveCMDService implements IMoveCMDService {
 
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS).buildJsonStr();
             global.sendMsg2One(resultStr, mid);
+            ReferenceCountUtil.release(msg);
         });
-        try {
-            Object o = future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return () -> ReferenceCountUtil.release(msg);
+        return null;
     }
 
     @Override

@@ -43,7 +43,8 @@ public class LoginCMDService implements ILoginCMDService {
 
     @Override
     public Runnable execute(ChannelHandlerContext ctx, TextWebSocketFrame msg, ReqEntity reqEntity) {
-        Future future = IThreadService.executor.submit(() -> {
+        //Future future =
+        IThreadService.executor.execute(() -> {
             Integer cmd = reqEntity.getCmd();
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             //获取玩家鲲池
@@ -63,13 +64,15 @@ public class LoginCMDService implements ILoginCMDService {
             String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SUCCESS)
                     .setContent(content).buildJsonStr();
             global.sendMsg2One(resultStr, mid);
+            ReferenceCountUtil.release(msg);
         });
-        try {
+        /*try {
             Object o = future.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-        }
-        return () -> ReferenceCountUtil.release(msg);
+        }*/
+        //return () -> ReferenceCountUtil.release(msg);
+        return null;
     }
 
     @Override
