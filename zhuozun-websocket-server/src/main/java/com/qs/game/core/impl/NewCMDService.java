@@ -5,6 +5,7 @@ import com.qs.game.common.game.CMD;
 import com.qs.game.common.game.CommandService;
 import com.qs.game.common.game.KunType;
 import com.qs.game.common.netty.Global;
+import com.qs.game.config.game.GameManager;
 import com.qs.game.core.ICommonService;
 import com.qs.game.core.IThreadService;
 import com.qs.game.core.IWorkCMDService;
@@ -17,6 +18,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -50,19 +52,22 @@ public class NewCMDService implements IWorkCMDService {
             String mid = this.getPlayerId(ctx); //管道中的用户mid
             Map<String, Object> params = reqEntity.getParams();
             //校验参数是否为空
-            Integer noIndex = commonService.getAndCheckKunIndex(this.getClass(), params, "no");
-            if (noIndex == null) return;
+            Integer noIndex = commonService.getAndCheckRequestNo(this.getClass(), "no", cmd, mid, params);
+            if (Objects.isNull(noIndex)) return;
 
             //获取玩家的鲲池
-            Pool pool = commonService.getAndCheckPool(this.getClass(), mid);
+            Pool pool = commonService.getAndCheckPool(this.getClass(), cmd, mid);
             if (Objects.isNull(pool)) return;
+
 
             List<PoolCell> poolCells = pool.getPoolCells();
             PoolCell pc = poolCells.get(noIndex);
 
             // 如果要新建的位置已经有鲲占位置了，不允许新加
-            if (pc.getKuns().getType() > 0) {
+            if (pc.getKuns().getType() > KunType.TYPE_0) {
                 log.info("NewCMDService poolCell.getKuns().getType() > 0 ");
+                String resultStr = RespEntity.getBuilder().setCmd(cmd).setErr(ERREnum.SEAT_NOT_EMPTY).buildJsonStr();
+                global.sendMsg2One(resultStr, mid);
                 return;
             }
 
@@ -70,14 +75,13 @@ public class NewCMDService implements IWorkCMDService {
             int type = KunType.TYPE_1;
             poolCells = poolCells.stream().peek(e -> {
                 if (Objects.equals(e.getNo(), noIndex)) {
-                    e.setKuns(e.getKuns().setType(type).setWork(0).setTime(0));
+                    e.setKuns(new Kuns().setType(type).setWork(0).setTime(0));
                 }
             }).collect(Collectors.toList());
 
             //保存鲲池到缓存和内存
             commonService.savePool2CacheAndMemory(mid, pool.setPoolCells(poolCells));
 
-            //获取玩家鲲池
             Map<String, Object> content = new HashMap<>();
             content.put("no", noIndex);
             content.put("type", type);
