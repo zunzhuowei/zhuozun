@@ -25,7 +25,7 @@ public class ThreadService implements IThreadService {
     //启动线程
     @Override
     public void run(Runnable runnable) {
-        if (Objects.nonNull(runnable)) executor.submit(runnable);
+        if (Objects.nonNull(runnable)) executor.execute(runnable);
     }
 
     // tcp握手
