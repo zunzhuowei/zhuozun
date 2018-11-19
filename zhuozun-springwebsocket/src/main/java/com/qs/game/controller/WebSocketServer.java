@@ -8,6 +8,7 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -72,6 +73,34 @@ public class WebSocketServer {
         for (WebSocketServer item : webSocketSet) {
             try {
                 item.sendMessage(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @OnMessage
+    public void onMessage(ByteBuffer message, Session session) {
+        char q = message.getChar();
+        char s = message.getChar();
+        System.out.println("q = " + q);
+        System.out.println("s = " + s);
+
+        int msgLen = message.getInt();
+        byte[] b = new byte[msgLen];
+
+        message.get(b,  0, msgLen);
+        String msg = new String(b);
+        System.out.println("msg = " + msg);
+
+        int tail = message.getInt();
+        System.out.println("tail = " + tail);
+
+        log.info("收到来自窗口" + sid + "的信息:" + message);
+        //群发消息
+        for (WebSocketServer item : webSocketSet) {
+            try {
+                item.sendMessage(message.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
