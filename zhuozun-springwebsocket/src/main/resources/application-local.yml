@@ -8,6 +8,9 @@ server:
     user:
       name: zhangsan
       password: 123
+  tomcat:
+    max-threads: 20000
+    max-connections: 20000
 #  ssl:
 #    http:
 #      port: 8601 # http
