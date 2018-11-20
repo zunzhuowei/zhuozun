@@ -1,15 +1,14 @@
 package com.qs.game.controller;
 
+import com.qs.game.utils.ByteUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.PingMessage;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -71,7 +70,7 @@ public class WebSocketServer {
     @OnMessage
     public void onMessage(String message, Session session) {
         log.info("收到来自窗口" + sid + "的信息:" + message);
-//群发消息
+        //群发消息
         for (WebSocketServer item : webSocketSet) {
             try {
                 item.sendMessage(message);
@@ -81,34 +80,49 @@ public class WebSocketServer {
         }
     }
 
+    /**
+     *  接收客户端 二进制格式请求数据
+     */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session) {
+        ByteBuffer duplicate = message.duplicate();
         char q = message.getChar();
         char s = message.getChar();
         System.out.println("q = " + q);
         System.out.println("s = " + s);
 
         int msgLen = message.getInt();
-        byte[] b = new byte[msgLen];
-
-        message.get(b,  0, msgLen);
-        String msg = new String(b);
+        String msg = ByteUtils.getStr(message, msgLen);
         System.out.println("msg = " + msg);
 
         int tail = message.getInt();
         System.out.println("tail = " + tail);
+
+        char c = message.getChar();
+
+        int telLen = message.getInt();
+        String tel = ByteUtils.getStr(message, telLen);
+
+        System.out.println("tel = " + tel);
+        System.out.println("c = " + c);
 
         log.info("收到来自窗口" + sid + "的信息:" + message);
         //群发消息
         for (WebSocketServer item : webSocketSet) {
             try {
                 item.sendMessage(message.toString());
+                item.session.getBasicRemote().sendBinary(duplicate);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     *  客户端心跳
+     * @param pongMessage
+     * @param session
+     */
     @OnMessage
     public void onMessage(PongMessage pongMessage, Session session) {
         System.out.println("pongMessage = " + pongMessage);

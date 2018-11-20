@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Created by zun.wei on 2018/11/20 16:35.
- * Description:
+ * Description: websocket 请求工具类
  */
 @Data
 @Accessors(chain = true)
@@ -181,40 +181,43 @@ public class ByteUtils implements Serializable {
     }
 
 
+    public static ByteUtils beginBuild() {
+        return new ByteUtils().setConnent(new byte[]{});
+    }
 
+/*
     public ByteUtils init(byte[] srcByte) {
-        return new ByteUtils().setConnent(srcByte);
+        return this.setConnent(srcByte);
     }
 
     public ByteUtils init(char srcChar) {
-        return new ByteUtils().setConnent(charToByte(srcChar));
+        return this.setConnent(charToByte(srcChar));
     }
 
     public ByteUtils init(int srcInt) {
-        return new ByteUtils().setConnent(intToByteArray(srcInt));
+        return this.setConnent(intToByteArray(srcInt));
     }
 
     public ByteUtils init(short srcShort) {
-        return new ByteUtils().setConnent(getBytes(srcShort, false));
+        return this.setConnent(getBytes(srcShort, false));
     }
 
     public ByteUtils init(long srcLong) {
-        return new ByteUtils().setConnent(getBytes(srcLong, false));
+        return this.setConnent(getBytes(srcLong, false));
     }
 
     public ByteUtils init(String srcStr) {
-        return new ByteUtils().setConnent(srcStr.getBytes());
+        return this.setConnent(srcStr.getBytes());
     }
+*/
 
 
     public ByteUtils append(String str) {
-        this.setConnent(byteMerger(this.getConnent(), str.getBytes()));
-        return this;
+        return this.setConnent(byteMerger(this.getConnent(), str.getBytes()));
     }
 
     public ByteUtils append(long number) {
-        this.setConnent(byteMerger(this.getConnent(), longToBytes(number)));
-        return this;
+        return this.setConnent(byteMerger(this.getConnent(), longToBytes(number)));
     }
 
     public ByteUtils append(int number) {
@@ -223,18 +226,15 @@ public class ByteUtils implements Serializable {
     }
 
     public ByteUtils append(byte[] bytes) {
-        this.setConnent(byteMerger(this.getConnent(), bytes));
-        return this;
+        return this.setConnent(byteMerger(this.getConnent(), bytes));
     }
 
     public ByteUtils append(short number) {
-        this.setConnent(byteMerger(this.getConnent(), shortToByteArray(number)));
-        return this;
+        return this.setConnent(byteMerger(this.getConnent(), shortToByteArray(number)));
     }
 
     public ByteUtils append(char chars) {
-        this.setConnent(byteMerger(this.getConnent(), charToByte(chars)));
-        return this;
+        return this.setConnent(byteMerger(this.getConnent(), charToByte(chars)));
     }
 
     public byte[] buildByteArr() {
@@ -244,5 +244,18 @@ public class ByteUtils implements Serializable {
     public ByteBuffer buildBuffer() {
         return ByteBuffer.wrap(this.getConnent());
     }
+
+    /**
+     *  读取 ByteBuffer 中指定长度的字符串
+     * @param byteBuffer socket 中的 byteBuffer
+     * @param strLen 要读取字符串的长度
+     * @return  读取到指定长度的字符串
+     */
+    public static String getStr(ByteBuffer byteBuffer, int strLen) {
+        byte[] b = new byte[strLen];
+        byteBuffer.get(b, 0, strLen);
+        return new String(b);
+    }
+
 
 }
