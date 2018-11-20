@@ -11,7 +11,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.*;
 
 /**
  * Created by zun.wei on 2018/11/19 10:52.
@@ -34,6 +34,11 @@ public class WebSocketServer {
 
     //接收sid
     private String sid = "";
+
+    private ExecutorService executor =
+            new ThreadPoolExecutor(12, 16, 0L,
+                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100000));//CPU核数4-10倍
+
 
     /**
      * 连接建立成功调用的方法
@@ -85,37 +90,39 @@ public class WebSocketServer {
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session) {
-        ByteBuffer duplicate = message.duplicate();
-        char q = message.getChar();
-        char s = message.getChar();
-        System.out.println("q = " + q);
-        System.out.println("s = " + s);
+        executor.execute(() -> {
+            ByteBuffer duplicate = message.duplicate();
+            char q = message.getChar();
+            char s = message.getChar();
+            System.out.println("q = " + q);
+            System.out.println("s = " + s);
 
-        int msgLen = message.getInt();
-        String msg = ByteUtils.getStr(message, msgLen);
-        System.out.println("msg = " + msg);
+            int msgLen = message.getInt();
+            String msg = ByteUtils.getStr(message, msgLen);
+            System.out.println("msg = " + msg);
 
-        int tail = message.getInt();
-        System.out.println("tail = " + tail);
+            int tail = message.getInt();
+            System.out.println("tail = " + tail);
 
-        char c = message.getChar();
+            char c = message.getChar();
 
-        int telLen = message.getInt();
-        String tel = ByteUtils.getStr(message, telLen);
+            int telLen = message.getInt();
+            String tel = ByteUtils.getStr(message, telLen);
 
-        System.out.println("tel = " + tel);
-        System.out.println("c = " + c);
+            System.out.println("tel = " + tel);
+            System.out.println("c = " + c);
 
-        log.info("收到来自窗口" + sid + "的信息:" + message);
-        //群发消息
-        for (WebSocketServer item : webSocketSet) {
-            try {
-                item.sendMessage(message.toString());
-                item.session.getBasicRemote().sendBinary(duplicate);
-            } catch (IOException e) {
-                e.printStackTrace();
+            log.info("收到来自窗口" + sid + "的信息:" + message);
+            //群发消息
+            for (WebSocketServer item : webSocketSet) {
+                try {
+                    item.sendMessage(message.toString());
+                    item.session.getBasicRemote().sendBinary(duplicate);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        });
     }
 
     /**
