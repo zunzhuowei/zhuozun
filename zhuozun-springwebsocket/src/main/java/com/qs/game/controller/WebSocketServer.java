@@ -3,11 +3,13 @@ package com.qs.game.controller;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.PingMessage;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -105,6 +107,11 @@ public class WebSocketServer {
                 e.printStackTrace();
             }
         }
+    }
+
+    @OnMessage
+    public void onMessage(PongMessage pongMessage, Session session) {
+        System.out.println("pongMessage = " + pongMessage);
     }
 
     /**

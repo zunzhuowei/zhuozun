@@ -1,7 +1,12 @@
 package com.qs.game.test;
 
+import com.qs.game.utils.ByteUtils;
+
 import javax.websocket.*;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -52,12 +57,36 @@ public class WebSocketTest {
             }
         }
 
-        for (;;) {
+        for (; ; ) {
             list.forEach(e -> {
                 try {
                     Thread.sleep(1000);
                     boolean isOpen = e.isOpen();
                     if (isOpen) {
+
+                        String msg = "abc";
+                        int len = msg.length();
+                        byte[] connent = new ByteUtils().init('Q').append('S')
+                                .append(len).append(msg).append(111)
+                                .append('a')
+                                .buildByteArr();
+
+                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent));
+                        e.getBasicRemote().flushBatch();
+                    }
+                    /*if (isOpen) {
+
+                        byte[] head = byteMerger(charToByte('Q'), charToByte('S'));
+                        String msg = "abc";
+                        int len = msg.length();
+                        byte[] msg_led_head = byteMerger(head, intToByteArray(len));
+                        byte[] msg_connent = byteMerger(msg_led_head, msg.getBytes());
+                        byte[] tail = byteMerger(msg_connent, intToByteArray(111));
+
+                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(tail));
+                        e.getBasicRemote().flushBatch();
+                    }*/
+                   /* if (isOpen) {
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(charToByte('Q')), false);
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(charToByte('S')), false);
                         String msg = "abc";
@@ -66,7 +95,7 @@ public class WebSocketTest {
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(msg.getBytes()), false);
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(intToByteArray(111)), true);
                         e.getBasicRemote().flushBatch();
-                    }
+                    }*/
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
                 }
@@ -75,14 +104,14 @@ public class WebSocketTest {
     }
 
     public static int byteArrayToInt(byte[] b) {
-        return   b[3] & 0xFF |
+        return b[3] & 0xFF |
                 (b[2] & 0xFF) << 8 |
                 (b[1] & 0xFF) << 16 |
                 (b[0] & 0xFF) << 24;
     }
 
     public static byte[] intToByteArray(int a) {
-        return new byte[] {
+        return new byte[]{
                 (byte) ((a >> 24) & 0xFF),
                 (byte) ((a >> 16) & 0xFF),
                 (byte) ((a >> 8) & 0xFF),
@@ -99,6 +128,15 @@ public class WebSocketTest {
 
     public static char byteToChar(byte[] b) {
         return (char) (((b[0] & 0xFF) << 8) | (b[1] & 0xFF));
+    }
+
+
+    //java 合并两个byte数组
+    public static byte[] byteMerger(byte[] byte_1, byte[] byte_2) {
+        byte[] byte_3 = new byte[byte_1.length + byte_2.length];
+        System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);
+        System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);
+        return byte_3;
     }
 
 }
