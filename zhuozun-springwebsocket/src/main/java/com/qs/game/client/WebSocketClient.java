@@ -1,4 +1,4 @@
-package com.qs.game.test;
+package com.qs.game.client;
 
 import com.qs.game.utils.ByteUtils;
 import org.apache.juli.logging.Log;
@@ -16,20 +16,20 @@ import java.util.List;
  * Description:
  */
 @ClientEndpoint
-public class WebSocketTest {
+public class WebSocketClient {
 
-    private static Log log = LogFactory.getLog(WebSocketTest.class);
+    private static Log log = LogFactory.getLog(WebSocketClient.class);
 
     private String deviceId;
 
     private Session session;
 
-    public WebSocketTest() {
+    public WebSocketClient() {
     }
 
     private static final List<Session> list = new LinkedList<Session>();
 
-    public WebSocketTest(String deviceId) {
+    public WebSocketClient(String deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -39,7 +39,7 @@ public class WebSocketTest {
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
-            session = container.connectToServer(WebSocketTest.class, URI.create(uri));
+            session = container.connectToServer(WebSocketClient.class, URI.create(uri));
             System.out.println("count: " + deviceId);
             list.add(session);
         } catch (Exception e) {
@@ -50,8 +50,8 @@ public class WebSocketTest {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i < 500; i++) {
-            WebSocketTest wSocketTest = new WebSocketTest(String.valueOf(i));
+        for (int i = 1; i < 5; i++) {
+            WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
             if (!wSocketTest.start()) {
                 System.out.println("测试结束。");
                 break;
@@ -61,7 +61,7 @@ public class WebSocketTest {
         for (; ; ) {
             list.forEach(e -> {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1);
                     boolean isOpen = e.isOpen();
                     if (isOpen) {
 

@@ -1,0 +1,23 @@
+package com.qs.game.config;
+
+import com.qs.game.server.WebSocketServer;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.concurrent.*;
+
+/**
+ * Created by zun.wei on 2018/11/21 10:55.
+ * Description:
+ */
+public class SysConfig implements Serializable {
+
+    public static final ExecutorService executor =
+            new ThreadPoolExecutor(12, 16, 0L,
+                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100000));//CPU核数4-10倍
+
+    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
+    public static final  CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<WebSocketServer>(new ArrayList<>(102400));
+
+
+}

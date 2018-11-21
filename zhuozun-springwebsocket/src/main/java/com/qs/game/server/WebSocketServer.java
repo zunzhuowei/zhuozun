@@ -1,55 +1,51 @@
-package com.qs.game.controller;
+package com.qs.game.server;
 
+import com.qs.game.config.MessageRouter;
+import com.qs.game.config.SysConfig;
+import com.qs.game.constant.EvenType;
+import com.qs.game.model.even.*;
 import com.qs.game.utils.ByteUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.server.standard.SpringConfigurator;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.concurrent.*;
 
 /**
  * Created by zun.wei on 2018/11/19 10:52.
  * Description:
  */
+//@ServerEndpoint(value = "/websocket/{sid}",configurator = SpringConfigurator.class)
 @ServerEndpoint("/websocket/{sid}")
 @Component
 public class WebSocketServer {
 
     private static Log log = LogFactory.getLog(WebSocketServer.class);
 
-    //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
-    private static int onlineCount = 0;
-
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-    private static CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<WebSocketServer>(new ArrayList<>(102400));
+    //@Autowired
+    //private MessageRouter messageRouter;
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
     //接收sid
-    private String sid = "";
-
-    private ExecutorService executor =
-            new ThreadPoolExecutor(12, 16, 0L,
-                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100000));//CPU核数4-10倍
-
+    //private String sid = "";
 
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) {
+        //messageRouter.router(new Even().setSession(session).setSid(sid), EvenType.ON_OPEN);
         this.session = session;
-        webSocketSet.add(this); //加入set中
-        addOnlineCount(); //在线数加1
-        log.info("有新窗口开始监听:" + sid + ",当前在线人数为" + getOnlineCount());
-        this.sid = sid;
+        //this.sid = sid;
+        SysConfig.webSocketSet.add(this); //加入set中
         try {
             sendMessage("连接成功");
         } catch (IOException e) {
@@ -61,10 +57,9 @@ public class WebSocketServer {
      * 连接关闭调用的方法
      */
     @OnClose
-    public void onClose() {
-        webSocketSet.remove(this); //从set中删除
-        subOnlineCount(); //在线数减1
-        log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
+    public void onClose(Session session, @PathParam("sid") String sid) {
+        //messageRouter.router(new Even().setSession(session).setSid(sid), EvenType.ON_CLOSE);
+        SysConfig.webSocketSet.remove(this); //从set中删除
     }
 
     /**
@@ -73,10 +68,11 @@ public class WebSocketServer {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Session session, @PathParam("sid") String sid) {
+        //messageRouter.router(new OnStrEven().setMessage(message).setSession(session).setSid(sid), EvenType.ON_STR_MESSAGE);
         log.info("收到来自窗口" + sid + "的信息:" + message);
         //群发消息
-        for (WebSocketServer item : webSocketSet) {
+        for (WebSocketServer item : SysConfig.webSocketSet) {
             try {
                 item.sendMessage(message);
             } catch (IOException e) {
@@ -89,8 +85,9 @@ public class WebSocketServer {
      *  接收客户端 二进制格式请求数据
      */
     @OnMessage
-    public void onMessage(ByteBuffer message, Session session) {
-        executor.execute(() -> {
+    public void onMessage(ByteBuffer message, Session session, @PathParam("sid") String sid) {
+        //messageRouter.router(new OnBinaryEven().setByteBuffer(message).setSession(session).setSid(sid), EvenType.ON_BYTE_MESSAGE);
+        SysConfig.executor.execute(() -> {
             ByteBuffer duplicate = message.duplicate();
             char q = message.getChar();
             char s = message.getChar();
@@ -114,7 +111,7 @@ public class WebSocketServer {
 
             log.info("收到来自窗口" + sid + "的信息:" + message);
             //群发消息
-            for (WebSocketServer item : webSocketSet) {
+            for (WebSocketServer item : SysConfig.webSocketSet) {
                 try {
                     item.sendMessage(message.toString());
                     item.session.getBasicRemote().sendBinary(duplicate);
@@ -127,20 +124,19 @@ public class WebSocketServer {
 
     /**
      *  客户端心跳
-     * @param pongMessage
-     * @param session
      */
     @OnMessage
-    public void onMessage(PongMessage pongMessage, Session session) {
+    public void onMessage(PongMessage pongMessage, Session session, @PathParam("sid") String sid) {
+       // messageRouter.router(new OnPongEven().setPongMessage(pongMessage).setSession(session).setSid(sid), EvenType.ON_PONE_MESSAGE);
         System.out.println("pongMessage = " + pongMessage);
     }
 
     /**
-     * @param session
-     * @param error
+     *  当发生异常时
      */
     @OnError
-    public void onError(Session session, Throwable error) {
+    public void onError(Session session, Throwable error, @PathParam("sid") String sid) {
+      //  messageRouter.router(new OnErrorEven().setError(error).setSession(session).setSid(sid), EvenType.ON_ERROR_MESSAGE);
         log.error("发生错误");
         error.printStackTrace();
     }
@@ -156,9 +152,9 @@ public class WebSocketServer {
     /**
      * 群发自定义消息
      */
-    public static void sendInfo(String message, @PathParam("sid") String sid) throws IOException {
+    /*public static void sendInfo(String message, @PathParam("sid") String sid) throws IOException {
         log.info("推送消息到窗口" + sid + "，推送内容:" + message);
-        for (WebSocketServer item : webSocketSet) {
+        for (WebSocketServer item : SysConfig.webSocketSet) {
             try {
                 //这里可以设定只推送给这个sid的，为null则全部推送
                 if (sid == null) {
@@ -170,18 +166,6 @@ public class WebSocketServer {
                 continue;
             }
         }
-    }
-
-    public static synchronized int getOnlineCount() {
-        return onlineCount;
-    }
-
-    public static synchronized void addOnlineCount() {
-        WebSocketServer.onlineCount++;
-    }
-
-    public static synchronized void subOnlineCount() {
-        WebSocketServer.onlineCount--;
-    }
+    }*/
 
 }

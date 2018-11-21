@@ -1,12 +1,12 @@
 package com.qs.game.controller;
 
+import com.qs.game.server.WebSocketServer;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 
@@ -34,7 +34,7 @@ public class CheckCenterController {
     }
 
     //推送数据接口
-    @ResponseBody
+   /* @ResponseBody
     @RequestMapping("/socket/push/{cid}")
     public String pushToWeb(@PathVariable String cid, String message) {
         try {
@@ -44,6 +44,6 @@ public class CheckCenterController {
             return cid + "#" + e.getMessage();
         }
         return cid;
-    }
+    }*/
 
 }

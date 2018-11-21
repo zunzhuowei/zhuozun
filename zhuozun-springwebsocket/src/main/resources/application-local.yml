@@ -27,8 +27,6 @@ mybatis:
 spring:
   application:
     name: ${server.app-name}
-  freemarker:
-    suffix: .ftl
   redis:
     database: 6 # 14
     host: 192.168.1.128

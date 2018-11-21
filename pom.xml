@@ -28,7 +28,6 @@
         <module>zhuozun-gateway-server</module>
         <module>zhuozun-kafka-provider</module>
         <module>zhuozun-admin-ui</module>
-        <module>zhuozun-netty-server</module>
         <module>zhuozun-websocket-server</module>
     </modules>
 
