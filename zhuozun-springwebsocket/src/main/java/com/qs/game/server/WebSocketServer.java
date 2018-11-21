@@ -21,30 +21,30 @@ import java.nio.ByteBuffer;
  * Created by zun.wei on 2018/11/19 10:52.
  * Description:
  */
-//@ServerEndpoint(value = "/websocket/{sid}",configurator = SpringConfigurator.class)
-@ServerEndpoint("/websocket/{sid}")
+@ServerEndpoint(value = "/websocket/{sid}",configurator = SpringConfigurator.class)
+//@ServerEndpoint("/websocket/{sid}")
 @Component
 public class WebSocketServer {
 
     private static Log log = LogFactory.getLog(WebSocketServer.class);
 
-    //@Autowired
-    //private MessageRouter messageRouter;
+    @Autowired
+    private MessageRouter messageRouter;
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
     //接收sid
-    //private String sid = "";
+    private String sid = "";
 
     /**
      * 连接建立成功调用的方法
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) {
-        //messageRouter.router(new Even().setSession(session).setSid(sid), EvenType.ON_OPEN);
+        messageRouter.router(new Even().setSession(session).setSid(sid), EvenType.ON_OPEN);
         this.session = session;
-        //this.sid = sid;
+        this.sid = sid;
         SysConfig.webSocketSet.add(this); //加入set中
         try {
             sendMessage("连接成功");
@@ -57,8 +57,8 @@ public class WebSocketServer {
      * 连接关闭调用的方法
      */
     @OnClose
-    public void onClose(Session session, @PathParam("sid") String sid) {
-        //messageRouter.router(new Even().setSession(session).setSid(sid), EvenType.ON_CLOSE);
+    public void onClose() {
+        messageRouter.router(new Even().setSession(session), EvenType.ON_CLOSE);
         SysConfig.webSocketSet.remove(this); //从set中删除
     }
 
@@ -68,8 +68,8 @@ public class WebSocketServer {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sid") String sid) {
-        //messageRouter.router(new OnStrEven().setMessage(message).setSession(session).setSid(sid), EvenType.ON_STR_MESSAGE);
+    public void onMessage(String message, Session session) {
+        messageRouter.router(new OnStrEven().setMessage(message).setSession(session).setSid(sid), EvenType.ON_STR_MESSAGE);
         log.info("收到来自窗口" + sid + "的信息:" + message);
         //群发消息
         for (WebSocketServer item : SysConfig.webSocketSet) {
@@ -85,8 +85,8 @@ public class WebSocketServer {
      *  接收客户端 二进制格式请求数据
      */
     @OnMessage
-    public void onMessage(ByteBuffer message, Session session, @PathParam("sid") String sid) {
-        //messageRouter.router(new OnBinaryEven().setByteBuffer(message).setSession(session).setSid(sid), EvenType.ON_BYTE_MESSAGE);
+    public void onMessage(ByteBuffer message, Session session) {
+        messageRouter.router(new OnBinaryEven().setByteBuffer(message).setSession(session).setSid(sid), EvenType.ON_BYTE_MESSAGE);
         SysConfig.executor.execute(() -> {
             ByteBuffer duplicate = message.duplicate();
             char q = message.getChar();
@@ -126,17 +126,17 @@ public class WebSocketServer {
      *  客户端心跳
      */
     @OnMessage
-    public void onMessage(PongMessage pongMessage, Session session, @PathParam("sid") String sid) {
-       // messageRouter.router(new OnPongEven().setPongMessage(pongMessage).setSession(session).setSid(sid), EvenType.ON_PONE_MESSAGE);
+    public void onMessage(PongMessage pongMessage, Session session) {
+        messageRouter.router(new OnPongEven().setPongMessage(pongMessage).setSession(session).setSid(sid), EvenType.ON_PONE_MESSAGE);
         System.out.println("pongMessage = " + pongMessage);
     }
 
     /**
-     *  当发生异常时
+     * 当发生异常时
      */
     @OnError
-    public void onError(Session session, Throwable error, @PathParam("sid") String sid) {
-      //  messageRouter.router(new OnErrorEven().setError(error).setSession(session).setSid(sid), EvenType.ON_ERROR_MESSAGE);
+    public void onError(Session session, Throwable error) {
+        messageRouter.router(new OnErrorEven().setError(error).setSession(session), EvenType.ON_ERROR_MESSAGE);
         log.error("发生错误");
         error.printStackTrace();
     }

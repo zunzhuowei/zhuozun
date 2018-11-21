@@ -50,7 +50,7 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 2; i++) {
             WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
             if (!wSocketTest.start()) {
                 System.out.println("测试结束。");
