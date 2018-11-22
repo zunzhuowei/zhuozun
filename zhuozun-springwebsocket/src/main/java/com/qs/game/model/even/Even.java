@@ -1,12 +1,11 @@
 package com.qs.game.model.even;
 
+import com.qs.game.server.WebSocketServer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 
 /**
  * Created by zun.wei on 2018/11/21 13:47.
@@ -19,5 +18,7 @@ public class Even implements Serializable {
     private Session session;
 
     private String sid;
+
+    private WebSocketServer webSocketServer;
 
 }

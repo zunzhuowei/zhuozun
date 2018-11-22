@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.websocket.CloseReason;
+
 /**
  * Created by zun.wei on 2018/11/21 14:09.
  * Description:
@@ -12,5 +14,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class OnCloseEven extends Even {
+
+    private CloseReason closeReason;
 
 }

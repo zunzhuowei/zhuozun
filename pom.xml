@@ -29,6 +29,7 @@
         <module>zhuozun-kafka-provider</module>
         <module>zhuozun-admin-ui</module>
         <module>zhuozun-websocket-server</module>
+        <module>zhuozun-springwebsocket</module>
     </modules>
 
 
