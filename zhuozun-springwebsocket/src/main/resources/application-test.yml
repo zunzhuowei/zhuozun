@@ -1,0 +1,104 @@
+#不能用localhost,否则启动报异常:Unresolved address
+#tcp监听的端口
+netty:
+  websocket:
+    port: 9002
+  boss:
+    thread:
+      count: 2  # bossGroup的线程数
+  worker:
+    thread:
+      count: 2  # worker的线程数
+
+server:
+  port: 8600 #https
+  app-name: websocket-server
+  discover:
+    hostname: 192.168.1.204
+    port: 7000
+  eureka:
+    user:
+      name: zhangsan
+      password: 123
+  ssl:
+    http:
+      port: 8601 # http
+    key-store: wss.jks
+    key-store-type: JKS
+    key-password: netty123
+
+mybatis:
+  config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
+  type-aliases-package: com.qs.game.model    # 所有Entity别名类所在包
+  mapper-locations:
+  - classpath*:mybatis/mapper/**/*.xml                       # mapper映射文件
+
+spring:
+  application:
+    name: ${server.app-name}
+  freemarker:
+    suffix: .ftl
+  redis:
+    database: 14
+    host: 192.168.1.128
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 8
+        max-idle: 0
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    username: dev
+    password: dev
+    dbcp2:
+      min-idle: 5                                           # 数据库连接池的最小维持连接数
+      initial-size: 5                                       # 初始化连接数
+      max-total: 5                                          # 最大连接数
+      max-wait-millis: 200                                # 等待连接获取的最大超时时间
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-while-idle: false
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+  instance:
+    instance-id: ${server.app-name}-${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    health-check-url-path: /actuator/health
+
+# admin server 配置 允许访问权限
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    root: info
+    io: # 指定包输入日志
+      swagger: error
+
+info:
+  app.name: ${server.app-name}
+  company.name: qs.game
+  build.artifactId: "@project.artifactId@"
+  build.version: "@project.version@"
+  spring-cloud-version: "@spring.cloud.version@"
+
+# https://www.jianshu.com/p/222fe9f2a564
+# https://blog.csdn.net/li6151770/article/details/73546565

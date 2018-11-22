@@ -47,19 +47,19 @@ public class AccessHandler extends SimpleChannelInboundHandler<TextWebSocketFram
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         log.info("Client: {} 在线", channel.remoteAddress());
-        ctx.fireChannelActive();
+        //ctx.fireChannelActive();
     }
 
 
 
-    @Override
+/*    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         String uid = ctx.channel().attr(Global.attrUid).get();
         global.delCtxFromSessionRepo(uid);
         channel.close();
         log.info("Client: {} : {} 掉线", channel.remoteAddress(), uid);
-    }
+    }*/
 
 
     @Override
