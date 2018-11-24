@@ -1,5 +1,7 @@
 package com.qs.game.client;
 
+import com.qs.game.config.TextEncoder;
+import com.qs.game.model.communication.UserTest;
 import com.qs.game.utils.ByteUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -15,7 +17,7 @@ import java.util.List;
  * Created by zun.wei on 2018/11/19 16:26.
  * Description:
  */
-@ClientEndpoint
+@ClientEndpoint(encoders = {TextEncoder.class})
 public class WebSocketClient {
 
     private static Log log = LogFactory.getLog(WebSocketClient.class);
@@ -50,7 +52,7 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i < 5000; i++) {
+        for (int i = 1; i < 2; i++) {
             WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
             if (!wSocketTest.start()) {
                 System.out.println("测试结束。");
@@ -61,7 +63,7 @@ public class WebSocketClient {
         for (; ; ) {
             list.forEach(e -> {
                 try {
-                    Thread.sleep(1);
+                    Thread.sleep(1000);
                     boolean isOpen = e.isOpen();
                     if (isOpen) {
 
@@ -79,7 +81,14 @@ public class WebSocketClient {
                                 .buildByteArr();
 
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent));
-                        e.getBasicRemote().flushBatch();
+                        e.getBasicRemote().sendText("test text");
+
+                        try {
+                            e.getBasicRemote().sendObject(new UserTest().setId(2L).setPassWord("456").setUserName("lisi"));
+                        } catch (EncodeException e1) {
+                            e1.printStackTrace();
+                        }
+                        //e.getBasicRemote().flushBatch();
                     }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
