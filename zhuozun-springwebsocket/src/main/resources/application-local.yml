@@ -53,7 +53,22 @@ spring:
   data:
     mongodb:
       uri: mongodb://xxx:xxx@localhost:27017/position
-
+  groovy:
+    template:
+      suffix: .html
+      cache: false
+      enabled: true
+      content-type: text/html
+      resource-loader-path: /templates/
+      configuration:
+        declaration-encoding: UTF-8
+#  thymeleaf:
+#    cache: false
+#    enabled: true
+#    encoding: UTF-8
+#    mode: HTML
+#    suffix: .html
+#    prefix: classpath:/templates/
 
 
 #eureka:

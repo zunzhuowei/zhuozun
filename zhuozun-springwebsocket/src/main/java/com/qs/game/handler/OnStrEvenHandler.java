@@ -19,7 +19,7 @@ public class OnStrEvenHandler implements EvenHandler {
         OnStrEven onStrEven = (OnStrEven) even;
         String sid = onStrEven.getSid();
         String message = onStrEven.getMessage();
-        log.info("OnStrEvenHandler handler 收到来自窗口" + sid + "的信息:" + message);
+        log.info("OnStrEvenHandler handler 收到来自窗口{}的信息:{}", sid, message);
     }
 
 }
