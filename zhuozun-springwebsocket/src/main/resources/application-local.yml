@@ -23,7 +23,6 @@ mybatis:
   type-aliases-package: com.qs.game.model    # 所有Entity别名类所在包
   mapper-locations:
   - classpath*:mybatis/mapper/**/*.xml                       # mapper映射文件
-
 spring:
   application:
     name: ${server.app-name}
@@ -51,6 +50,10 @@ spring:
       validation-query: select 1
       validation-query-timeout: 5000
       test-while-idle: false
+  data:
+    mongodb:
+      uri: mongodb://xxx:xxx@localhost:27017/position
+
 
 
 #eureka:
