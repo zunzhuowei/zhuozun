@@ -1,6 +1,7 @@
 package com.qs.game.server;
 
 import com.qs.game.config.MessageRouter;
+import com.qs.game.config.TextEncoder;
 import com.qs.game.constant.EvenType;
 import com.qs.game.model.even.*;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,9 @@ import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Future;
 
 /**
  * Created by zun.wei on 2018/11/19 10:52.
@@ -18,7 +21,7 @@ import java.nio.ByteBuffer;
  */
 @Slf4j
 @Component
-@ServerEndpoint("/websocket/{sid}")
+@ServerEndpoint(value = "/websocket/{sid}", encoders = {TextEncoder.class})
 public class WebSocketServer {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
@@ -101,11 +104,133 @@ public class WebSocketServer {
                 .setWebSocketServer(this), EvenType.ON_ERROR_MESSAGE);
     }
 
+
+
     /**
-     * 实现服务器主动推送
+     *  Send the message, blocking until the message is sent.
      */
-    public void sendMessage(String message) throws IOException {
+    public void sendTextMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
+    }
+
+    /**
+     *  Send the message, blocking until the message is sent.
+     */
+    public void sendBinaryMessage(byte[] message) throws IOException {
+        this.session.getBasicRemote().sendBinary(ByteBuffer.wrap(message));
+    }
+
+    /**
+     *  Send the message, blocking until the message is sent.
+     *  Encodes object as a message and sends it to the remote endpoint.
+     */
+    public void sendObjectMessage(Serializable object) throws IOException, EncodeException {
+        this.session.getBasicRemote().sendObject(object);
+    }
+
+
+
+
+
+
+    /**
+     * Send the message asynchronously
+     */
+    public Future<Void> sendTextMessageAsync(String message) {
+        return this.session.getAsyncRemote().sendText(message);
+    }
+
+    /**
+     * Send the message asynchronously
+     */
+    public Future<Void> sendTextMessageAsync(String message, long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        return async.sendText(message);
+    }
+
+    /**
+     * @param completion Used to signal to the client when the message has been sent
+     */
+    public void sendTextMessageAsync(String message, SendHandler completion) {
+        this.session.getAsyncRemote().sendText(message, completion);
+    }
+
+    /**
+     *
+     * @param completion Used to signal to the client when the message has been sent
+     * @param timeout The new timeout for sending messages asynchronously
+     *                 in milliseconds. A non-positive value means an
+     *                 infinite timeout.
+     */
+    public void sendTextMessageAsync(String message, SendHandler completion, long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        async.sendText(message, completion);
+    }
+
+
+    public Future<Void> sendObjectMessageAsync(Serializable object) {
+        return this.session.getAsyncRemote().sendObject(object);
+    }
+
+    public void sendObjectMessageAsync(Serializable object, SendHandler completion) {
+        this.session.getAsyncRemote().sendObject(object, completion);
+    }
+
+    public Future<Void> sendObjectMessageAsync(Serializable object,long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        return async.sendObject(object);
+    }
+
+    public void sendObjectMessageAsync(Serializable object, SendHandler completion,long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        async.sendObject(object, completion);
+    }
+
+
+
+
+
+
+
+
+    /**
+     * Send the message asynchronously
+     */
+    public Future<Void> sendBinaryMessageAsync(byte[] message) {
+        return this.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(message));
+    }
+
+    /**
+     * Send the message asynchronously
+     */
+    public Future<Void> sendBinaryMessageAsync(byte[] message, long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        return async.sendBinary(ByteBuffer.wrap(message));
+    }
+
+    /**
+     * @param completion Used to signal to the client when the message has been sent
+     */
+    public void sendBinaryMessageAsync(byte[] message, SendHandler completion) {
+        this.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(message), completion);
+    }
+
+    /**
+     *
+     * @param completion Used to signal to the client when the message has been sent
+     * @param timeout The new timeout for sending messages asynchronously
+     *                 in milliseconds. A non-positive value means an
+     *                 infinite timeout.
+     */
+    public void sendBinaryMessageAsync(byte[] message, SendHandler completion, long timeout) {
+        RemoteEndpoint.Async async = this.session.getAsyncRemote();
+        async.setSendTimeout(timeout);
+        async.sendBinary(ByteBuffer.wrap(message), completion);
     }
 
 }

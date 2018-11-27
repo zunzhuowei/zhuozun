@@ -1,6 +1,7 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
+import com.qs.game.model.communication.UserTest;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.server.WebSocketServer;
@@ -8,6 +9,7 @@ import com.qs.game.utils.ByteUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.websocket.EncodeException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -26,6 +28,13 @@ public class OnBinaryEvenHandler implements EvenHandler {
         ByteBuffer message = onBinaryEven.getByteBuffer();
         String sid = onBinaryEven.getSid();
         WebSocketServer webSocketServer = onBinaryEven.getWebSocketServer();
+        try {
+            webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
+        } catch (IOException | EncodeException e) {
+            e.printStackTrace();
+        }
+
+        //if (true) return;
 
         SysConfig.THREAD_POOL_EXECUTOR.execute(() -> {
             ByteBuffer duplicate = message.duplicate();

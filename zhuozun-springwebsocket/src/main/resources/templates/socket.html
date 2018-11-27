@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
     <meta charset="UTF-8">
@@ -15,6 +14,7 @@
 <h2>33</h2>
 <input id="start">
 <input id="message">
+<input id="close">
 <iframe id="my_iframe" style="display:none;"></iframe>
 <script type="application/javascript">
     var socket;
@@ -26,17 +26,22 @@
         //等同于socket = new WebSocket("ws://localhost:8083/checkcentersys/websocket/20");
         //socket = new WebSocket("http://localhost:8080/websocket/${cid}".replace("http","ws"));
         socket = new WebSocket("ws://localhost:8600/websocket/33");
+
+        socket.binaryType = 'arraybuffer';
+
         //打开事件
         socket.onopen = function () {
             console.log("Socket 已打开");
             $("#start").val("Socket 已打开")
             //socket.disconnect();
         socket.send("这是来自客户端的消息" + location.href + new Date());
+        socket.send("{\"id\":11111,\"passWord\":\"1112311111\",\"sex\":2,\"userName\":\"张三123123\"}");
         };
         //获得消息事件
         socket.onmessage = function (msg) {
-            console.log(msg.data);
-            $("#message").val(msg.data)
+            //console.log(msg.data);
+            //$("#message").val(msg.data)
+            console.log(binaryData(msg));
         //发现消息进入 开始处理前端触发逻辑
         };
         //关闭事件
@@ -55,6 +60,11 @@
         // socket.close();
         //});
     }
+
+    function binaryData(ev) {
+        return JSON.parse(new TextDecoder("utf-8").decode(new Uint8Array(ev.data)))
+    }
+
 </script>
 
 </body>
