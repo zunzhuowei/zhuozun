@@ -1,6 +1,6 @@
 package com.qs.game.model.even;
 
-import com.qs.game.server.WebSocketServer;
+import com.qs.game.socket.server.WebSocketServer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

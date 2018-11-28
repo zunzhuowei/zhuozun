@@ -1,7 +1,7 @@
-package com.qs.game.server;
+package com.qs.game.socket.server;
 
-import com.qs.game.config.MessageRouter;
-import com.qs.game.config.TextEncoder;
+import com.qs.game.socket.MessageRouter;
+import com.qs.game.socket.TextEncoder;
 import com.qs.game.constant.EvenType;
 import com.qs.game.model.even.*;
 import lombok.extern.slf4j.Slf4j;

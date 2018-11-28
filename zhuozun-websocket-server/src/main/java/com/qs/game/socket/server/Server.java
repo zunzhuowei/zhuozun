@@ -1,4 +1,4 @@
-package com.qs.game.server;
+package com.qs.game.socket.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

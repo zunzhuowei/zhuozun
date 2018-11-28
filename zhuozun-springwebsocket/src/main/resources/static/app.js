@@ -1,51 +1,31 @@
-var stompClient = null;
+var socket;
+if (typeof(WebSocket) === undefined) {
+    console.log("您的浏览器不支持WebSocket");
+} else {
+    socket = new WebSocket("ws://localhost:8600/websocket/33");
 
-function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-    $("#greetings").html("");
+    //socket.binaryType = 'arraybuffer';
+
+    //打开事件
+    socket.onopen = function () {
+        console.log("Socket 已打开");
+        socket.send("这是来自客户端的消息" + location.href + new Date());
+        socket.send("{\"id\":11111,\"passWord\":\"1112311111\",\"sex\":2,\"userName\":\"张三123123\"}");
+    };
+    //获得消息事件
+    socket.onmessage = function (msg) {
+        console.log(msg.data);
+        //发现消息进入 开始处理前端触发逻辑
+    };
+    //关闭事件
+    socket.onclose = function () {
+        console.log("Socket已关闭");
+    };
+    //发生了错误事件
+    socket.onerror = function () {
+        alert("Socket发生了错误");
+        //此时可以尝试刷新页面
+    };
+    //socket.connect();
+    //socket.disconnect();
 }
-
-function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
-        });
-    });
-}
-
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
-
-function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
-}
-
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
-}
-
-$(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
-});
-

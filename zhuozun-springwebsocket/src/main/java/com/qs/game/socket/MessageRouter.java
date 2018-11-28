@@ -1,4 +1,4 @@
-package com.qs.game.config;
+package com.qs.game.socket;
 
 import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
