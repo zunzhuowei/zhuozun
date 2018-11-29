@@ -1,5 +1,6 @@
 package com.qs.game.dao;
 
+import com.qs.game.SpringWebSocketApp;
 import com.qs.game.model.communication.UserTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * Created by zun.wei on 2018/11/27.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = {SpringWebSocketApp.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserDaoTest {
 
 

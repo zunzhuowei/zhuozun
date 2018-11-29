@@ -1,9 +1,8 @@
 package com.qs.game.config;
 
-import com.qs.game.server.WebSocketServer;
+import com.qs.game.socket.server.WebSocketServer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 
 /**

@@ -3,7 +3,7 @@ package com.qs.game.handler;
 import com.qs.game.config.SysConfig;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnCloseEven;
-import com.qs.game.server.WebSocketServer;
+import com.qs.game.socket.server.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
-package com.qs.game.client;
+package com.qs.game.socket.client;
 
-import com.qs.game.config.TextEncoder;
+import com.qs.game.socket.TextEncoder;
 import com.qs.game.model.communication.UserTest;
 import com.qs.game.utils.ByteUtils;
 import org.apache.juli.logging.Log;

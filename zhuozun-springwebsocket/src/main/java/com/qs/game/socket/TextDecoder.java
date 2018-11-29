@@ -1,4 +1,4 @@
-package com.qs.game.config;
+package com.qs.game.socket;
 
 import com.alibaba.fastjson.JSON;
 

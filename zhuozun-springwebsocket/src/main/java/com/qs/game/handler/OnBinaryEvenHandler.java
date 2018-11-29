@@ -4,7 +4,7 @@ import com.qs.game.config.SysConfig;
 import com.qs.game.model.communication.UserTest;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
-import com.qs.game.server.WebSocketServer;
+import com.qs.game.socket.server.WebSocketServer;
 import com.qs.game.utils.ByteUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
