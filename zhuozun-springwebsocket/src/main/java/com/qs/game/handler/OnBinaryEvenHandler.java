@@ -34,7 +34,16 @@ public class OnBinaryEvenHandler implements EvenHandler {
             e.printStackTrace();
         }
 
-        //if (true) return;
+        int i = message.get();
+        System.out.println("i = " + i);
+
+        String tam = ByteUtils.getStr(message, 15);
+        System.out.println("tam = " + tam);
+
+        int i2 = message.getInt();
+        System.out.println("i2 = " + i2);
+
+        if (true) return;
 
         SysConfig.THREAD_POOL_EXECUTOR.execute(() -> {
             ByteBuffer duplicate = message.duplicate();

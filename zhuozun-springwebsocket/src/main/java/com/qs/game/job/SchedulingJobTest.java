@@ -32,7 +32,7 @@ public class SchedulingJobTest {
         {
             Session session = webSocketServer.getSession();
             if (session.isOpen()) {
-                log.info("SchedulingJobTest deleteDeadChannels -------::{}", webSocketServer.getSid());
+                log.debug("SchedulingJobTest deleteDeadChannels -------::{}", webSocketServer.getSid());
                 try {
                     webSocketServer.sendTextMessage("HB");
                 } catch (IOException e) {
