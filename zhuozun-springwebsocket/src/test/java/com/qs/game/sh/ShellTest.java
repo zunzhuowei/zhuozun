@@ -116,14 +116,17 @@ public class ShellTest {
 
         // 回到临时打包位置
         builder.append("cd ").append(ServerEnum.packageTempPath).append("/").append("\n");
+        // 删除src war 临时文件
+        builder.append("rm -rf ").append(serverEnum.artifactId).append("\n");
 
         ps.println(builder.toString());// 往文件里写入字符串
         ps.close();
         // 脚本文件目录
         String commandStr = ServerEnum.gitPath + " " + file.getAbsolutePath();
         ShellTest.exeCmd(commandStr);
-        //boolean del = file.delete();
-        //System.out.println("del = " + del);
+        // 执行完脚本后，删除脚本临时文件。
+        boolean del = file.delete();
+        System.out.println("del = " + del);
     }
 
 
