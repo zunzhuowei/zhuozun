@@ -37,7 +37,7 @@ public class ShellTest {
         File file = new File("temp.txt");
         PrintStream ps = new PrintStream(new FileOutputStream(file));
         StringBuilder builder = new StringBuilder();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
         String[] dependencyArtifactIds = serverEnum.dependencyArtifactIds;
         for (String artifact : dependencyArtifactIds) {
@@ -118,6 +118,13 @@ public class ShellTest {
         builder.append("cd ").append(ServerEnum.packageTempPath).append("/").append("\n");
         // 删除src war 临时文件
         builder.append("rm -rf ").append(serverEnum.artifactId).append("\n");
+
+        // mvn clean 依赖包
+        for (String artifact : dependencyArtifactIds) {
+            builder.append("echo ").append("----------- remove dependency artifact ").append(artifact).append(" --------").append("\n");
+            builder.append("cd ").append(ServerEnum.java_source_path).append("/").append(artifact).append("/\n");
+            builder.append("rm -rf target").append("\n");
+        }
 
         ps.println(builder.toString());// 往文件里写入字符串
         ps.close();
