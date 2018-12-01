@@ -39,6 +39,29 @@ public class ShellTest {
         StringBuilder builder = new StringBuilder();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
+        String[] remote_server_names = serverEnum.remote_server_name; //远程服务器名称
+
+        // 远程执行ssh 备份上次部署的war包添加一个日期
+        boolean isBackups = serverEnum.isBackups;
+        if (isBackups) {
+            builder.append("echo ").append("----------- Remote execution of SSH last backup war ------------").append("\n");
+            for (String remote_server_name : remote_server_names) {
+                builder.append("ssh ").append(remote_server_name).append(" << ").append("remotessh").append("\n")
+                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
+                //备份 上一次部署的 war 包
+                builder.append("cd ").append("webapps").append("/\n")
+                        .append("cp -r ").append(serverEnum.warPackageName).append(" ")
+                        .append(serverEnum.warPackageName)
+                        .append(simpleDateFormat.format(new Date())).append("\n")
+                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
+                builder.append("echo ").append("----------- finish  last backup war on remote server ")
+                        .append(remote_server_name).append(" ------------").append("\n")
+                        .append("exit").append("\n")
+                        .append("remotessh").append("\n");
+            }
+        }
+
+        // 打依赖包
         String[] dependencyArtifactIds = serverEnum.dependencyArtifactIds;
         for (String artifact : dependencyArtifactIds) {
             builder.append("echo ").append("----------- install artifact ").append(artifact).append(" --------").append("\n");
@@ -88,7 +111,7 @@ public class ShellTest {
 
         //上传war 到远程服务器
         builder.append("echo ").append("----------- Upload war to remote server ------------").append("\n");
-        String[] remote_server_names = serverEnum.remote_server_name;
+
         for (String remote_server_name : remote_server_names) {
             builder.append("scp -r ").append(serverEnum.warPackageName).append(" ").append(remote_server_name)
                     .append(":").append(serverEnum.remote_tomcat_path).append("\n");
@@ -99,15 +122,6 @@ public class ShellTest {
         for (String remote_server_name : remote_server_names) {
             builder.append("ssh ").append(remote_server_name).append(" << ").append("remotessh").append("\n")
                     .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
-            boolean isBackups = serverEnum.isBackups;
-            if (isBackups) {
-                //备份 上一次部署的 war 包
-                builder.append("cd ").append("webapps").append("/\n")
-                        .append("cp -r ").append(serverEnum.warPackageName).append(" ")
-                        .append(serverEnum.warPackageName)
-                        .append(simpleDateFormat.format(new Date())).append("\n")
-                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
-            }
             builder.append("mv ").append(serverEnum.warPackageName).append(" ").append("webapps").append("\n")
                     .append("echo ").append("----------- finish deploy war to server ").append(remote_server_name).append(" ------------").append("\n")
                     .append("exit").append("\n")
