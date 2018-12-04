@@ -6,12 +6,14 @@ import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.socket.server.WebSocketServer;
 import com.qs.game.utils.ByteUtils;
+import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.EncodeException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.
@@ -34,14 +36,25 @@ public class OnBinaryEvenHandler implements EvenHandler {
             e.printStackTrace();
         }
 
-        int i = message.get();
+        int i = DataUtils.getByteByBuffer(message);
         System.out.println("i = " + i);
 
-        String tam = ByteUtils.getStr(message, 15);
+        String tam = DataUtils.getStrByBuffer(message, 15);
         System.out.println("tam = " + tam);
 
-        int i2 = message.getInt();
+        //int i2 = bytesToInt(message.array(), message.position());
+
+        int i2 = DataUtils.getIntByBuffer(message);
         System.out.println("i2 = " + i2);
+
+        int i3 = DataUtils.getShortByBuffer(message);
+        System.out.println("i3= " + i3);
+
+        byte i4 = DataUtils.getByteByBuffer(message);
+        System.out.println("i4= " + (char)i4);
+
+        byte i5 = DataUtils.getByteByBuffer(message);
+        System.out.println("i5= " + (char)i5);
 
         if (true) return;
 

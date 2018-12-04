@@ -9,7 +9,21 @@ if (typeof(WebSocket) === undefined) {
     //打开事件
     socket.onopen = function () {
         console.log("Socket 已打开");
-        socket.send(blob);
+        var byte = new ByteArray();
+        var byteNum = Int8Array.of(110);
+        var intNum = Int32Array.of(1008611111);
+        var shortNum = Int16Array.of(108);
+
+        var str = new TextEncoder().encode("我爱天安门");
+        byte.push(byteNum);
+        byte.push(str);
+
+        byte.push(intNum);
+        byte.push(shortNum);
+        byte.push('Q'.charAt(0));
+        byte.push('S'.charAt(0));
+
+        socket.send(new Blob(byte.list, {type: "application/octet-binary"}));
         //socket.send("{\"id\":11111,\"passWord\":\"1112311111\",\"sex\":2,\"userName\":\"张三123123\"}");
     };
     //获得消息事件
@@ -29,65 +43,56 @@ if (typeof(WebSocket) === undefined) {
     //socket.connect();
     //socket.disconnect();
 
-    var ab = new ArrayBuffer(1024); //1024字节
+    function ByteArray(){
+        this.list=[];
+        this.byteOffset = 0;
+        this.length = 0;
+    }
 
-    var str = new TextEncoder("utf-8").encode("我爱天安门");
-    var strLen = str.length;
-    console.log("strLen ---------::" + strLen);
-    var iA = new Int8Array(ab, 0, 1); //
-    iA[0] = 97;
-
-    var iB = new Int16Array(ab);
-    iB = intTobytes2(n);
-
-    var blob = new Blob([iA, str, iB], {type: "application/octet-binary"});
-
-
-    //Uint8Array转字符串
-    function Uint8ArrayToString(fileData){
-        var dataString = "";
-        for (var i = 0; i < fileData.length; i++) {
-            dataString += String.fromCharCode(fileData[i]);
+    var p = ByteArray.prototype;
+    p.push = function (unit8Arr) {
+        this.list.push(unit8Arr);
+        this.length += unit8Arr.length;
+    };
+    p.readBytes = function (len) {
+        if (len > 0) {
+            var rbuf = new Uint8Array(len);
+            var rbuf_ind = 0;
+            while (rbuf_ind < len) {
+                if (this.list.length > 0) {
+                    var tmpbuf = this.list.shift();
+                    var tmplen = tmpbuf.length;
+                    var last_len = len - rbuf_ind;
+                    if (tmplen >= last_len) {
+                        //足夠了
+                        var tmpbuf2 = tmpbuf.subarray(0, last_len);
+                        rbuf.set(tmpbuf2, rbuf_ind);
+                        rbuf_ind += tmpbuf2.length;
+                        if (last_len < tmplen) {
+                            var newUint8Array = tmpbuf.subarray(last_len, tmplen);
+                            this.list.unshift(newUint8Array);
+                        }
+                        break;
+                    } else {
+                        rbuf.set(tmpbuf, rbuf_ind);
+                        rbuf_ind += tmplen;
+                    }
+                } else {
+                    rbuf = rbuf.subarray(0, rbuf_ind);
+                    break;
+                }
+            }
+            this.length -= rbuf.length;
+            return rbuf;
         }
+        return null;
+    };
 
-        return dataString
-    }
-
-    //字符串转Uint8Array
-    function stringToUint8Array(str){
-        var arr = [];
-        for (var i = 0, j = str.length; i < j; ++i) {
-            arr.push(str.charCodeAt(i));
-        }
-
-        var tmpUint8Array = new Uint8Array(arr);
-        return tmpUint8Array
-    }
-
-    //int转byte[]
-    function intTobytes2(n) {
-        var bytes = [];
-
-        for (var i = 0; i < 2; i++) {
-            bytes[i] = n >> (8 - i * 8);
-
-        }
-        return bytes;
-    }
-
-    //string转ArrayBuffer
-    function str2ab(str) {
-        var buf = new ArrayBuffer(str.length * 2); // 每个字符占用2个字节
-        var bufView = new Uint16Array(buf);
-        for (var i = 0, strLen = str.length; i < strLen; i++) {
-            bufView[i] = str.charCodeAt(i);
-        }
-        return buf;
-    }
-
-    //ArrayBuffer转String
-    function ab2str(buf) {
-        return String.fromCharCode.apply(null, new Uint8Array(buf));
-    }
-
+    /*
+    var byte=new ByteArray();
+    byte.push(new Uint8Array([1,2,4,5]));
+    byte.push(new Uint8Array([5,3,4,5]));
+    byte.readBytes(2);
+    byte.readBytes(2);
+     */
 }
