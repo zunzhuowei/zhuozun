@@ -11,19 +11,19 @@ import java.util.Date;
  * Created by zun.wei on 2018/11/29 10:33.
  * Description: test for execute for shell
  */
-public class ShellTest {
+public class ShellTest4Svn {
 
 
     @Test
     public void deployWar() throws IOException {
         // 选择要发布的应用
-        ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_GAME);
+        //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_GAME);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_ACTI_HAPPY_GAME);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_GAME);
 
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_BEARD);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_ACTI_HAPPY_BEARD);
-        //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_BEARD);
+        ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_BEARD);
 
 
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.ONLINE_SERVER_WEB_HAPPY_GAME);
@@ -144,7 +144,7 @@ public class ShellTest {
         ps.close();
         // 脚本文件目录
         String commandStr = ServerEnum.gitPath + " " + file.getAbsolutePath();
-        ShellTest.exeCmd(commandStr);
+        ShellTest4Svn.exeCmd(commandStr);
         // 执行完脚本后，删除脚本临时文件。
         boolean del = file.delete();
         System.out.println("del = " + del);
