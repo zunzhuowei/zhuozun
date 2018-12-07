@@ -8,7 +8,15 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 import javax.servlet.MultipartConfigElement;
 
@@ -16,7 +24,8 @@ import javax.servlet.MultipartConfigElement;
  * Created by zun.wei on 2018/11/21.
  */
 @Configuration
-public class WebSocketConfig implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
+@EnableWebSocket // (1) spring websocket config
+public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
     @Value("${tomcat.server.port}")
     private String port;
@@ -79,6 +88,32 @@ public class WebSocketConfig implements WebServerFactoryCustomizer<ConfigurableS
                     connector.setAttribute("compression", compression);
                 });
 
+    }
+
+    @Bean
+    public ServletServerContainerFactoryBean createWebSocketContainer() {
+        ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+        container.setMaxTextMessageBufferSize(8192); // 接收单个包最大缓存值
+        container.setMaxBinaryMessageBufferSize(8192);
+        return container;
+    }
+
+
+    // spring websocket 和tomcat websocket 同时配置相同path，tomcat优先级比较高，
+    // 如果不同两者path路径，则两者共存。
+    @Override// (2) spring websocket config
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(new MyHandler(),"/websocket2/{sid}")
+                .addInterceptors(new HttpSessionHandshakeInterceptor());
+    }
+
+    // (3) spring websocket config
+    public class MyHandler extends TextWebSocketHandler {
+        @Override
+        public void handleTextMessage(WebSocketSession session, TextMessage message) {
+            String MyHandler = message.getPayload();
+            System.out.println("MyHandler = " + MyHandler);
+        }
     }
 
 }
