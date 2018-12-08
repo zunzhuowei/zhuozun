@@ -11,19 +11,19 @@ import java.util.Date;
  * Created by zun.wei on 2018/11/29 10:33.
  * Description: test for execute for shell
  */
-public class ShellTest {
+public class ShellTest4Svn {
 
 
     @Test
     public void deployWar() throws IOException {
         // 选择要发布的应用
-        ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_GAME);
+        //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_GAME);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_ACTI_HAPPY_GAME);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_GAME);
 
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_WEB_HAPPY_BEARD);
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_ACTI_HAPPY_BEARD);
-        //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_BEARD);
+        ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.TEST_SERVER_APP_HAPPY_BEARD);
 
 
         //ServerEnum serverEnum = ServerEnum.getServerEnum(ServerEnum.ONLINE_SERVER_WEB_HAPPY_GAME);
@@ -37,8 +37,31 @@ public class ShellTest {
         File file = new File("temp.txt");
         PrintStream ps = new PrintStream(new FileOutputStream(file));
         StringBuilder builder = new StringBuilder();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 
+        String[] remote_server_names = serverEnum.remote_server_name; //远程服务器名称
+
+        // 远程执行ssh 备份上次部署的war包添加一个日期
+        boolean isBackups = serverEnum.isBackups;
+        if (isBackups) {
+            builder.append("echo ").append("----------- Remote execution of SSH last backup war ------------").append("\n");
+            for (String remote_server_name : remote_server_names) {
+                builder.append("ssh ").append(remote_server_name).append(" << ").append("remotessh").append("\n")
+                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
+                //备份 上一次部署的 war 包
+                builder.append("cd ").append("webapps").append("/\n")
+                        .append("cp -r ").append(serverEnum.warPackageName).append(" ")
+                        .append(serverEnum.warPackageName)
+                        .append(simpleDateFormat.format(new Date())).append("\n")
+                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
+                builder.append("echo ").append("----------- finish  last backup war on remote server ")
+                        .append(remote_server_name).append(" ------------").append("\n")
+                        .append("exit").append("\n")
+                        .append("remotessh").append("\n");
+            }
+        }
+
+        // 打依赖包
         String[] dependencyArtifactIds = serverEnum.dependencyArtifactIds;
         for (String artifact : dependencyArtifactIds) {
             builder.append("echo ").append("----------- install artifact ").append(artifact).append(" --------").append("\n");
@@ -88,7 +111,7 @@ public class ShellTest {
 
         //上传war 到远程服务器
         builder.append("echo ").append("----------- Upload war to remote server ------------").append("\n");
-        String[] remote_server_names = serverEnum.remote_server_name;
+
         for (String remote_server_name : remote_server_names) {
             builder.append("scp -r ").append(serverEnum.warPackageName).append(" ").append(remote_server_name)
                     .append(":").append(serverEnum.remote_tomcat_path).append("\n");
@@ -99,15 +122,6 @@ public class ShellTest {
         for (String remote_server_name : remote_server_names) {
             builder.append("ssh ").append(remote_server_name).append(" << ").append("remotessh").append("\n")
                     .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
-            boolean isBackups = serverEnum.isBackups;
-            if (isBackups) {
-                //备份 上一次部署的 war 包
-                builder.append("cd ").append("webapps").append("/\n")
-                        .append("cp -r ").append(serverEnum.warPackageName).append(" ")
-                        .append(serverEnum.warPackageName)
-                        .append(simpleDateFormat.format(new Date())).append("\n")
-                        .append("cd ").append(serverEnum.remote_tomcat_path).append("\n");
-            }
             builder.append("mv ").append(serverEnum.warPackageName).append(" ").append("webapps").append("\n")
                     .append("echo ").append("----------- finish deploy war to server ").append(remote_server_name).append(" ------------").append("\n")
                     .append("exit").append("\n")
@@ -116,14 +130,24 @@ public class ShellTest {
 
         // 回到临时打包位置
         builder.append("cd ").append(ServerEnum.packageTempPath).append("/").append("\n");
+        // 删除src war 临时文件
+        builder.append("rm -rf ").append(serverEnum.artifactId).append("\n");
+
+        // mvn clean 依赖包
+        for (String artifact : dependencyArtifactIds) {
+            builder.append("echo ").append("----------- remove dependency artifact ").append(artifact).append(" --------").append("\n");
+            builder.append("cd ").append(ServerEnum.java_source_path).append("/").append(artifact).append("/\n");
+            builder.append("rm -rf target").append("\n");
+        }
 
         ps.println(builder.toString());// 往文件里写入字符串
         ps.close();
         // 脚本文件目录
         String commandStr = ServerEnum.gitPath + " " + file.getAbsolutePath();
-        ShellTest.exeCmd(commandStr);
-        //boolean del = file.delete();
-        //System.out.println("del = " + del);
+        ShellTest4Svn.exeCmd(commandStr);
+        // 执行完脚本后，删除脚本临时文件。
+        boolean del = file.delete();
+        System.out.println("del = " + del);
     }
 
 
