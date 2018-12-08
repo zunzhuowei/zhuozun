@@ -1,5 +1,8 @@
 package com.qs.game.config;
 
+import com.qs.game.handler.spring.SpringBinaryWebSocketHandler;
+import com.qs.game.handler.spring.SpringTextWebSocketHandler;
+import com.qs.game.interceptor.SpringWebSocketHandlerInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -8,16 +11,13 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
+import javax.annotation.Resource;
 import javax.servlet.MultipartConfigElement;
 
 /**
@@ -99,21 +99,20 @@ public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCus
     }
 
 
+    @Resource
+    private SpringBinaryWebSocketHandler springBinaryWebSocketHandler;
+
+    @Resource
+    private SpringTextWebSocketHandler springTextWebSocketHandler;
+
     // spring websocket 和tomcat websocket 同时配置相同path，tomcat优先级比较高，
     // 如果不同两者path路径，则两者共存。
     @Override// (2) spring websocket config
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new MyHandler(),"/websocket2/{sid}")
-                .addInterceptors(new HttpSessionHandshakeInterceptor());
-    }
-
-    // (3) spring websocket config
-    public class MyHandler extends TextWebSocketHandler {
-        @Override
-        public void handleTextMessage(WebSocketSession session, TextMessage message) {
-            String MyHandler = message.getPayload();
-            System.out.println("MyHandler = " + MyHandler);
-        }
+        registry.addHandler(springTextWebSocketHandler, "/websocket2/{sid}")
+                .addHandler(springBinaryWebSocketHandler, "/websocket2/{sid}")
+                .addInterceptors(new SpringWebSocketHandlerInterceptor())
+                .setAllowedOrigins("*");
     }
 
 }
