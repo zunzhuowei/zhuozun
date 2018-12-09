@@ -33,6 +33,7 @@ public class SpringWebSocketHandlerInterceptor extends HttpSessionHandshakeInter
             boolean isNum = StringUtils.isNumeric(path);
             log.info("beforeHandshake isNum = {}", isNum);
             if (!isNum) return false;
+            attributes.put("sid", path);
         } else {
             return false;
         }

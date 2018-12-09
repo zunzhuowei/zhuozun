@@ -1,9 +1,13 @@
 package com.qs.game.socket.server;
 
 import com.qs.game.socket.MessageRouter;
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.TextEncoder;
 import com.qs.game.constant.EvenType;
 import com.qs.game.model.even.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +23,13 @@ import java.util.concurrent.Future;
  * Created by zun.wei on 2018/11/19 10:52.
  * Description: websocket 服务端(多例，该类中不支持spring 注入)
  */
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Component
+@Data
+@Accessors(chain = true)
 @ServerEndpoint(value = "/websocket/{sid}", encoders = {TextEncoder.class})
-public class WebSocketServer {
+public class WebSocketServer extends SysWebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
@@ -30,22 +37,6 @@ public class WebSocketServer {
     //接收sid
     private String sid = "";
 
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    public String getSid() {
-        return sid;
-    }
-
-    public void setSid(String sid) {
-        this.sid = sid;
-    }
 
     /**
      * 连接建立成功调用的方法
@@ -78,7 +69,7 @@ public class WebSocketServer {
     }
 
     /**
-     *  接收客户端 二进制格式请求数据
+     * 接收客户端 二进制格式请求数据
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session, @PathParam("sid") String sid) {
@@ -87,7 +78,7 @@ public class WebSocketServer {
     }
 
     /**
-     *  客户端心跳
+     * 客户端心跳
      */
     @OnMessage
     public void onMessage(PongMessage pongMessage, Session session, @PathParam("sid") String sid) {
@@ -105,32 +96,27 @@ public class WebSocketServer {
     }
 
 
-
     /**
-     *  Send the message, blocking until the message is sent.
+     * Send the message, blocking until the message is sent.
      */
     public void sendTextMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
     }
 
     /**
-     *  Send the message, blocking until the message is sent.
+     * Send the message, blocking until the message is sent.
      */
     public void sendBinaryMessage(byte[] message) throws IOException {
         this.session.getBasicRemote().sendBinary(ByteBuffer.wrap(message));
     }
 
     /**
-     *  Send the message, blocking until the message is sent.
-     *  Encodes object as a message and sends it to the remote endpoint.
+     * Send the message, blocking until the message is sent.
+     * Encodes object as a message and sends it to the remote endpoint.
      */
     public void sendObjectMessage(Serializable object) throws IOException, EncodeException {
         this.session.getBasicRemote().sendObject(object);
     }
-
-
-
-
 
 
     /**
@@ -157,11 +143,10 @@ public class WebSocketServer {
     }
 
     /**
-     *
      * @param completion Used to signal to the client when the message has been sent
-     * @param timeout The new timeout for sending messages asynchronously
-     *                 in milliseconds. A non-positive value means an
-     *                 infinite timeout.
+     * @param timeout    The new timeout for sending messages asynchronously
+     *                   in milliseconds. A non-positive value means an
+     *                   infinite timeout.
      */
     public void sendTextMessageAsync(String message, SendHandler completion, long timeout) {
         RemoteEndpoint.Async async = this.session.getAsyncRemote();
@@ -178,23 +163,17 @@ public class WebSocketServer {
         this.session.getAsyncRemote().sendObject(object, completion);
     }
 
-    public Future<Void> sendObjectMessageAsync(Serializable object,long timeout) {
+    public Future<Void> sendObjectMessageAsync(Serializable object, long timeout) {
         RemoteEndpoint.Async async = this.session.getAsyncRemote();
         async.setSendTimeout(timeout);
         return async.sendObject(object);
     }
 
-    public void sendObjectMessageAsync(Serializable object, SendHandler completion,long timeout) {
+    public void sendObjectMessageAsync(Serializable object, SendHandler completion, long timeout) {
         RemoteEndpoint.Async async = this.session.getAsyncRemote();
         async.setSendTimeout(timeout);
         async.sendObject(object, completion);
     }
-
-
-
-
-
-
 
 
     /**
@@ -221,11 +200,10 @@ public class WebSocketServer {
     }
 
     /**
-     *
      * @param completion Used to signal to the client when the message has been sent
-     * @param timeout The new timeout for sending messages asynchronously
-     *                 in milliseconds. A non-positive value means an
-     *                 infinite timeout.
+     * @param timeout    The new timeout for sending messages asynchronously
+     *                   in milliseconds. A non-positive value means an
+     *                   infinite timeout.
      */
     public void sendBinaryMessageAsync(byte[] message, SendHandler completion, long timeout) {
         RemoteEndpoint.Async async = this.session.getAsyncRemote();

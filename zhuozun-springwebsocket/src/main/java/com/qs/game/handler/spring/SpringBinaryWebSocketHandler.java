@@ -7,6 +7,9 @@ import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import java.nio.ByteBuffer;
+import java.util.Map;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/12/9.
@@ -44,6 +47,11 @@ public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
 
     @Override //当建立连接之后
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        Map<String, Object> attrs = session.getAttributes();
+        log.info("SpringBinaryWebSocketHandler afterConnectionEstablished attrs = {}", attrs);
+        String sid = attrs.get("sid") + "";
+        SpringWebSocketSession springWebSocketSession = new SpringWebSocketSession().setWebSocketSession(session).setSid(sid);
+        WEB_SOCKET_MAP.put(sid, springWebSocketSession);
         ByteBuffer byteBuffer = ByteBuffer.wrap("当建立连接之后".getBytes());
         BinaryMessage binaryMessage = new BinaryMessage(byteBuffer);
         session.sendMessage(binaryMessage);
@@ -63,6 +71,10 @@ public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        Map<String, Object> attrs = session.getAttributes();
+        log.info("SpringBinaryWebSocketHandler afterConnectionClosed attrs = {}", attrs);
+        String sid = attrs.get("sid") + "";
+        WEB_SOCKET_MAP.remove(sid);
         super.afterConnectionClosed(session, status);
     }
 

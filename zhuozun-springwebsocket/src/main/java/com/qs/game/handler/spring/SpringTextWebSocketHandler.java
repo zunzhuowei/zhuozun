@@ -5,6 +5,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.Map;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
+
 /**
  * Created by zun.wei on 2018/12/9.
  */
@@ -21,6 +25,11 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        Map<String, Object> attrs = session.getAttributes();
+        log.info("SpringTextWebSocketHandler afterConnectionEstablished attrs = {}", attrs);
+        String sid = attrs.get("sid") + "";
+        SpringWebSocketSession springWebSocketSession = new SpringWebSocketSession().setWebSocketSession(session).setSid(sid);
+        WEB_SOCKET_MAP.put(sid, springWebSocketSession);
         super.afterConnectionEstablished(session);
     }
 
@@ -36,6 +45,10 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        Map<String, Object> attrs = session.getAttributes();
+        log.info("SpringTextWebSocketHandler afterConnectionClosed attrs = {}", attrs);
+        String sid = attrs.get("sid") + "";
+        WEB_SOCKET_MAP.remove(sid);
         super.afterConnectionClosed(session, status);
     }
 

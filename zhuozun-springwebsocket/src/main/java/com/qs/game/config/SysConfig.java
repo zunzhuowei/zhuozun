@@ -1,5 +1,6 @@
 package com.qs.game.config;
 
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.server.WebSocketServer;
 
 import java.io.Serializable;
@@ -18,6 +19,6 @@ public class SysConfig implements Serializable {
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     //public static final  CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<WebSocketServer>(new ArrayList<>(102400));
 
-    public static final ConcurrentHashMap<String, WebSocketServer> WEB_SOCKET_MAP = new ConcurrentHashMap<>(10240);
+    public static final ConcurrentHashMap<String, SysWebSocket> WEB_SOCKET_MAP = new ConcurrentHashMap<>(10240);
 
 }
