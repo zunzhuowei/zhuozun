@@ -3,6 +3,7 @@ package com.qs.game.handler;
 import com.qs.game.config.SysConfig;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnCloseEven;
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.server.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,9 @@ public class OnCloseEvenHandler implements EvenHandler {
     @Override
     public void handler(Even even) {
         OnCloseEven onCloseEven = (OnCloseEven) even;
-        WebSocketServer webSocketServer = onCloseEven.getWebSocketServer();
-        CloseReason closeReason = onCloseEven.getCloseReason();
+        SysWebSocket sysWebSocket = onCloseEven.getSysWebSocket();
         String sid = onCloseEven.getSid();
-        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", webSocketServer.getSid(), closeReason.getReasonPhrase());
+        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sysWebSocket.getSid(), onCloseEven.getCloseReason());
         SysConfig.WEB_SOCKET_MAP.remove(sid); //从set中删除
     }
 

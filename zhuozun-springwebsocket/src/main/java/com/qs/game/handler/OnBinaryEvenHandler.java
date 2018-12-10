@@ -1,9 +1,11 @@
 package com.qs.game.handler;
 
+import com.alibaba.fastjson.JSON;
 import com.qs.game.config.SysConfig;
 import com.qs.game.model.communication.UserTest;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.server.WebSocketServer;
 import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
@@ -29,10 +31,11 @@ public class OnBinaryEvenHandler implements EvenHandler {
         OnBinaryEven onBinaryEven = (OnBinaryEven) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         String sid = onBinaryEven.getSid();
-        WebSocketServer webSocketServer = onBinaryEven.getWebSocketServer();
+        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
         try {
-            webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
-        } catch (IOException | EncodeException e) {
+            UserTest userTest = new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0);
+            sysWebSocket.sendMessage(JSON.toJSONString(userTest));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -83,7 +86,7 @@ public class OnBinaryEvenHandler implements EvenHandler {
             log.info("收到来自窗口" + sid + "的信息:" + message);
 
             try {
-                webSocketServer.getSession().getBasicRemote().sendBinary(duplicate);
+                sysWebSocket.sendMessage(duplicate);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,6 @@
 package com.qs.game.model.even;
 
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.server.WebSocketServer;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -19,6 +20,6 @@ public class Even implements Serializable {
 
     private String sid;
 
-    private WebSocketServer webSocketServer;
+    private SysWebSocket sysWebSocket;
 
 }

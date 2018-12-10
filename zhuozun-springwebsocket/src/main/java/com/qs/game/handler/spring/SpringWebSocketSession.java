@@ -5,7 +5,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.BinaryMessage;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by zun.wei on 2018/12/9.
@@ -22,6 +27,21 @@ public class SpringWebSocketSession extends SysWebSocket {
     //接收sid
     private String sid;
 
+    @Override
+    public void sendMessage(byte[] bytesMsg) throws IOException {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytesMsg);
+        BinaryMessage binaryMessage = new BinaryMessage(byteBuffer);
+        webSocketSession.sendMessage(binaryMessage);
+    }
 
+    @Override
+    public void sendMessage(String strMsg) throws IOException {
+        webSocketSession.sendMessage(new TextMessage(strMsg));
+    }
+
+    public void sendMessage(ByteBuffer byteBuffer) throws IOException {
+        BinaryMessage binaryMessage = new BinaryMessage(byteBuffer);
+        webSocketSession.sendMessage(binaryMessage);
+    }
 
 }

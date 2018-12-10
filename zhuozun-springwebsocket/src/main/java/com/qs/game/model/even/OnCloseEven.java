@@ -17,4 +17,6 @@ public class OnCloseEven extends Even {
 
     private CloseReason closeReason;
 
+    private String reason;
+
 }

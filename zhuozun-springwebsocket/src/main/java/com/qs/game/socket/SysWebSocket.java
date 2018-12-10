@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.websocket.Session;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  * Created by zun.wei on 2018/12/9.
@@ -22,5 +24,11 @@ public class SysWebSocket implements Serializable {
     private String sid = "";
 
     private WebSocketSession webSocketSession;
+
+    public void sendMessage(byte[] bytesMsg) throws IOException {}
+
+    public void sendMessage(String strMsg) throws IOException {}
+
+    public void sendMessage(ByteBuffer byteBuffer) throws IOException {}
 
 }

@@ -13,12 +13,17 @@ import java.util.concurrent.*;
 public class SysConfig implements Serializable {
 
     public static final ExecutorService THREAD_POOL_EXECUTOR =
-            new ThreadPoolExecutor(12, 16, 0L,
-                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(100000));//CPU核数4-10倍
+            //(1)核心线程数最大值;(2)线程总数最大值;(3)非核心线程闲置超时时长;(4)keepAliveTime的单位;(5)
+            new ThreadPoolExecutor(10, 18, 0L,
+                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());//CPU核数4-10倍
 
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-    //public static final  CopyOnWriteArraySet<WebSocketServer> webSocketSet = new CopyOnWriteArraySet<WebSocketServer>(new ArrayList<>(102400));
+    // 消息路由线程池
+    public static final ExecutorService ROUTER_POOL_EXECUTOR =
+            //(1)核心线程数最大值;(2)线程总数最大值;(3)非核心线程闲置超时时长;(4)keepAliveTime的单位;(5)
+            new ThreadPoolExecutor(3, 6, 0L,
+                    TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());//CPU核数4-10倍
 
+    //存储在线玩家session
     public static final ConcurrentHashMap<String, SysWebSocket> WEB_SOCKET_MAP = new ConcurrentHashMap<>(10240);
 
 }

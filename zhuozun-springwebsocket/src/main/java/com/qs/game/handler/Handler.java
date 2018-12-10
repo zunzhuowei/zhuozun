@@ -1,13 +1,21 @@
 package com.qs.game.handler;
 
+import com.qs.game.constant.CMD;
 import com.qs.game.model.even.Even;
+import com.qs.game.model.even.OnBinaryEven;
+import com.qs.game.model.even.OnStrEven;
+import com.qs.game.utils.DataUtils;
+import lombok.extern.slf4j.Slf4j;
 
+import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Created by zun.wei on 2018/11/22 11:35.
  * Description: 事件处理实现类
  */
+@Slf4j
 public class Handler implements EvenHandler {
 
     private static OnBinaryEvenHandler binaryEvenHandler;
@@ -21,7 +29,42 @@ public class Handler implements EvenHandler {
 
     private Handler(){}
 
-    public static Handler getInstance() {
+    public static Handler getInstance(Even even, boolean withCustomProtocol) {
+        if (withCustomProtocol) {
+            OnBinaryEven onBinaryEven = even instanceof OnBinaryEven ? ((OnBinaryEven) even) : null;
+            if (Objects.nonNull(onBinaryEven)) {
+                ByteBuffer byteBuffer = onBinaryEven.getByteBuffer();
+                if (Objects.isNull(byteBuffer)) return null;
+                ByteBuffer message = byteBuffer.duplicate();
+                int packHeadLen = message.array().length;
+                if (packHeadLen < 4) {
+                    log.warn("Handler withCustomProtocol msgLen less than {}", 4);
+                    return null;
+                }
+                char q = DataUtils.getCharByBuffer(message);
+                char s = DataUtils.getCharByBuffer(message);
+                if (q != 'Q' || s != 'S') {
+                    log.warn("Handler withCustomProtocol protocol not equals {},{}", q, s);
+                    return null;
+                }
+
+                int cmd = DataUtils.getIntByBuffer(message);
+                boolean b = CMD.existCmd(cmd);
+                if (!b) {
+                    log.warn("Handler withCustomProtocol cmd :{} not exist", cmd);
+                    return null;
+                }
+            }
+        }
+
+        //OnStrEven onStrEven = even instanceof OnStrEven ? ((OnStrEven) even) : null;
+
+
+        //OnCloseEven onCloseEven = even instanceof OnCloseEven ? ((OnCloseEven) even) : null;
+        //OnErrorEven onErrorEven = even instanceof OnErrorEven ? ((OnErrorEven) even) : null;
+        //OnOpenEven onOpenEven = even instanceof OnOpenEven ? ((OnOpenEven) even) : null;
+        //OnPongEven onPongEven = even instanceof OnPongEven ? ((OnPongEven) even) : null;
+
         return instantce;
     }
 
