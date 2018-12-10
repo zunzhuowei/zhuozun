@@ -27,17 +27,14 @@ public class OnBinaryEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception{
         OnBinaryEven onBinaryEven = (OnBinaryEven) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         String sid = onBinaryEven.getSid();
         SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
-        try {
-            UserTest userTest = new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0);
-            sysWebSocket.sendMessage(JSON.toJSONString(userTest));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        UserTest userTest = new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0);
+        sysWebSocket.sendMessage(JSON.toJSONString(userTest));
 
         int i = DataUtils.getByteByBuffer(message);
         System.out.println("i = " + i);
@@ -59,49 +56,6 @@ public class OnBinaryEvenHandler implements EvenHandler {
         byte i5 = DataUtils.getByteByBuffer(message);
         System.out.println("i5= " + (char)i5);
 
-        if (true) return;
-
-        SysConfig.THREAD_POOL_EXECUTOR.execute(() -> {
-            ByteBuffer duplicate = message.duplicate();
-            char q = message.getChar();
-            char s = message.getChar();
-            System.out.println("q = " + q);
-            System.out.println("s = " + s);
-
-            int msgLen = message.getInt();
-            String msg = ByteUtils.getStr(message, msgLen);
-            System.out.println("msg = " + msg);
-
-            int tail = message.getInt();
-            System.out.println("tail = " + tail);
-
-            char c = message.getChar();
-
-            int telLen = message.getInt();
-            String tel = ByteUtils.getStr(message, telLen);
-
-            System.out.println("tel = " + tel);
-            System.out.println("c = " + c);
-
-            log.info("收到来自窗口" + sid + "的信息:" + message);
-
-            try {
-                sysWebSocket.sendMessage(duplicate);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            //群发消息
-            /*SysConfig.WEB_SOCKET_MAP.forEachValue(100L, webSocketServer -> {
-                try {
-                    webSocketServer.sendMessage(message.toString());
-                    webSocketServer.getSession().getBasicRemote().sendBinary(duplicate);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });*/
-
-        });
     }
 
 }

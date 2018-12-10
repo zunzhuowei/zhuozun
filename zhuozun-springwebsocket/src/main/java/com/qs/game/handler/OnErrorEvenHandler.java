@@ -15,7 +15,7 @@ public class OnErrorEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception {
         OnErrorEven onErrorEven = (OnErrorEven) even;
         Throwable error = onErrorEven.getError();
         String sid = onErrorEven.getSid();

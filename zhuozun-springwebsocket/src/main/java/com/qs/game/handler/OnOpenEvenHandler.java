@@ -21,7 +21,7 @@ public class OnOpenEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception {
         OnOpenEven onOpenEven = (OnOpenEven) even;
         SysWebSocket sysWebSocket = onOpenEven.getSysWebSocket();
         String sid = onOpenEven.getSid();
@@ -30,13 +30,9 @@ public class OnOpenEvenHandler implements EvenHandler {
         sysWebSocket.setWebSocketSession(sysWebSocket.getWebSocketSession());
         SysConfig.WEB_SOCKET_MAP.put(sid, sysWebSocket);//加入 map 中
         log.info("OnOpenEvenHandler handler sid:{} -- online people:{}", sid, SysConfig.WEB_SOCKET_MAP.size());
-        try {
-            //onOpenEven.getSession().getBasicRemote().sendText("client sid:" +sid + ",连接成功!");
-            //webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
-            sysWebSocket.sendMessage("{\"id\":1,\"passWord\":\"123\",\"sex\":0,\"userName\":\"张三\"}".getBytes());
-        } catch (IOException e) {
-            log.error("websocket IO异常");
-        }
+        //onOpenEven.getSession().getBasicRemote().sendText("client sid:" +sid + ",连接成功!");
+        //webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
+        sysWebSocket.sendMessage("{\"id\":1,\"passWord\":\"123\",\"sex\":0,\"userName\":\"张三\"}".getBytes());
 
     }
 

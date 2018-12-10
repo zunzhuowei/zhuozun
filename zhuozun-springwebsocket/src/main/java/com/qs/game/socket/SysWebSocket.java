@@ -31,4 +31,6 @@ public class SysWebSocket implements Serializable {
 
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {}
 
+    public void closeWebSocket() throws IOException {}
+
 }

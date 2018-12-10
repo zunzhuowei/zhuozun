@@ -21,7 +21,7 @@ import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
  */
 @Component
 @Slf4j
-public class SchedulingJobTest {
+public class SchedulingJob {
 
 
     /**

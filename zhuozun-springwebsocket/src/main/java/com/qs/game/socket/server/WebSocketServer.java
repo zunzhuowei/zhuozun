@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Future;
 
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
+
 /**
  * Created by zun.wei on 2018/11/19 10:52.
  * Description: websocket 服务端(多例，该类中不支持spring 注入)
@@ -53,7 +55,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnClose
     public void onClose(Session session, CloseReason closeReason, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnCloseEven().setCloseReason(closeReason).setReason(closeReason.getReasonPhrase())
+        MessageRouter.route(new OnCloseEven().setReason(closeReason.getReasonPhrase())
                 .setSession(session).setSid(sid).setSysWebSocket(this), EvenType.ON_CLOSE);
     }
 
@@ -83,7 +85,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnMessage
     public void onMessage(PongMessage pongMessage, Session session, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnPongEven().setPongMessage(pongMessage).setByteBuffer(pongMessage.getApplicationData())
+        MessageRouter.route(new OnPongEven().setByteBuffer(pongMessage.getApplicationData())
                 .setSession(session).setSid(sid).setSysWebSocket(this), EvenType.ON_PONE_MESSAGE);
     }
 
@@ -225,6 +227,12 @@ public class WebSocketServer extends SysWebSocket {
     @Override
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {
         this.session.getAsyncRemote().sendBinary(byteBuffer);
+    }
+
+    @Override
+    public void closeWebSocket() throws IOException {
+        this.session.close();
+        WEB_SOCKET_MAP.remove(this.sid);
     }
 
 }

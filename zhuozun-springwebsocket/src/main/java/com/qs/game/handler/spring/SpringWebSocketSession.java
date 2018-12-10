@@ -12,6 +12,8 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
+
 /**
  * Created by zun.wei on 2018/12/9.
  *
@@ -39,9 +41,16 @@ public class SpringWebSocketSession extends SysWebSocket {
         webSocketSession.sendMessage(new TextMessage(strMsg));
     }
 
+    @Override
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {
         BinaryMessage binaryMessage = new BinaryMessage(byteBuffer);
         webSocketSession.sendMessage(binaryMessage);
+    }
+
+    @Override
+    public void closeWebSocket() throws IOException {
+        webSocketSession.close();
+        WEB_SOCKET_MAP.remove(this.sid);
     }
 
 }

@@ -60,14 +60,6 @@ public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
         Map<String, Object> attrs = session.getAttributes();
         log.info("SpringBinaryWebSocketHandler afterConnectionEstablished attrs = {}", attrs);
         String sid = attrs.get("sid") + "";
-       /* SpringWebSocketSession springWebSocketSession = new SpringWebSocketSession().setWebSocketSession(session).setSid(sid);
-        WEB_SOCKET_MAP.put(sid, springWebSocketSession);
-        ByteBuffer byteBuffer = ByteBuffer.wrap("当建立连接之后".getBytes());
-        BinaryMessage binaryMessage = new BinaryMessage(byteBuffer);
-        session.sendMessage(binaryMessage);
-        session.sendMessage(new TextMessage("当建立连接之后v"));
-        super.afterConnectionEstablished(session);*/
-
         MessageRouter.route(new OnOpenEven().setSid(sid)
                 .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_OPEN);
     }

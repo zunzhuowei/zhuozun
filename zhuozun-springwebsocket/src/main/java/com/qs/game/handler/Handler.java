@@ -6,6 +6,7 @@ import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.model.even.OnStrEven;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -29,6 +30,12 @@ public class Handler implements EvenHandler {
 
     private Handler(){}
 
+    /**
+     * 获取消息操作类
+     * @param even 消息时间
+     * @param withCustomProtocol 是否校验协议头
+     * @return 消息操作类
+     */
     public static Handler getInstance(Even even, boolean withCustomProtocol) {
         if (withCustomProtocol) {
             OnBinaryEven onBinaryEven = even instanceof OnBinaryEven ? ((OnBinaryEven) even) : null;
@@ -36,11 +43,15 @@ public class Handler implements EvenHandler {
                 ByteBuffer byteBuffer = onBinaryEven.getByteBuffer();
                 if (Objects.isNull(byteBuffer)) return null;
                 ByteBuffer message = byteBuffer.duplicate();
+
+                // check protocol length
                 int packHeadLen = message.array().length;
                 if (packHeadLen < 4) {
                     log.warn("Handler withCustomProtocol msgLen less than {}", 4);
                     return null;
                 }
+
+                // check protocol package head
                 char q = DataUtils.getCharByBuffer(message);
                 char s = DataUtils.getCharByBuffer(message);
                 if (q != 'Q' || s != 'S') {
@@ -48,10 +59,18 @@ public class Handler implements EvenHandler {
                     return null;
                 }
 
+                // check protocol package command
                 int cmd = DataUtils.getIntByBuffer(message);
                 boolean b = CMD.existCmd(cmd);
                 if (!b) {
                     log.warn("Handler withCustomProtocol cmd :{} not exist", cmd);
+                    return null;
+                }
+
+                //TODO check connect sid
+                String sid = onBinaryEven.getSid();
+                if (!StringUtils.isNumeric(sid)) {
+                    log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
                     return null;
                 }
             }
@@ -111,7 +130,7 @@ public class Handler implements EvenHandler {
     }
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception {
 
     }
 

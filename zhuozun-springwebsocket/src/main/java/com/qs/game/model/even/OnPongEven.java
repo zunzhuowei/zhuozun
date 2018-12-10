@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 @Accessors(chain = true)
 public class OnPongEven extends Even{
 
-    private PongMessage pongMessage;
+    //private PongMessage pongMessage;
 
     private ByteBuffer byteBuffer;
 

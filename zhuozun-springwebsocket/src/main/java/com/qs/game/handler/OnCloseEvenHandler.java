@@ -20,11 +20,11 @@ public class OnCloseEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception {
         OnCloseEven onCloseEven = (OnCloseEven) even;
         SysWebSocket sysWebSocket = onCloseEven.getSysWebSocket();
         String sid = onCloseEven.getSid();
-        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sysWebSocket.getSid(), onCloseEven.getCloseReason());
+        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sysWebSocket.getSid(), onCloseEven.getReason());
         SysConfig.WEB_SOCKET_MAP.remove(sid); //从set中删除
     }
 
