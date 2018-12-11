@@ -24,6 +24,6 @@ public class SysConfig implements Serializable {
                     TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());//CPU核数4-10倍
 
     //存储在线玩家session
-    public static final ConcurrentHashMap<String, SysWebSocket> WEB_SOCKET_MAP = new ConcurrentHashMap<>(10240);
+    public static final ConcurrentHashMap<String, SysWebSocket> WEB_SOCKET_MAP = new ConcurrentHashMap<>(40960);
 
 }

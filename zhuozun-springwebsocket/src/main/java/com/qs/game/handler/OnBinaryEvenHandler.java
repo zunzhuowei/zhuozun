@@ -30,32 +30,72 @@ public class OnBinaryEvenHandler implements EvenHandler {
     public void handler(Even even) throws Exception{
         OnBinaryEven onBinaryEven = (OnBinaryEven) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
+        ByteBuffer dup = message.duplicate();
+
         String sid = onBinaryEven.getSid();
         SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
 
-        UserTest userTest = new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0);
-        sysWebSocket.sendMessage(JSON.toJSONString(userTest));
+        char q = DataUtils.getCharByBuffer(message);
+        char s = DataUtils.getCharByBuffer(message);
 
-        int i = DataUtils.getByteByBuffer(message);
-        System.out.println("i = " + i);
+        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
 
-        String tam = DataUtils.getStrByBuffer(message, 15);
-        System.out.println("tam = " + tam);
+        System.out.println("q = " + q);
+        System.out.println("s = " + s);
 
-        //int i2 = bytesToInt(message.array(), message.position());
+        int cmd = DataUtils.getIntByBuffer(message);
+        int strLen = DataUtils.getIntByBuffer(message);
+        String str = DataUtils.getStrByBuffer(message, strLen);
+        int mid = DataUtils.getIntByBuffer(message);
+        char p1 = DataUtils.getCharByBuffer(message);
+        int telLen = DataUtils.getIntByBuffer(message);
+        String tel = DataUtils.getStrByBuffer(message, telLen);
 
-        int i2 = DataUtils.getIntByBuffer(message);
-        System.out.println("i2 = " + i2);
+        System.out.println("mid = " + mid);
+        System.out.println("p1 = " + p1);
+        System.out.println("cmd = " + cmd);
+        System.out.println("str = " + str);
+        System.out.println("tel = " + tel);
 
-        int i3 = DataUtils.getShortByBuffer(message);
-        System.out.println("i3= " + i3);
+        sysWebSocket.sendMessage(dup);
 
-        byte i4 = DataUtils.getByteByBuffer(message);
-        System.out.println("i4= " + (char)i4);
-
-        byte i5 = DataUtils.getByteByBuffer(message);
-        System.out.println("i5= " + (char)i5);
-
+        message.clear();
     }
+
+    // web request
+
+    /*@Override
+    public void handler(Even even) throws Exception{
+        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+        ByteBuffer message = onBinaryEven.getByteBuffer();
+        ByteBuffer dup = message.duplicate();
+
+        String sid = onBinaryEven.getSid();
+        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
+
+        char q = DataUtils.getCharByBuffer(message,true);
+        char s = DataUtils.getCharByBuffer(message,true);
+
+        System.out.println("q = " + q);
+        System.out.println("s = " + s);
+
+        int cmd = DataUtils.getIntByBuffer(message,true);
+        int strLen = DataUtils.getIntByBuffer(message,true);
+        String str = DataUtils.getStrByBuffer(message, strLen);
+        int mid = DataUtils.getIntByBuffer(message,true);
+        char p1 = DataUtils.getCharByBuffer(message,true);
+        int telLen = DataUtils.getIntByBuffer(message,true);
+        String tel = DataUtils.getStrByBuffer(message, telLen);
+
+        System.out.println("mid = " + mid);
+        System.out.println("p1 = " + p1);
+        System.out.println("cmd = " + cmd);
+        System.out.println("str = " + str);
+        System.out.println("tel = " + tel);
+
+        sysWebSocket.sendMessage(dup);
+
+        message.clear();
+    }*/
 
 }

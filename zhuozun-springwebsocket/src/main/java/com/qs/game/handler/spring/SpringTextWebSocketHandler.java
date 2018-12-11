@@ -23,7 +23,7 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringBinaryWebSocketHandler handleBinaryMessage attrs = {}", attrs);
+        log.info("SpringTextWebSocketHandler handleBinaryMessage attrs = {}", attrs);
         String sid = attrs.get("sid") + "";
         MessageRouter.route(new OnStrEven().setMessage(message.getPayload()).setSid(sid)
                 .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_BYTE_MESSAGE);

@@ -73,6 +73,8 @@ public class Handler implements EvenHandler {
                     log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
                     return null;
                 }
+
+                message.clear();
             }
         }
 

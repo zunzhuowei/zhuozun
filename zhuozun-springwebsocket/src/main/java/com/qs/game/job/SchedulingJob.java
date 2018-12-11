@@ -39,7 +39,7 @@ public class SchedulingJob {
                 if (session.isOpen()) {
                     log.debug("SchedulingJobTest tomcat websocket heartbeat -------::{}", webSocketServer.getSid());
                     try {
-                        webSocketServer.sendTextMessage("HB");
+                        webSocketServer.sendTextMessage("HB" + WEB_SOCKET_MAP.size());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -52,7 +52,7 @@ public class SchedulingJob {
                     if (webSocketSession.isOpen()) {
                         log.debug("SchedulingJobTest spring websocket heartbeat -------::{}", springWebSocketSession.getSid());
                         try {
-                            webSocketSession.sendMessage(new TextMessage("HB"));
+                            webSocketSession.sendMessage(new TextMessage("HB" + WEB_SOCKET_MAP.size()));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

@@ -28,7 +28,8 @@ public class MessageRouter implements Serializable {
     // 使用线程池的方式，提交消息到线程池执行。
     public static void route(Even even, EvenType evenType) {
         if (isSubmit) {
-            Future future = ROUTER_POOL_EXECUTOR.submit(() -> {
+            Future future = ROUTER_POOL_EXECUTOR.submit(() ->
+            {
                 try {
                     MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
                 } catch (Exception e) {
@@ -41,8 +42,10 @@ public class MessageRouter implements Serializable {
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-        } else {
-            ROUTER_POOL_EXECUTOR.execute(() -> {
+        }
+        else {
+            ROUTER_POOL_EXECUTOR.execute(() ->
+            {
                 try {
                     MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
                 } catch (Exception e) {

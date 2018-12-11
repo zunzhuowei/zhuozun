@@ -30,9 +30,6 @@ public class OnOpenEvenHandler implements EvenHandler {
         sysWebSocket.setWebSocketSession(sysWebSocket.getWebSocketSession());
         SysConfig.WEB_SOCKET_MAP.put(sid, sysWebSocket);//加入 map 中
         log.info("OnOpenEvenHandler handler sid:{} -- online people:{}", sid, SysConfig.WEB_SOCKET_MAP.size());
-        //onOpenEven.getSession().getBasicRemote().sendText("client sid:" +sid + ",连接成功!");
-        //webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
-        sysWebSocket.sendMessage("{\"id\":1,\"passWord\":\"123\",\"sex\":0,\"userName\":\"张三\"}".getBytes());
 
     }
 
