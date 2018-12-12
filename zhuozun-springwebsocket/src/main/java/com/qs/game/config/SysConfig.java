@@ -61,7 +61,7 @@ public class SysConfig implements Serializable {
      *
      * LinkedBlockingDeque： 一个由链表结构组成的双向阻塞队列。队列头部和尾部都可以添加和移除元素，多线程并发时，可以将锁的竞争最多降到一半。
      */
-    private static final BlockingQueue<Runnable> workQueue = new SynchronousQueue<>();
+    private static final BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
 
     //线程的创建工厂
     private static final ThreadFactory threadFactory = new ThreadFactory() {

@@ -23,7 +23,7 @@ public class MessageRouter implements Serializable {
 
 
     private static final boolean isSubmit = false; //使用线程池submit
-    private static final boolean withCustomProtocol = false; //校验自定义协议
+    private static final boolean withCustomProtocol = true; //校验自定义协议
 
     // 使用线程池的方式，提交消息到线程池执行。
     public static void route(Even even, EvenType evenType) {

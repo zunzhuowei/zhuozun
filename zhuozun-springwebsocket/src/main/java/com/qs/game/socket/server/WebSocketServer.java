@@ -216,17 +216,17 @@ public class WebSocketServer extends SysWebSocket {
 
     @Override
     public void sendMessage(byte[] bytesMsg) throws IOException {
-        this.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(bytesMsg));
+        this.session.getBasicRemote().sendBinary(ByteBuffer.wrap(bytesMsg), true);
     }
 
     @Override
     public void sendMessage(String strMsg) throws IOException {
-        this.session.getAsyncRemote().sendText(strMsg);
+        this.session.getBasicRemote().sendText(strMsg, true);
     }
 
     @Override
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {
-        this.session.getAsyncRemote().sendBinary(byteBuffer);
+        this.session.getBasicRemote().sendBinary(byteBuffer, true);
     }
 
     @Override
