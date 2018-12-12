@@ -1,5 +1,6 @@
 package com.qs.game.handler;
 
+import com.qs.game.config.SysConfig;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnErrorEven;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ public class OnErrorEvenHandler implements EvenHandler {
         String sid = onErrorEven.getSid();
         log.error("OnErrorEvenHandler handler ---- 发生错误 sid:{}, message:{}", sid, error.getMessage());
         //error.printStackTrace();
+        SysConfig.WEB_SOCKET_MAP.remove(sid); //从set中删除
     }
 
 }

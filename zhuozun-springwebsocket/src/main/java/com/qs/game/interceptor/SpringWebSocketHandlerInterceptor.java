@@ -24,21 +24,28 @@ public class SpringWebSocketHandlerInterceptor extends HttpSessionHandshakeInter
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) throws Exception {
-        log.info("Before Handshake");
+        log.debug("Before Handshake");
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            URI uri = servletRequest.getURI();
-            String path = uri.getPath();
-            path = path.substring(path.lastIndexOf("/") + 1, path.length());
-            boolean isNum = StringUtils.isNumeric(path);
-            log.info("beforeHandshake isNum = {}", isNum);
+            String path = null;
+            boolean isNum = false;
+            try {
+                ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+                URI uri = servletRequest.getURI();
+                path = uri.getPath();
+                path = path.substring(path.lastIndexOf("/") + 1, path.length());
+                isNum = StringUtils.isNumeric(path);
+                log.debug("beforeHandshake isNum = {}", isNum);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
             if (!isNum) return false;
             attributes.put("sid", path);
         } else {
             return false;
         }
         boolean b = super.beforeHandshake(request, response, wsHandler, attributes);
-        log.info("SpringWebSocketHandlerInterceptor b:{}", b);
+        log.debug("SpringWebSocketHandlerInterceptor b:{}", b);
         return b;
 
     }

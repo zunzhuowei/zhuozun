@@ -1,21 +1,13 @@
 package com.qs.game.handler;
 
-import com.alibaba.fastjson.JSON;
-import com.qs.game.config.SysConfig;
-import com.qs.game.model.communication.UserTest;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.socket.SysWebSocket;
-import com.qs.game.socket.server.WebSocketServer;
-import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.EncodeException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.

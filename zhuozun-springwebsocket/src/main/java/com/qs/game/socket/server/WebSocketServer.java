@@ -20,18 +20,22 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Future;
 
+import static com.qs.game.config.SysConfig.WEBSOCKET_URI_PATH;
 import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/11/19 10:52.
  * Description: websocket 服务端(多例，该类中不支持spring 注入)
+ *  经过压测，原生tomcat websocket 吞吐能力不及 spring 包装的websocket，
+ *  故弃用该 server 节点
  */
 @EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Component
 @Data
 @Accessors(chain = true)
-@ServerEndpoint(value = "/websocket/{sid}", encoders = {TextEncoder.class})
+//@ServerEndpoint(value = WEBSOCKET_URI_PATH, encoders = {TextEncoder.class})
+@Deprecated
 public class WebSocketServer extends SysWebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据

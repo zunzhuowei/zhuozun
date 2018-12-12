@@ -20,6 +20,8 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 import javax.annotation.Resource;
 import javax.servlet.MultipartConfigElement;
 
+import static com.qs.game.config.SysConfig.WEBSOCKET_URI_PATH;
+
 /**
  * Created by zun.wei on 2018/11/21.
  */
@@ -71,6 +73,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCus
         return factory.createMultipartConfig();
     }
 
+    //优化配置 spring boot 2.0 内置tomcat的
     @Override
     public void customize(ConfigurableServletWebServerFactory webServerFactory) {
         TomcatServletWebServerFactory factory = (TomcatServletWebServerFactory) webServerFactory;
@@ -90,6 +93,7 @@ public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCus
 
     }
 
+    // 配置 servlet 接收的包大小
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
         ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
@@ -109,8 +113,8 @@ public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCus
     // 如果不同两者path路径，则两者共存。
     @Override// (2) spring websocket config
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(springTextWebSocketHandler, "/websocket2/{sid}")
-                .addHandler(springBinaryWebSocketHandler, "/websocket2/{sid}")
+        registry.addHandler(springTextWebSocketHandler, WEBSOCKET_URI_PATH)
+                .addHandler(springBinaryWebSocketHandler, WEBSOCKET_URI_PATH)
                 .addInterceptors(new SpringWebSocketHandlerInterceptor())
                 .setAllowedOrigins("*");
     }

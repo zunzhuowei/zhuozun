@@ -4,11 +4,8 @@ import com.qs.game.config.SysConfig;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnCloseEven;
 import com.qs.game.socket.SysWebSocket;
-import com.qs.game.socket.server.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import javax.websocket.CloseReason;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.

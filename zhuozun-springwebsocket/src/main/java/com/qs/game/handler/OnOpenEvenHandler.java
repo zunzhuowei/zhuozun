@@ -1,15 +1,11 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
-import com.qs.game.handler.spring.SpringWebSocketSession;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnOpenEven;
 import com.qs.game.socket.SysWebSocket;
-import com.qs.game.socket.server.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.

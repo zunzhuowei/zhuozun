@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 @Slf4j
 public class SysWebSocket implements Serializable {
 
+    @Deprecated
     private Session session;
 
     //接收sid
