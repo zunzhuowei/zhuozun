@@ -22,47 +22,32 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handleBinaryMessage attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnStrEven().setMessage(message.getPayload()).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_BYTE_MESSAGE);
+        MessageRouter.route(new OnStrEven().setMessage(message.getPayload())
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_BYTE_MESSAGE);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler afterConnectionEstablished attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnOpenEven().setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_OPEN);
+        MessageRouter.route(new OnOpenEven()
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_OPEN);
     }
 
     @Override
     protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handlePongMessage attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnPongEven().setByteBuffer(message.getPayload()).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_PONE_MESSAGE);
+        MessageRouter.route(new OnPongEven().setByteBuffer(message.getPayload())
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_PONE_MESSAGE);
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handleTransportError attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnErrorEven().setError(exception).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_ERROR_MESSAGE);
+        MessageRouter.route(new OnErrorEven().setError(exception)
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_ERROR_MESSAGE);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler afterConnectionClosed attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
         MessageRouter.route(new OnCloseEven().setReason(status.getReason())
-                .setSid(sid).setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_CLOSE);
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_CLOSE);
     }
 
 }

@@ -3,8 +3,10 @@ package com.qs.game.job;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
@@ -26,7 +28,9 @@ public class SchedulingJob {
         WEB_SOCKET_MAP.forEachValue(10L, webSocket ->
         {
             try {
-                webSocket.sendMessage("HB:" + webSocket.getSid() + ", online people:" + WEB_SOCKET_MAP.size());
+                WebSocketSession webSocketSession = webSocket.getWebSocketSession();
+                Map<String,Object> attrs = webSocketSession.getAttributes();
+                webSocket.sendMessage("HB:" + attrs.get("sid") + ", online people:" + WEB_SOCKET_MAP.size());
             } catch (IOException e) {
                 e.printStackTrace();
             }

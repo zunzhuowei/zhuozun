@@ -22,6 +22,7 @@ public class SysWebSocket implements Serializable {
     private Session session;
 
     //接收sid
+    @Deprecated
     private String sid = "";
 
     private WebSocketSession webSocketSession;
@@ -32,6 +33,6 @@ public class SysWebSocket implements Serializable {
 
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {}
 
-    public void closeWebSocket() throws IOException {}
+    public void closeWebSocket(String sid) throws IOException {}
 
 }

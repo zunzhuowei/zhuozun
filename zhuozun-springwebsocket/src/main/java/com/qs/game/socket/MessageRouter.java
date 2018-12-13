@@ -4,9 +4,11 @@ import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
 import com.qs.game.model.even.Even;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -57,11 +59,16 @@ public class MessageRouter implements Serializable {
     }
 
     private static void executeRouteMessage(Even even, EvenType evenType, boolean withCustomProtocol) throws Exception {
+        SysWebSocket sysWebSocket = even.getSysWebSocket();
+        if (Objects.nonNull(sysWebSocket)) {
+            WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
+            Map<String,Object> context = webSocketSession.getAttributes();
+            even.setSid(context.get("sid") + "");
+        }
         Handler handler = Handler.getInstance(even, withCustomProtocol);
         if (Objects.isNull(handler)) {
-            even.getSysWebSocket().closeWebSocket();
             String sid = even.getSid();
-            WEB_SOCKET_MAP.remove(sid);
+            even.getSysWebSocket().closeWebSocket(sid);
             log.warn("MessageRouter route executeRouteMessage handler is null,sid:{}", sid);
             return;
         }

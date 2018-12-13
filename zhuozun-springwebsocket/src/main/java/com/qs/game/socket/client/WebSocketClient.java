@@ -10,10 +10,15 @@ import org.apache.juli.logging.LogFactory;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by zun.wei on 2018/11/19 16:26.
@@ -23,6 +28,9 @@ import java.util.List;
 public class WebSocketClient {
 
     private static Log log = LogFactory.getLog(WebSocketClient.class);
+
+    private static final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService exec2 = Executors.newScheduledThreadPool(20);
 
     private String deviceId;
 
@@ -37,14 +45,13 @@ public class WebSocketClient {
         this.deviceId = deviceId;
     }
 
-    protected boolean start() {
+    protected boolean start() {//tomcat 1145;nginx
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        String uri = "ws://localhost:8600/websocket/" + deviceId;
+        String uri = "ws://120.77.157.155:8008/websocket/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
             session = container.connectToServer(WebSocketClient.class, URI.create(uri));
-            System.out.println("count: " + deviceId);
             list.add(session);
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,16 +61,20 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        for (int i = 1; i < 20000; i++) {
-            WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-            if (!wSocketTest.start()) {
-                System.out.println("测试结束。");
-                break;
+        exec2.execute(() ->
+        {
+            for (int i = 1; i < 10001; i++) {
+                WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
+                if (!wSocketTest.start()) {
+                    System.out.println("测试结束。");
+                    break;
+                }
             }
-        }
+        });
 
-        for (; ; ) {
-            Thread.sleep(1000);
+        //启动一个线程每2秒读取新增的日志信息
+        exec.scheduleWithFixedDelay(() ->
+        {
             list.forEach(e -> {
                 try {
                     boolean isOpen = e.isOpen();
@@ -88,7 +99,7 @@ public class WebSocketClient {
                     e1.printStackTrace();
                 }
             });
-        }
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     @OnMessage

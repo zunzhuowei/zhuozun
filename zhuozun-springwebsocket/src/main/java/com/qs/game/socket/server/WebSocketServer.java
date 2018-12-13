@@ -234,9 +234,9 @@ public class WebSocketServer extends SysWebSocket {
     }
 
     @Override
-    public void closeWebSocket() throws IOException {
+    public void closeWebSocket(String sid) throws IOException {
         this.session.close();
-        WEB_SOCKET_MAP.remove(this.sid);
+        WEB_SOCKET_MAP.remove(sid);
     }
 
 }

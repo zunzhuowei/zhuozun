@@ -27,7 +27,7 @@ public class SpringWebSocketSession extends SysWebSocket {
     private WebSocketSession webSocketSession;
 
     //接收sid
-    private String sid;
+    //private String sid;
 
     @Override
     public void sendMessage(byte[] bytesMsg) throws IOException {
@@ -48,9 +48,9 @@ public class SpringWebSocketSession extends SysWebSocket {
     }
 
     @Override
-    public void closeWebSocket() throws IOException {
+    public void closeWebSocket(String sid) throws IOException {
         webSocketSession.close();
-        WEB_SOCKET_MAP.remove(this.sid);
+        WEB_SOCKET_MAP.remove(sid);
     }
 
 }
