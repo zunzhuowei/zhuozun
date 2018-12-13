@@ -3,10 +3,12 @@ package com.qs.game.socket.client;
 import com.qs.game.socket.TextEncoder;
 import com.qs.game.model.communication.UserTest;
 import com.qs.game.utils.ByteUtils;
+import com.qs.game.utils.DataUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -35,10 +37,9 @@ public class WebSocketClient {
         this.deviceId = deviceId;
     }
 
-    protected boolean start(int choose) {
+    protected boolean start() {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = "ws://localhost:8600/websocket/" + deviceId;
-        if (choose == 0) uri = "ws://localhost:8600/websocket2/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
@@ -52,23 +53,21 @@ public class WebSocketClient {
         return true;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         for (int i = 1; i < 20000; i++) {
             WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-            int ii = i % 2;
-            if (!wSocketTest.start(ii)) {
+            if (!wSocketTest.start()) {
                 System.out.println("测试结束。");
                 break;
             }
         }
 
         for (; ; ) {
+            Thread.sleep(1000);
             list.forEach(e -> {
                 try {
-                    Thread.sleep(1);
                     boolean isOpen = e.isOpen();
                     if (isOpen) {
-
                         String msg = "abc";
                         int len = msg.length();
 
@@ -83,9 +82,9 @@ public class WebSocketClient {
                                 .append(tel.length()).append(tel)
                                 .buildByteArr();
 
-                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent));
+                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
                     }
-                } catch (IOException | InterruptedException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             });
@@ -119,10 +118,12 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session) {
-        byte[] msgs = message.array();
-        log.debug("WebSocketClient onMessage msgs -------::" + new String(msgs));
+        char q = DataUtils.getCharByBuffer(message);
+        char s = DataUtils.getCharByBuffer(message);
+        int sid = DataUtils.getIntByBuffer(message);
+        int online = DataUtils.getIntByBuffer(message);
+        System.out.println("q s sid online = " + q + "," + s + "," + sid + "," + online);
         message.clear();
-        log.debug("接收服务端 二进制格式请求数据 -----------");
     }
 
     /**
