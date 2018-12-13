@@ -47,7 +47,7 @@ public class WebSocketClient {
 
     protected boolean start() {//tomcat 1145;nginx
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        String uri = "ws://120.77.157.155:8008/websocket/" + deviceId;
+        String uri = "ws://localhost:8600/websocket/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
@@ -61,16 +61,13 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        exec2.execute(() ->
-        {
-            for (int i = 1; i < 10001; i++) {
-                WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-                if (!wSocketTest.start()) {
-                    System.out.println("测试结束。");
-                    break;
-                }
+        for (int i = 1; i < 10001; i++) {
+            WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
+            if (!wSocketTest.start()) {
+                System.out.println("测试结束。");
+                break;
             }
-        });
+        }
 
         //启动一个线程每2秒读取新增的日志信息
         exec.scheduleWithFixedDelay(() ->
