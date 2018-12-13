@@ -30,10 +30,10 @@ public class OnBinaryEvenHandler implements EvenHandler {
         char q = DataUtils.getCharByBuffer(message);
         char s = DataUtils.getCharByBuffer(message);
 
-        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
-
-        System.out.println("q = " + q);
-        System.out.println("s = " + s);
+//        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
+//
+//        System.out.println("q = " + q);
+//        System.out.println("s = " + s);
 
         int cmd = DataUtils.getIntByBuffer(message);
         int strLen = DataUtils.getIntByBuffer(message);
@@ -43,11 +43,11 @@ public class OnBinaryEvenHandler implements EvenHandler {
         int telLen = DataUtils.getIntByBuffer(message);
         String tel = DataUtils.getStrByBuffer(message, telLen);
 
-        System.out.println("mid = " + mid);
-        System.out.println("p1 = " + p1);
-        System.out.println("cmd = " + cmd);
-        System.out.println("str = " + str);
-        System.out.println("tel = " + tel);
+//        System.out.println("mid = " + mid);
+//        System.out.println("p1 = " + p1);
+//        System.out.println("cmd = " + cmd);
+//        System.out.println("str = " + str);
+//        System.out.println("tel = " + tel);
 
         sysWebSocket.sendMessage(dup);
 

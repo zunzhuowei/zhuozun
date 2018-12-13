@@ -21,7 +21,7 @@ public class SchedulingJob {
      * 删除死链接
      */
     //cron = "0/5 * * * * *",
-    @Scheduled(fixedDelay = 5000)
+    //@Scheduled(fixedDelay = 5000)
     public void webSocketServerHeartBeat() {
         WEB_SOCKET_MAP.forEachValue(10L, webSocket ->
         {
