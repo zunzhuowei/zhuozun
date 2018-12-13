@@ -3,11 +3,14 @@ package com.qs.game.handler;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.socket.SysWebSocket;
+import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.
@@ -49,7 +52,7 @@ public class OnBinaryEvenHandler implements EvenHandler {
 //        System.out.println("str = " + str);
 //        System.out.println("tel = " + tel);
 
-        sysWebSocket.sendMessage(dup);
+        sysWebSocket.sendMessage(ByteUtils.beginBuild().append(q).append(s).append(WEB_SOCKET_MAP.size()).buildByteArr());
 
         message.clear();
     }
