@@ -15,6 +15,8 @@ import javax.websocket.CloseReason;
 @Accessors(chain = true)
 public class OnCloseEven extends Even {
 
-    private CloseReason closeReason;
+    //private CloseReason closeReason;
+
+    private String reason;
 
 }

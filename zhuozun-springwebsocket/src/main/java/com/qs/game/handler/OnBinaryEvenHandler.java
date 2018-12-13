@@ -1,16 +1,12 @@
 package com.qs.game.handler;
 
-import com.qs.game.config.SysConfig;
-import com.qs.game.model.communication.UserTest;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
-import com.qs.game.socket.server.WebSocketServer;
-import com.qs.game.utils.ByteUtils;
+import com.qs.game.socket.SysWebSocket;
+import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.EncodeException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
@@ -23,60 +19,75 @@ public class OnBinaryEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception{
         OnBinaryEven onBinaryEven = (OnBinaryEven) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
+        ByteBuffer dup = message.duplicate();
+
         String sid = onBinaryEven.getSid();
-        WebSocketServer webSocketServer = onBinaryEven.getWebSocketServer();
-        try {
-            webSocketServer.sendObjectMessage(new UserTest().setId(1L).setUserName("张三").setPassWord("123").setSex((byte) 0));
-        } catch (IOException | EncodeException e) {
-            e.printStackTrace();
-        }
+        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
 
-        //if (true) return;
+        char q = DataUtils.getCharByBuffer(message);
+        char s = DataUtils.getCharByBuffer(message);
 
-        SysConfig.THREAD_POOL_EXECUTOR.execute(() -> {
-            ByteBuffer duplicate = message.duplicate();
-            char q = message.getChar();
-            char s = message.getChar();
-            System.out.println("q = " + q);
-            System.out.println("s = " + s);
+        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
 
-            int msgLen = message.getInt();
-            String msg = ByteUtils.getStr(message, msgLen);
-            System.out.println("msg = " + msg);
+        System.out.println("q = " + q);
+        System.out.println("s = " + s);
 
-            int tail = message.getInt();
-            System.out.println("tail = " + tail);
+        int cmd = DataUtils.getIntByBuffer(message);
+        int strLen = DataUtils.getIntByBuffer(message);
+        String str = DataUtils.getStrByBuffer(message, strLen);
+        int mid = DataUtils.getIntByBuffer(message);
+        char p1 = DataUtils.getCharByBuffer(message);
+        int telLen = DataUtils.getIntByBuffer(message);
+        String tel = DataUtils.getStrByBuffer(message, telLen);
 
-            char c = message.getChar();
+        System.out.println("mid = " + mid);
+        System.out.println("p1 = " + p1);
+        System.out.println("cmd = " + cmd);
+        System.out.println("str = " + str);
+        System.out.println("tel = " + tel);
 
-            int telLen = message.getInt();
-            String tel = ByteUtils.getStr(message, telLen);
+        sysWebSocket.sendMessage(dup);
 
-            System.out.println("tel = " + tel);
-            System.out.println("c = " + c);
-
-            log.info("收到来自窗口" + sid + "的信息:" + message);
-
-            try {
-                webSocketServer.getSession().getBasicRemote().sendBinary(duplicate);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            //群发消息
-            /*SysConfig.WEB_SOCKET_MAP.forEachValue(100L, webSocketServer -> {
-                try {
-                    webSocketServer.sendMessage(message.toString());
-                    webSocketServer.getSession().getBasicRemote().sendBinary(duplicate);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });*/
-
-        });
+        message.clear();
     }
+
+    // web request
+
+    /*@Override
+    public void handler(Even even) throws Exception{
+        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+        ByteBuffer message = onBinaryEven.getByteBuffer();
+        ByteBuffer dup = message.duplicate();
+
+        String sid = onBinaryEven.getSid();
+        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
+
+        char q = DataUtils.getCharByBuffer(message,true);
+        char s = DataUtils.getCharByBuffer(message,true);
+
+        System.out.println("q = " + q);
+        System.out.println("s = " + s);
+
+        int cmd = DataUtils.getIntByBuffer(message,true);
+        int strLen = DataUtils.getIntByBuffer(message,true);
+        String str = DataUtils.getStrByBuffer(message, strLen);
+        int mid = DataUtils.getIntByBuffer(message,true);
+        char p1 = DataUtils.getCharByBuffer(message,true);
+        int telLen = DataUtils.getIntByBuffer(message,true);
+        String tel = DataUtils.getStrByBuffer(message, telLen);
+
+        System.out.println("mid = " + mid);
+        System.out.println("p1 = " + p1);
+        System.out.println("cmd = " + cmd);
+        System.out.println("str = " + str);
+        System.out.println("tel = " + tel);
+
+        sysWebSocket.sendMessage(dup);
+
+        message.clear();
+    }*/
 
 }

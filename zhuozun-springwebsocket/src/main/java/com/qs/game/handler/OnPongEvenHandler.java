@@ -15,7 +15,7 @@ public class OnPongEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception {
         OnPongEven onPongEven = (OnPongEven) even;
         String sid = onPongEven.getSid();
         log.info("pong from sid -------::" + sid);

@@ -51,6 +51,6 @@ public interface EvenHandler {
         return SpringBeanUtil.getBean(OnStrEvenHandler.class);
     }
 
-    void handler(Even even);
+    void handler(Even even) throws Exception;
 
 }

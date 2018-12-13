@@ -30,6 +30,7 @@
         <module>zhuozun-admin-ui</module>
         <module>zhuozun-websocket-server</module>
         <module>zhuozun-springwebsocket</module>
+        <module>zhuozun-springwebsocket-client</module>
     </modules>
 
 

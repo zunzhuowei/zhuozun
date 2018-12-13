@@ -15,7 +15,7 @@ public class OnStrEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) {
+    public void handler(Even even) throws Exception  {
         OnStrEven onStrEven = (OnStrEven) even;
         String sid = onStrEven.getSid();
         String message = onStrEven.getMessage();

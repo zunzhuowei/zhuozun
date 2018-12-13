@@ -4,7 +4,7 @@ package com.qs.game.sh;
  * Created by zun.wei on 2018/11/29 15:58.
  * Description:
  */
-public enum ServerEnum {
+public enum ServerEnumGit {
 
 
     // 跑得快金币场测试服 web 后台
@@ -12,7 +12,6 @@ public enum ServerEnum {
             "qs-web",
             "happyweb.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys", "qs-config", "qs-model", "qs-mapper", "qs-service"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happygame/web/*.properties",
@@ -24,7 +23,6 @@ public enum ServerEnum {
             "qs-app",
             "happyapp.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happygame/app/*.properties",
@@ -36,7 +34,6 @@ public enum ServerEnum {
             "qs-activity-center",
             "happyacti.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happygame/acti/*.properties",
@@ -48,7 +45,6 @@ public enum ServerEnum {
             "qs-web",
             "happybeardweb.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys", "qs-config", "qs-model", "qs-mapper", "qs-service"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happybeard/web/*.properties",
@@ -60,7 +56,6 @@ public enum ServerEnum {
             "qs-app",
             "happybeardapp.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happybeard/app/*.properties",
@@ -72,7 +67,6 @@ public enum ServerEnum {
             "qs-activity-center",
             "happybeardacti.war",
             new String[]{"testWebServer"},
-            new String[]{"qs-common", "qs-sys"},
             false,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/test/happybeard/acti/*.properties",
@@ -90,7 +84,6 @@ public enum ServerEnum {
             "qs-web",
             "happyweb.war",
             new String[]{"miniBeardWeb"},
-            new String[]{"qs-common", "qs-sys", "qs-config", "qs-model", "qs-mapper", "qs-service"},
             true,
             "/wwwroot/java/tomcat-jxgame/",
             "/E/qs_game_cfg_files/online/happygame/web/*.properties",
@@ -102,7 +95,6 @@ public enum ServerEnum {
             "qs-app",
             "happyapp.war",
             new String[]{"miniBeardApp01", "miniBeardApp02", "miniBeardApp03"},
-            new String[]{"qs-common", "qs-sys"},
             true,
             "/wwwroot/java/tomcat-gold/",
             "/E/qs_game_cfg_files/online/happygame/app/*.properties",
@@ -114,7 +106,6 @@ public enum ServerEnum {
             "qs-activity-center",
             "happyacti.war",
             new String[]{"miniBeardApp01", "miniBeardApp02", "miniBeardApp03"},
-            new String[]{"qs-common", "qs-sys"},
             true,
             "/wwwroot/java/tomcat-gold/",
             "/E/qs_game_cfg_files/online/happygame/acti/*.properties",
@@ -126,7 +117,6 @@ public enum ServerEnum {
             "qs-web",
             "happybeardweb.war",
             new String[]{"qsBeardWeb"},
-            new String[]{"qs-common", "qs-sys", "qs-config", "qs-model", "qs-mapper", "qs-service"},
             true,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/online/happybeard/web/*.properties",
@@ -138,7 +128,6 @@ public enum ServerEnum {
             "qs-app",
             "happybeardapp.war",
             new String[]{"qsBeardApp01", "qsBeardApp02"},
-            new String[]{"qs-common", "qs-sys"},
             true,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/online/happybeard/app/*.properties",
@@ -150,7 +139,6 @@ public enum ServerEnum {
             "qs-activity-center",
             "happybeardacti.war",
             new String[]{"qsBeardApp01", "qsBeardApp02"},
-            new String[]{"qs-common", "qs-sys"},
             true,
             "/wwwroot/java/tomcat-happy/",
             "/E/qs_game_cfg_files/online/happybeard/acti/*.properties",
@@ -161,16 +149,15 @@ public enum ServerEnum {
 
     public static final String gitPath = "D:/Git/git-bash.exe";//git安装目录
     public static final String packageTempPath = "/D/packageTempPath"; //临时构建目录
-    public static final String java_source_path = "/D/idea_poject/qs_project_02"; //java项目源文件目录
+    public static final String java_source_path = "/D/idea_poject/mini"; //java项目源文件目录
 
-    ServerEnum(String artifactId, String warPackageName, String[] remote_server_name,
-               String[] dependencyArtifactIds, boolean isBackups,
-               String remote_tomcat_path, String config_file_dir, String config_file_dir_xml) {
+    ServerEnumGit(String artifactId, String warPackageName, String[] remote_server_name, boolean isBackups,
+                  String remote_tomcat_path, String config_file_dir, String config_file_dir_xml) {
 
         this.artifactId = artifactId;
         this.warPackageName = warPackageName;
         this.remote_server_name = remote_server_name;
-        this.dependencyArtifactIds = dependencyArtifactIds;
+        //this.dependencyArtifactIds = dependencyArtifactIds;
         this.isBackups = isBackups;
         this.remote_tomcat_path = remote_tomcat_path;
         this.config_file_dir = config_file_dir;
@@ -183,10 +170,10 @@ public enum ServerEnum {
     public String remote_tomcat_path; //远程服务器tomcat所在目录
     public String config_file_dir; //properties 配置文件存放路径
     public String config_file_dir_xml; //xml配置文件路径
-    public String[] dependencyArtifactIds;//maven项目中依赖的jar包,注意依赖关系顺序。
+    //public String[] dependencyArtifactIds;//maven项目中依赖的jar包,注意依赖关系顺序。
     public boolean isBackups; //是否备份上个版本
 
-    public static ServerEnum getServerEnum(ServerEnum serverEnum) {
+    public static ServerEnumGit getServerEnumGit(ServerEnumGit serverEnum) {
         return serverEnum;
     }
 }

@@ -1,6 +1,6 @@
 package com.qs.game.model.even;
 
-import com.qs.game.socket.server.WebSocketServer;
+import com.qs.game.socket.SysWebSocket;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -15,10 +15,11 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class Even implements Serializable {
 
+    @Deprecated
     private Session session;
 
     private String sid;
 
-    private WebSocketServer webSocketServer;
+    private SysWebSocket sysWebSocket;
 
 }

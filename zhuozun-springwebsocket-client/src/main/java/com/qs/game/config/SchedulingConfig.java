@@ -11,12 +11,12 @@ import java.util.concurrent.Executors;
  * 异步定时调度多线程配置
  */
 @Configuration
-public class SchedulingConfig  implements SchedulingConfigurer {
+public class SchedulingConfig implements SchedulingConfigurer {
 
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         //设定一个长度2的定时任务线程池
-        taskRegistrar.setScheduler(Executors.newScheduledThreadPool(1));
+        taskRegistrar.setScheduler(Executors.newScheduledThreadPool(2));
     }
 }

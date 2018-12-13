@@ -35,9 +35,10 @@ public class WebSocketClient {
         this.deviceId = deviceId;
     }
 
-    protected boolean start() {
+    protected boolean start(int choose) {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = "ws://localhost:8600/websocket/" + deviceId;
+        if (choose == 0) uri = "ws://localhost:8600/websocket2/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
@@ -52,9 +53,10 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException {
-        for (int i = 1; i < 2; i++) {
+        for (int i = 1; i < 20000; i++) {
             WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-            if (!wSocketTest.start()) {
+            int ii = i % 2;
+            if (!wSocketTest.start(ii)) {
                 System.out.println("测试结束。");
                 break;
             }
@@ -63,7 +65,7 @@ public class WebSocketClient {
         for (; ; ) {
             list.forEach(e -> {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(1);
                     boolean isOpen = e.isOpen();
                     if (isOpen) {
 
@@ -74,6 +76,7 @@ public class WebSocketClient {
 
                         byte[] connent = ByteUtils.beginBuild()
                                 .append('Q').append('S')
+                                .append(1000)
                                 .append(len).append(msg)
                                 .append(111)
                                 .append('a')
@@ -81,14 +84,6 @@ public class WebSocketClient {
                                 .buildByteArr();
 
                         e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent));
-                        e.getBasicRemote().sendText("test text");
-
-                        try {
-                            e.getBasicRemote().sendObject(new UserTest().setId(2L).setPassWord("456").setUserName("lisi"));
-                        } catch (EncodeException e1) {
-                            e1.printStackTrace();
-                        }
-                        //e.getBasicRemote().flushBatch();
                     }
                 } catch (IOException | InterruptedException e1) {
                     e1.printStackTrace();
@@ -124,26 +119,9 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session) {
-        char q = message.getChar();
-        char s = message.getChar();
-        System.out.println("q = " + q);
-        System.out.println("s = " + s);
-
-        int msgLen = message.getInt();
-        String msg = ByteUtils.getStr(message, msgLen);
-        System.out.println("msg = " + msg);
-
-        int tail = message.getInt();
-        System.out.println("tail = " + tail);
-
-        char c = message.getChar();
-
-        int telLen = message.getInt();
-        String tel = ByteUtils.getStr(message, telLen);
-
-        System.out.println("tel = " + tel);
-        System.out.println("c = " + c);
-
+        byte[] msgs = message.array();
+        log.debug("WebSocketClient onMessage msgs -------::" + new String(msgs));
+        message.clear();
         log.debug("接收服务端 二进制格式请求数据 -----------");
     }
 

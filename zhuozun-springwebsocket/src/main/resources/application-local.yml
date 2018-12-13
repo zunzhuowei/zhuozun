@@ -8,9 +8,20 @@ server:
     user:
       name: zhangsan
       password: 123
-  tomcat:
-    max-threads: 20000
-    max-connections: 20000
+tomcat:
+  server:
+    MaxFileSize: 300MB
+    MaxRequestSize: 500MB
+    acceptorThreadCount: 100
+    compression: 'on'
+    connectionTimeout: 10000
+    maxConnections: 10000
+    maxSpareThreads: 50
+    maxThreads: 1000
+    minSpareThreads: 50
+    port: ${server.port}
+    protocol: org.apache.coyote.http11.Http11Nio2Protocol
+    redirectPort: 443
 #  ssl:
 #    http:
 #      port: 8601 # http
