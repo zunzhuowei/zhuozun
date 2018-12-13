@@ -21,7 +21,7 @@ public class OnCloseEvenHandler implements EvenHandler {
         OnCloseEven onCloseEven = (OnCloseEven) even;
         SysWebSocket sysWebSocket = onCloseEven.getSysWebSocket();
         String sid = onCloseEven.getSid();
-        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sysWebSocket.getSid(), onCloseEven.getReason());
+        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sid, onCloseEven.getReason());
         SysConfig.WEB_SOCKET_MAP.remove(sid); //从set中删除
     }
 

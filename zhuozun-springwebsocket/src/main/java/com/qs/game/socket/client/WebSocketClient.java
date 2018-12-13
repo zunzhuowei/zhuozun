@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by zun.wei on 2018/11/19 16:26.
@@ -61,18 +62,25 @@ public class WebSocketClient {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        for (int i = 1; i < 10001; i++) {
-            WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-            if (!wSocketTest.start()) {
-                System.out.println("测试结束。");
-                break;
+        final AtomicInteger mCount = new AtomicInteger(1);
+        for (int i = 1; i < 10001; i++)
+        {
+            final int c = mCount.getAndIncrement();
+            if (c <10001)
+            {
+                exec2.execute(() ->
+                {
+                    WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(c));
+                    wSocketTest.start();
+                });
             }
         }
 
         //启动一个线程每2秒读取新增的日志信息
         exec.scheduleWithFixedDelay(() ->
         {
-            list.forEach(e -> {
+            list.forEach(e ->
+            {
                 try {
                     boolean isOpen = e.isOpen();
                     if (isOpen) {

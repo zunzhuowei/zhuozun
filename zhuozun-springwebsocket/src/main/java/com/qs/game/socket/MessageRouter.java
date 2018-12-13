@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.qs.game.config.SysConfig.ROUTER_POOL_EXECUTOR;
+import static com.qs.game.config.SysConfig.SID;
 import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
@@ -63,7 +64,7 @@ public class MessageRouter implements Serializable {
         if (Objects.nonNull(sysWebSocket)) {
             WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
             Map<String,Object> context = webSocketSession.getAttributes();
-            even.setSid(context.get("sid") + "");
+            even.setSid(context.get(SID) + "");
         }
         Handler handler = Handler.getInstance(even, withCustomProtocol);
         if (Objects.isNull(handler)) {

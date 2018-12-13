@@ -21,8 +21,6 @@ public class OnOpenEvenHandler implements EvenHandler {
         OnOpenEven onOpenEven = (OnOpenEven) even;
         SysWebSocket sysWebSocket = onOpenEven.getSysWebSocket();
         String sid = onOpenEven.getSid();
-        sysWebSocket.setSession(onOpenEven.getSession());
-        sysWebSocket.setSid(sid);
         sysWebSocket.setWebSocketSession(sysWebSocket.getWebSocketSession());
         SysConfig.WEB_SOCKET_MAP.put(sid, sysWebSocket);//加入 map 中
         log.info("OnOpenEvenHandler handler sid:{} -- online people:{}", sid, SysConfig.WEB_SOCKET_MAP.size());
