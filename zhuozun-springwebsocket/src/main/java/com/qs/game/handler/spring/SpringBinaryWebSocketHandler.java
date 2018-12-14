@@ -53,4 +53,9 @@ public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
                 .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_CLOSE);
     }
 
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+        MessageRouter.route(new OnStrEven().setMessage(message.getPayload())
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_STR_MESSAGE);
+    }
 }

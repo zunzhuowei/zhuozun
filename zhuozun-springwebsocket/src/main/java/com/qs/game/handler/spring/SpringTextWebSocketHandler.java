@@ -23,7 +23,7 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         MessageRouter.route(new OnStrEven().setMessage(message.getPayload())
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_BYTE_MESSAGE);
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_STR_MESSAGE);
     }
 
     @Override
@@ -48,6 +48,12 @@ public class SpringTextWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         MessageRouter.route(new OnCloseEven().setReason(status.getReason())
                 .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_CLOSE);
+    }
+
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+        MessageRouter.route(new OnBinaryEven().setByteBuffer(message.getPayload())
+                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_BYTE_MESSAGE);
     }
 
 }
