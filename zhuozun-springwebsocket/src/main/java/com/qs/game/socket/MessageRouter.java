@@ -63,8 +63,10 @@ public class MessageRouter implements Serializable {
         SysWebSocket sysWebSocket = even.getSysWebSocket();
         if (Objects.nonNull(sysWebSocket)) {
             WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
-            Map<String,Object> context = webSocketSession.getAttributes();
+            Map<String, Object> context = webSocketSession.getAttributes();
             even.setSid(context.get(SID) + "");
+        } else {
+            sysWebSocket = new SysWebSocket();
         }
 
         Handler handler = Handler.getInstance(even, withCustomProtocol);
@@ -74,8 +76,9 @@ public class MessageRouter implements Serializable {
             log.warn("MessageRouter route executeRouteMessage handler is null,sid:{}", sid);
             return;
         }
-
-        synchronized (WEB_SOCKET_MAP.get(sid)) {
+        SysWebSocket memSocket = WEB_SOCKET_MAP.get(sid);
+        if (Objects.nonNull(memSocket)) sysWebSocket = memSocket;
+        synchronized (sysWebSocket) {
             switch (evenType) {
                 case ON_OPEN:
                     handler.getOpenEvenHandler().handler(even);
