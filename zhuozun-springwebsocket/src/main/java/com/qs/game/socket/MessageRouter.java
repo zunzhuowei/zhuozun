@@ -66,34 +66,38 @@ public class MessageRouter implements Serializable {
             Map<String,Object> context = webSocketSession.getAttributes();
             even.setSid(context.get(SID) + "");
         }
+
         Handler handler = Handler.getInstance(even, withCustomProtocol);
+        String sid = even.getSid();
         if (Objects.isNull(handler)) {
-            String sid = even.getSid();
             even.getSysWebSocket().closeWebSocket(sid);
             log.warn("MessageRouter route executeRouteMessage handler is null,sid:{}", sid);
             return;
         }
-        switch (evenType) {
-            case ON_OPEN:
-                handler.getOpenEvenHandler().handler(even);
-                break;
-            case ON_CLOSE:
-                handler.getCloseEvenHandler().handler(even);
-                break;
-            case ON_STR_MESSAGE:
-                handler.getStrEvenHandler().handler(even);
-                break;
-            case ON_BYTE_MESSAGE:
-                handler.getBinaryEvenHandler().handler(even);
-                break;
-            case ON_PONE_MESSAGE:
-                handler.getPongEvenHandler().handler(even);
-                break;
-            case ON_ERROR_MESSAGE:
-                handler.getErrorEvenHandler().handler(even);
-                break;
-            default:
-                throw new RuntimeException("no even error");
+
+        synchronized (WEB_SOCKET_MAP.get(sid)) {
+            switch (evenType) {
+                case ON_OPEN:
+                    handler.getOpenEvenHandler().handler(even);
+                    break;
+                case ON_CLOSE:
+                    handler.getCloseEvenHandler().handler(even);
+                    break;
+                case ON_STR_MESSAGE:
+                    handler.getStrEvenHandler().handler(even);
+                    break;
+                case ON_BYTE_MESSAGE:
+                    handler.getBinaryEvenHandler().handler(even);
+                    break;
+                case ON_PONE_MESSAGE:
+                    handler.getPongEvenHandler().handler(even);
+                    break;
+                case ON_ERROR_MESSAGE:
+                    handler.getErrorEvenHandler().handler(even);
+                    break;
+                default:
+                    throw new RuntimeException("no even error");
+            }
         }
     }
 
