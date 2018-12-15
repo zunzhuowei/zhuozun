@@ -16,9 +16,8 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -41,19 +40,22 @@ public class WebSocketClient {
     }
 
     private static final List<Session> list = new LinkedList<Session>();
+    private static final WebSocketClient[] webSocketClients = new WebSocketClient[20000];
+    private static final AtomicInteger mCount = new AtomicInteger(1);
 
     public WebSocketClient(String deviceId) {
         this.deviceId = deviceId;
     }
 
-    protected boolean start() {//tomcat 1145;nginx
+    protected boolean start(int c) {//tomcat 1145;nginx
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = "ws://localhost:8600/websocket/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
             session = container.connectToServer(WebSocketClient.class, URI.create(uri));
-            list.add(session);
+            webSocketClients[c] = this;
+            //list.add(session);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -61,28 +63,33 @@ public class WebSocketClient {
         return true;
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        final AtomicInteger mCount = new AtomicInteger(1);
-        for (int i = 1; i < 10001; i++)
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+
+        int count = 1000;
+        for (int i = 0; i < count; i++)
         {
             final int c = mCount.getAndIncrement();
-            if (c <10001)
+            if (c < count)
             {
                 exec2.execute(() ->
                 {
                     WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(c));
-                    wSocketTest.start();
+                    wSocketTest.start(c);
                 });
             }
         }
 
-        //启动一个线程每2秒读取新增的日志信息
-        exec.scheduleWithFixedDelay(() ->
-        {
-            list.forEach(e ->
-            {
+        for (; ; ) {
+            //Thread.sleep(5000);
+            for (int i = 0; i < webSocketClients.length; i++) {
+                //Thread.sleep(50);
                 try {
-                    boolean isOpen = e.isOpen();
+                    if (Objects.isNull(webSocketClients[i])) {
+                        //System.out.println("\"continue\" = " + "continue");
+                        continue;
+                    }
+
+                    boolean isOpen = webSocketClients[i].session.isOpen();
                     if (isOpen) {
                         String msg = "abc";
                         int len = msg.length();
@@ -98,13 +105,16 @@ public class WebSocketClient {
                                 .append(tel.length()).append(tel)
                                 .buildByteArr();
 
-                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
+                        webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
+                    } else {
+                        System.out.println("sessions[i] = " + webSocketClients[i].session);
+                        //sessions[i].close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "is close"));
                     }
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-            });
-        }, 0, 5, TimeUnit.SECONDS);
+            }
+        }
     }
 
     @OnMessage
