@@ -65,8 +65,6 @@ public class MessageRouter implements Serializable {
             WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
             Map<String, Object> context = webSocketSession.getAttributes();
             even.setSid(context.get(SID) + "");
-        } else {
-            sysWebSocket = new SysWebSocket();
         }
 
         Handler handler = Handler.getInstance(even, withCustomProtocol);
@@ -76,31 +74,36 @@ public class MessageRouter implements Serializable {
             log.warn("MessageRouter route executeRouteMessage handler is null,sid:{}", sid);
             return;
         }
-        SysWebSocket memSocket = WEB_SOCKET_MAP.get(sid);
-        if (Objects.nonNull(memSocket)) sysWebSocket = memSocket;
-        synchronized (sysWebSocket) {
-            switch (evenType) {
-                case ON_OPEN:
-                    handler.getOpenEvenHandler().handler(even);
-                    break;
-                case ON_CLOSE:
-                    handler.getCloseEvenHandler().handler(even);
-                    break;
-                case ON_STR_MESSAGE:
+
+        switch (evenType) {
+            case ON_OPEN:
+                handler.getOpenEvenHandler().handler(even);
+                break;
+            case ON_CLOSE:
+                handler.getCloseEvenHandler().handler(even);
+                break;
+            case ON_STR_MESSAGE:
+            {
+                synchronized (WEB_SOCKET_MAP.get(sid)) {
                     handler.getStrEvenHandler().handler(even);
-                    break;
-                case ON_BYTE_MESSAGE:
-                    handler.getBinaryEvenHandler().handler(even);
-                    break;
-                case ON_PONE_MESSAGE:
-                    handler.getPongEvenHandler().handler(even);
-                    break;
-                case ON_ERROR_MESSAGE:
-                    handler.getErrorEvenHandler().handler(even);
-                    break;
-                default:
-                    throw new RuntimeException("no even error");
+                }
+                break;
             }
+            case ON_BYTE_MESSAGE:
+            {
+                synchronized (WEB_SOCKET_MAP.get(sid)) {
+                    handler.getBinaryEvenHandler().handler(even);
+                }
+                break;
+            }
+            case ON_PONE_MESSAGE:
+                handler.getPongEvenHandler().handler(even);
+                break;
+            case ON_ERROR_MESSAGE:
+                handler.getErrorEvenHandler().handler(even);
+                break;
+            default:
+                throw new RuntimeException("no even error");
         }
     }
 
