@@ -52,8 +52,10 @@ public class OnBinaryEvenHandler implements EvenHandler {
 //        System.out.println("str = " + str);
 //        System.out.println("tel = " + tel);
 
-        sysWebSocket.sendMessage(ByteUtils.beginBuild().append(q).append(s)
-                .append(Integer.parseInt(sid)).append(WEB_SOCKET_MAP.size()).buildByteArr());
+        synchronized (sysWebSocket) {
+            sysWebSocket.sendMessage(ByteUtils.beginBuild().append(q).append(s)
+                    .append(Integer.parseInt(sid)).append(WEB_SOCKET_MAP.size()).buildByteArr());
+        }
 
         message.clear();
     }
