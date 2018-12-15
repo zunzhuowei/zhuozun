@@ -73,7 +73,7 @@ public class SysConfig implements Serializable {
      * 3. DiscardPolicy ：对拒绝任务直接无声抛弃，没有异常信息。
      * 4. DiscardOldestPolicy ：对拒绝任务不抛弃，而是抛弃队列里面等待最久的一个线程，然后把拒绝任务加到队列。
      */
-    private static final RejectedExecutionHandler rejectHandler = new ThreadPoolExecutor.DiscardPolicy();
+    private static final RejectedExecutionHandler rejectHandler = new ThreadPoolExecutor.CallerRunsPolicy();
 
     //线程池对象，创建线程
     public static final ThreadPoolExecutor ROUTER_POOL_EXECUTOR = new ThreadPoolExecutor(
