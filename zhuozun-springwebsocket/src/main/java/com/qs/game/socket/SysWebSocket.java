@@ -3,6 +3,7 @@ package com.qs.game.socket;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import javax.websocket.Session;
@@ -32,6 +33,8 @@ public class SysWebSocket implements Serializable {
     public void sendMessage(String strMsg) throws IOException {}
 
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {}
+
+    public void sendMessage(WebSocketMessage<?> message) throws IOException {}
 
     public void closeWebSocket(String sid) throws IOException {}
 

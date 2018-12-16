@@ -4,6 +4,7 @@ import com.qs.game.constant.CMD;
 import com.qs.game.model.even.Even;
 import com.qs.game.model.even.OnBinaryEven;
 import com.qs.game.model.even.OnStrEven;
+import com.qs.game.socket.SysWebSocket;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/11/22 11:35.
@@ -44,6 +47,21 @@ public class Handler implements EvenHandler {
                 if (Objects.isNull(byteBuffer)) return null;
                 ByteBuffer message = byteBuffer.duplicate();
 
+                //TODO check connect sid
+                String sid = onBinaryEven.getSid();
+                if (!StringUtils.isNumeric(sid)) {
+                    log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
+                    return null;
+                }
+
+
+                // check socket
+                SysWebSocket sysWebSocket = WEB_SOCKET_MAP.get(sid);
+                if (Objects.isNull(sysWebSocket)) {
+                    log.warn("Handler withCustomProtocol sysWebSocket is null", sid);
+                    return null;
+                }
+
                 // check protocol length
                 int packHeadLen = message.array().length;
                 if (packHeadLen < 4) {
@@ -67,12 +85,6 @@ public class Handler implements EvenHandler {
                     return null;
                 }
 
-                //TODO check connect sid
-                String sid = onBinaryEven.getSid();
-                if (!StringUtils.isNumeric(sid)) {
-                    log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
-                    return null;
-                }
 
                 message.clear();
             }

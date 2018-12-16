@@ -1,5 +1,6 @@
 package com.qs.game.socket.server;
 
+import com.qs.game.job.SchedulingJob;
 import com.qs.game.socket.MessageRouter;
 import com.qs.game.socket.SysWebSocket;
 import com.qs.game.socket.TextEncoder;
@@ -18,6 +19,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 import static com.qs.game.config.SysConfig.WEBSOCKET_URI_PATH;
@@ -220,23 +222,41 @@ public class WebSocketServer extends SysWebSocket {
 
     @Override
     public void sendMessage(byte[] bytesMsg) throws IOException {
-        this.session.getBasicRemote().sendBinary(ByteBuffer.wrap(bytesMsg), true);
+        synchronized (this) {
+            if (Objects.nonNull(this.session)
+                    && this.session.isOpen()) {
+                this.session.getBasicRemote().sendBinary(ByteBuffer.wrap(bytesMsg), true);
+            }
+        }
     }
 
     @Override
     public void sendMessage(String strMsg) throws IOException {
-        this.session.getBasicRemote().sendText(strMsg, true);
+        synchronized (this) {
+            if (Objects.nonNull(this.session)
+                    && this.session.isOpen()) {
+                this.session.getBasicRemote().sendText(strMsg, true);
+            }
+        }
     }
 
     @Override
     public void sendMessage(ByteBuffer byteBuffer) throws IOException {
-        this.session.getBasicRemote().sendBinary(byteBuffer, true);
+        synchronized (this) {
+            if (Objects.nonNull(this.session)
+                    && this.session.isOpen()) {
+                this.session.getBasicRemote().sendBinary(byteBuffer, true);
+            }
+        }
     }
 
     @Override
     public void closeWebSocket(String sid) throws IOException {
-        this.session.close();
-        WEB_SOCKET_MAP.remove(sid);
+        synchronized (this) {
+            this.session.close();
+            WEB_SOCKET_MAP.remove(sid);
+            SchedulingJob.heartBeats.remove(sid);
+        }
     }
 
 }

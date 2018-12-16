@@ -2,6 +2,7 @@ package com.qs.game.socket;
 
 import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
+import com.qs.game.job.SchedulingJob;
 import com.qs.game.model.even.Even;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
@@ -13,9 +14,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static com.qs.game.config.SysConfig.ROUTER_POOL_EXECUTOR;
-import static com.qs.game.config.SysConfig.SID;
-import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
+import static com.qs.game.config.SysConfig.*;
 
 /**
  * Created by zun.wei on 2018/11/21 11:38.
@@ -30,14 +29,27 @@ public class MessageRouter implements Serializable {
 
     // 使用线程池的方式，提交消息到线程池执行。
     public static void route(Even even, EvenType evenType) {
+        SysWebSocket sysWebSocket = even.getSysWebSocket();
+        if (Objects.nonNull(sysWebSocket)) {
+            WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
+            Map<String, Object> context = webSocketSession.getAttributes();
+            even.setSid(context.get(SID) + "");
+        }
+        String sid = even.getSid();
+
         if (isSubmit) {
             Future future = ROUTER_POOL_EXECUTOR.submit(() ->
             {
                 try {
                     MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
                 } catch (Exception e) {
-                    log.warn("MessageRouter route Exception --::{}", e.getMessage());
-                    e.printStackTrace();
+                    log.warn("MessageRouter route Exception 1 --::{}", e.getMessage());
+                    try {
+                        even.getSysWebSocket().closeWebSocket(sid);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    //e.printStackTrace();
                 }
             });
             try {
@@ -52,25 +64,29 @@ public class MessageRouter implements Serializable {
                 try {
                     MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
                 } catch (Exception e) {
-                    log.warn("MessageRouter route Exception --::{}", e.getMessage());
-                    e.printStackTrace();
+                    log.warn("MessageRouter route Exception 2 --::{}", e.getMessage());
+                    try {
+                        even.getSysWebSocket().closeWebSocket(sid);
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    //e.printStackTrace();
                 }
             });
         }
     }
 
     private static void executeRouteMessage(Even even, EvenType evenType, boolean withCustomProtocol) throws Exception {
-        SysWebSocket sysWebSocket = even.getSysWebSocket();
-        if (Objects.nonNull(sysWebSocket)) {
-            WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
-            Map<String, Object> context = webSocketSession.getAttributes();
-            even.setSid(context.get(SID) + "");
-        }
 
         Handler handler = Handler.getInstance(even, withCustomProtocol);
         String sid = even.getSid();
         if (Objects.isNull(handler)) {
-            even.getSysWebSocket().closeWebSocket(sid);
+            try {
+                even.getSysWebSocket().closeWebSocket(sid);
+            } catch (IOException e) {
+                log.warn("MessageRouter route executeRouteMessage handler closeWebSocket", e.getMessage());
+                //e.printStackTrace();
+            }
             log.warn("MessageRouter route executeRouteMessage handler is null,sid:{}", sid);
             return;
         }
@@ -82,18 +98,12 @@ public class MessageRouter implements Serializable {
             case ON_CLOSE:
                 handler.getCloseEvenHandler().handler(even);
                 break;
-            case ON_STR_MESSAGE:
-            {
-                synchronized (WEB_SOCKET_MAP.get(sid)) {
-                    handler.getStrEvenHandler().handler(even);
-                }
+            case ON_STR_MESSAGE: {
+                handler.getStrEvenHandler().handler(even);
                 break;
             }
-            case ON_BYTE_MESSAGE:
-            {
-                synchronized (WEB_SOCKET_MAP.get(sid)) {
-                    handler.getBinaryEvenHandler().handler(even);
-                }
+            case ON_BYTE_MESSAGE: {
+                handler.getBinaryEvenHandler().handler(even);
                 break;
             }
             case ON_PONE_MESSAGE:

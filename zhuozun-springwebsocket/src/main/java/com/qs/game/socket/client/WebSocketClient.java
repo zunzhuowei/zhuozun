@@ -65,7 +65,7 @@ public class WebSocketClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 
-        int count = 1000;
+        int count = 2;
         for (int i = 0; i < count; i++)
         {
             final int c = mCount.getAndIncrement();
@@ -106,6 +106,8 @@ public class WebSocketClient {
                                 .buildByteArr();
 
                         webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
+                        //webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.allocate(0), true);
+
                     } else {
                         System.out.println("sessions[i] = " + webSocketClients[i].session);
                         //sessions[i].close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "is close"));
