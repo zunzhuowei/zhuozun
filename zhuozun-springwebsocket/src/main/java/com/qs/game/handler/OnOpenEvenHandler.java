@@ -1,8 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnOpenEven;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnOpenEvent;
 import com.qs.game.socket.SysWebSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,8 +17,8 @@ public class OnOpenEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception {
-        OnOpenEven onOpenEven = (OnOpenEven) even;
+    public void handler(Event event) throws Exception {
+        OnOpenEvent onOpenEven = (OnOpenEvent) event;
         SysWebSocket sysWebSocket = onOpenEven.getSysWebSocket();
         String sid = onOpenEven.getSid();
         sysWebSocket.setWebSocketSession(sysWebSocket.getWebSocketSession());

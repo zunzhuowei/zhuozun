@@ -1,9 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.job.SchedulingJob;
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnPongEven;
-import com.qs.game.utils.DataUtils;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnPongEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.PongMessage;
@@ -21,12 +20,12 @@ public class OnPongEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception {
-        OnPongEven onPongEven = (OnPongEven) even;
+    public void handler(Event event) throws Exception {
+        OnPongEvent onPongEven = (OnPongEvent) event;
         String sid = onPongEven.getSid();
         log.info("pong from sid -------::" + sid);
         SchedulingJob.heartBeats.put(sid, new Date().getTime());
-        even.getSysWebSocket().sendMessage(new PongMessage(ByteBuffer.allocate(0))); //ping msg
+        event.getSysWebSocket().sendMessage(new PongMessage(ByteBuffer.allocate(0))); //ping msg
     }
 
 }

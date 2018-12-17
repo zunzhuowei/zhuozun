@@ -1,9 +1,10 @@
 package com.qs.game.socket;
 
+import com.qs.game.config.DisruptorConfig;
 import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
-import com.qs.game.job.SchedulingJob;
-import com.qs.game.model.even.Even;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.EventEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -28,24 +29,28 @@ public class MessageRouter implements Serializable {
     private static final boolean withCustomProtocol = true; //校验自定义协议
 
     // 使用线程池的方式，提交消息到线程池执行。
-    public static void route(Even even, EvenType evenType) {
-        SysWebSocket sysWebSocket = even.getSysWebSocket();
+    public static void route(Event event, EvenType evenType) {
+        SysWebSocket sysWebSocket = event.getSysWebSocket();
         if (Objects.nonNull(sysWebSocket)) {
             WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
             Map<String, Object> context = webSocketSession.getAttributes();
-            even.setSid(context.get(SID) + "");
+            event.setSid(context.get(SID) + "");
         }
-        String sid = even.getSid();
+        String sid = event.getSid();
+
+        //DisruptorConfig.SocketMessageEventProducer producer = DisruptorConfig.getSocketMessageProducer();
+        //producer.onData(new EventEntity().setEvent(event).setEvenType(evenType));
+        //if (true) return;
 
         if (isSubmit) {
             Future future = ROUTER_POOL_EXECUTOR.submit(() ->
             {
                 try {
-                    MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
+                    MessageRouter.executeRouteMessage(event, evenType, withCustomProtocol);
                 } catch (Exception e) {
                     log.warn("MessageRouter route Exception 1 --::{}", e.getMessage());
                     try {
-                        even.getSysWebSocket().closeWebSocket(sid);
+                        event.getSysWebSocket().closeWebSocket(sid);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -62,11 +67,11 @@ public class MessageRouter implements Serializable {
             ROUTER_POOL_EXECUTOR.execute(() ->
             {
                 try {
-                    MessageRouter.executeRouteMessage(even, evenType, withCustomProtocol);
+                    MessageRouter.executeRouteMessage(event, evenType, withCustomProtocol);
                 } catch (Exception e) {
                     log.warn("MessageRouter route Exception 2 --::{}", e.getMessage());
                     try {
-                        even.getSysWebSocket().closeWebSocket(sid);
+                        event.getSysWebSocket().closeWebSocket(sid);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -76,13 +81,13 @@ public class MessageRouter implements Serializable {
         }
     }
 
-    private static void executeRouteMessage(Even even, EvenType evenType, boolean withCustomProtocol) throws Exception {
+    private static void executeRouteMessage(Event event, EvenType evenType, boolean withCustomProtocol) throws Exception {
 
-        Handler handler = Handler.getInstance(even, withCustomProtocol);
-        String sid = even.getSid();
+        Handler handler = Handler.getInstance(event, withCustomProtocol);
+        String sid = event.getSid();
         if (Objects.isNull(handler)) {
             try {
-                even.getSysWebSocket().closeWebSocket(sid);
+                event.getSysWebSocket().closeWebSocket(sid);
             } catch (IOException e) {
                 log.warn("MessageRouter route executeRouteMessage handler closeWebSocket", e.getMessage());
                 //e.printStackTrace();
@@ -93,27 +98,27 @@ public class MessageRouter implements Serializable {
 
         switch (evenType) {
             case ON_OPEN:
-                handler.getOpenEvenHandler().handler(even);
+                handler.getOpenEvenHandler().handler(event);
                 break;
             case ON_CLOSE:
-                handler.getCloseEvenHandler().handler(even);
+                handler.getCloseEvenHandler().handler(event);
                 break;
             case ON_STR_MESSAGE: {
-                handler.getStrEvenHandler().handler(even);
+                handler.getStrEvenHandler().handler(event);
                 break;
             }
             case ON_BYTE_MESSAGE: {
-                handler.getBinaryEvenHandler().handler(even);
+                handler.getBinaryEvenHandler().handler(event);
                 break;
             }
             case ON_PONE_MESSAGE:
-                handler.getPongEvenHandler().handler(even);
+                handler.getPongEvenHandler().handler(event);
                 break;
             case ON_ERROR_MESSAGE:
-                handler.getErrorEvenHandler().handler(even);
+                handler.getErrorEvenHandler().handler(event);
                 break;
             default:
-                throw new RuntimeException("no even error");
+                throw new RuntimeException("no event error");
         }
     }
 

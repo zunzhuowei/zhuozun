@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import javax.websocket.PongMessage;
 import java.nio.ByteBuffer;
 
 /**
@@ -14,7 +13,7 @@ import java.nio.ByteBuffer;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class OnPongEven extends Even{
+public class OnPongEvent extends Event {
 
     //private PongMessage pongMessage;
 

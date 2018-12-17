@@ -1,7 +1,7 @@
 package com.qs.game.handler;
 
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnBinaryEven;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnBinaryEvent;
 import com.qs.game.socket.SysWebSocket;
 import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
@@ -22,8 +22,8 @@ public class OnBinaryEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception{
-        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+    public void handler(Event event) throws Exception{
+        OnBinaryEvent onBinaryEven = (OnBinaryEvent) event;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         ByteBuffer dup = message.duplicate();
 
@@ -61,8 +61,8 @@ public class OnBinaryEvenHandler implements EvenHandler {
     // web request
 
     /*@Override
-    public void handler(Even even) throws Exception{
-        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+    public void handler(Event even) throws Exception{
+        OnBinaryEvent onBinaryEven = (OnBinaryEvent) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         ByteBuffer dup = message.duplicate();
 

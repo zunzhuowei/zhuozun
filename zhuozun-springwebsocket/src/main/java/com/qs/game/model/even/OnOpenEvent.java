@@ -11,8 +11,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class OnStrEven extends Even{
+public class OnOpenEvent extends Event {
 
-    private String message;
 
 }

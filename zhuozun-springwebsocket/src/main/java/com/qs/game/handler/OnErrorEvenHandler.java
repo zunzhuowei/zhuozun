@@ -1,8 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnErrorEven;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnErrorEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +16,8 @@ public class OnErrorEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception {
-        OnErrorEven onErrorEven = (OnErrorEven) even;
+    public void handler(Event event) throws Exception {
+        OnErrorEvent onErrorEven = (OnErrorEvent) event;
         Throwable error = onErrorEven.getError();
         String sid = onErrorEven.getSid();
         log.error("OnErrorEvenHandler handler ---- 发生错误 sid:{}, message:{}", sid, error.getMessage());

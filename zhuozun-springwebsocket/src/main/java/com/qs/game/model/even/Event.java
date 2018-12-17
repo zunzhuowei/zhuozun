@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-public class Even implements Serializable {
+public class Event implements Serializable {
 
     @Deprecated
     private Session session;

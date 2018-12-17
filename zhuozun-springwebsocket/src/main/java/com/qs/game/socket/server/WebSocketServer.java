@@ -3,7 +3,6 @@ package com.qs.game.socket.server;
 import com.qs.game.job.SchedulingJob;
 import com.qs.game.socket.MessageRouter;
 import com.qs.game.socket.SysWebSocket;
-import com.qs.game.socket.TextEncoder;
 import com.qs.game.constant.EvenType;
 import com.qs.game.model.even.*;
 import lombok.Data;
@@ -11,18 +10,15 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.BinaryMessage;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
-import static com.qs.game.config.SysConfig.WEBSOCKET_URI_PATH;
 import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
@@ -52,7 +48,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnOpen
     public void onOpen(Session session, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnOpenEven().setSession(session).setSid(sid)
+        MessageRouter.route(new OnOpenEvent().setSession(session).setSid(sid)
                 .setSysWebSocket(this), EvenType.ON_OPEN);
     }
 
@@ -61,7 +57,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnClose
     public void onClose(Session session, CloseReason closeReason, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnCloseEven().setReason(closeReason.getReasonPhrase())
+        MessageRouter.route(new OnCloseEvent().setReason(closeReason.getReasonPhrase())
                 .setSession(session).setSid(sid).setSysWebSocket(this), EvenType.ON_CLOSE);
     }
 
@@ -72,7 +68,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnStrEven().setMessage(message).setSession(session).setSid(sid)
+        MessageRouter.route(new OnStrEvent().setMessage(message).setSession(session).setSid(sid)
                 .setSysWebSocket(this), EvenType.ON_STR_MESSAGE);
 
     }
@@ -82,7 +78,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnBinaryEven().setByteBuffer(message).setSession(session).setSid(sid)
+        MessageRouter.route(new OnBinaryEvent().setByteBuffer(message).setSession(session).setSid(sid)
                 .setSysWebSocket(this), EvenType.ON_BYTE_MESSAGE);
     }
 
@@ -91,7 +87,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnMessage
     public void onMessage(PongMessage pongMessage, Session session, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnPongEven().setByteBuffer(pongMessage.getApplicationData())
+        MessageRouter.route(new OnPongEvent().setByteBuffer(pongMessage.getApplicationData())
                 .setSession(session).setSid(sid).setSysWebSocket(this), EvenType.ON_PONE_MESSAGE);
     }
 
@@ -100,7 +96,7 @@ public class WebSocketServer extends SysWebSocket {
      */
     @OnError
     public void onError(Session session, Throwable error, @PathParam("sid") String sid) {
-        MessageRouter.route(new OnErrorEven().setError(error).setSession(session).setSid(sid)
+        MessageRouter.route(new OnErrorEvent().setError(error).setSession(session).setSid(sid)
                 .setSysWebSocket(this), EvenType.ON_ERROR_MESSAGE);
     }
 

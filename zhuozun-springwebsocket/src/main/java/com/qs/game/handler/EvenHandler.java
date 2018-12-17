@@ -1,6 +1,6 @@
 package com.qs.game.handler;
 
-import com.qs.game.model.even.Even;
+import com.qs.game.model.even.Event;
 import com.qs.game.utils.SpringBeanUtil;
 
 /**
@@ -51,6 +51,6 @@ public interface EvenHandler {
         return SpringBeanUtil.getBean(OnStrEvenHandler.class);
     }
 
-    void handler(Even even) throws Exception;
+    void handler(Event event) throws Exception;
 
 }

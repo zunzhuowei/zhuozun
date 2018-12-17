@@ -65,7 +65,7 @@ public class WebSocketClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 
-        int count = 2;
+        int count = 2000;
         for (int i = 0; i < count; i++)
         {
             final int c = mCount.getAndIncrement();

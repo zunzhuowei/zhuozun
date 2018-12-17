@@ -11,7 +11,8 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class OnOpenEven extends Even {
+public class OnErrorEvent extends Event {
 
+    private Throwable error;
 
 }

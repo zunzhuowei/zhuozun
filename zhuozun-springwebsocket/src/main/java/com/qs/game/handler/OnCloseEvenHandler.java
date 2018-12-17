@@ -1,8 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnCloseEven;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnCloseEvent;
 import com.qs.game.socket.SysWebSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -17,8 +17,8 @@ public class OnCloseEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception {
-        OnCloseEven onCloseEven = (OnCloseEven) even;
+    public void handler(Event event) throws Exception {
+        OnCloseEvent onCloseEven = (OnCloseEvent) event;
         SysWebSocket sysWebSocket = onCloseEven.getSysWebSocket();
         String sid = onCloseEven.getSid();
         log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sid, onCloseEven.getReason());

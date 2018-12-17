@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
-public class OnBinaryEven extends Even {
+public class OnBinaryEvent extends Event {
 
     private ByteBuffer byteBuffer;
 
