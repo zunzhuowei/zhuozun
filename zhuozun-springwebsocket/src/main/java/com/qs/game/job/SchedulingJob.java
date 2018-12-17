@@ -46,12 +46,12 @@ public class SchedulingJob {
         });*/
         log.info("now online people count : {}", WEB_SOCKET_MAP.size());
 
-        /*if (!heartBeats.isEmpty()) {
+        if (!heartBeats.isEmpty()) {
             long nowTime = new Date().getTime();
             heartBeats.entrySet().parallelStream()
                     .filter(e -> nowTime - e.getValue() > ONE_SECOND * 3)
                     .forEach(this::removeSession);
-        }*/
+        }
 
     }
 

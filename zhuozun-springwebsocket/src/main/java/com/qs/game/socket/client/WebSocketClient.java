@@ -6,6 +6,8 @@ import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.springframework.web.socket.PingMessage;
+import org.springframework.web.socket.WebSocketMessage;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -65,7 +67,7 @@ public class WebSocketClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 
-        int count = 2000;
+        int count = 2;
         for (int i = 0; i < count; i++)
         {
             final int c = mCount.getAndIncrement();
@@ -106,7 +108,9 @@ public class WebSocketClient {
                                 .buildByteArr();
 
                         webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
-                        //webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.allocate(0), true);
+                        //webSocketClients[i].session.getBasicRemote().sendPing(ByteBuffer.allocate(0));
+                        //webSocketClients[i].session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
+                        break;
 
                     } else {
                         System.out.println("sessions[i] = " + webSocketClients[i].session);

@@ -23,7 +23,7 @@ public class OnPongEvenHandler implements EvenHandler {
     public void handler(Event event) throws Exception {
         OnPongEvent onPongEven = (OnPongEvent) event;
         String sid = onPongEven.getSid();
-        log.info("pong from sid -------::" + sid);
+        //log.info("pong from sid -------::" + sid);
         SchedulingJob.heartBeats.put(sid, new Date().getTime());
         event.getSysWebSocket().sendMessage(new PongMessage(ByteBuffer.allocate(0))); //ping msg
     }
