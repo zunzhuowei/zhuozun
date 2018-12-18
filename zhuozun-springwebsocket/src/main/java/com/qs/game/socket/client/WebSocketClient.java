@@ -67,7 +67,7 @@ public class WebSocketClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 
-        int count = 2;
+        int count = 2000;
         for (int i = 0; i < count; i++)
         {
             final int c = mCount.getAndIncrement();
@@ -164,8 +164,9 @@ public class WebSocketClient {
      * @param session
      */
     @OnMessage
-    public void onMessage(PongMessage pongMessage, Session session) {
-        System.out.println("pongMessage = " + pongMessage);
+    public void onMessage(PongMessage pongMessage, Session session) throws IOException {
+        System.out.println("pongMessage = " + pongMessage.getApplicationData());
+        this.session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
     }
 
     /**

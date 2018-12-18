@@ -1,6 +1,6 @@
 package com.qs.game.config;
 
-import com.qs.game.socket.SysWebSocket;
+import com.qs.game.handler.spring.SpringWebSocketSession;
 
 import java.io.Serializable;
 import java.util.concurrent.*;
@@ -18,7 +18,7 @@ public class SysConfig implements Serializable {
     public static final String SID = "sid";
 
     //存储在线玩家session
-    public static final ConcurrentHashMap<String, SysWebSocket> WEB_SOCKET_MAP = new ConcurrentHashMap<>(40960);
+    public static final ConcurrentHashMap<String, SpringWebSocketSession> WEB_SOCKET_MAP = new ConcurrentHashMap<>(40960);
 
 
     //参数初始化

@@ -1,9 +1,9 @@
 package com.qs.game.handler;
 
 import com.qs.game.constant.CMD;
+import com.qs.game.handler.spring.SpringWebSocketSession;
 import com.qs.game.model.even.Event;
 import com.qs.game.model.even.OnBinaryEvent;
-import com.qs.game.socket.SysWebSocket;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,9 +55,9 @@ public class Handler implements EvenHandler {
 
 
                 // check socket
-                SysWebSocket sysWebSocket = WEB_SOCKET_MAP.get(sid);
-                if (Objects.isNull(sysWebSocket)) {
-                    log.warn("Handler withCustomProtocol sysWebSocket is null", sid);
+                SpringWebSocketSession springWebSocketSession = WEB_SOCKET_MAP.get(sid);
+                if (Objects.isNull(springWebSocketSession)) {
+                    log.warn("Handler withCustomProtocol springWebSocketSession is null", sid);
                     return null;
                 }
 

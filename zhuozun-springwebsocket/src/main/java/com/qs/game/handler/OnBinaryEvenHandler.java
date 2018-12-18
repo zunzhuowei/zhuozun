@@ -1,8 +1,9 @@
 package com.qs.game.handler;
 
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
 import com.qs.game.model.even.Event;
 import com.qs.game.model.even.OnBinaryEvent;
-import com.qs.game.socket.SysWebSocket;
 import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class OnBinaryEvenHandler implements EvenHandler {
         ByteBuffer dup = message.duplicate();
 
         String sid = onBinaryEven.getSid();
-        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
+        SpringWebSocketSession springWebSocketSession = onBinaryEven.getSpringWebSocketSession();
 
         char q = DataUtils.getCharByBuffer(message);
         char s = DataUtils.getCharByBuffer(message);
@@ -52,8 +53,8 @@ public class OnBinaryEvenHandler implements EvenHandler {
 //        System.out.println("str = " + str);
 //        System.out.println("tel = " + tel);
 
-        sysWebSocket.sendMessage(ByteUtils.beginBuild().append(q).append(s)
-                .append(Integer.parseInt(sid)).append(WEB_SOCKET_MAP.size()).buildByteArr());
+        //WebSocketSender.sendMessage(springWebSocketSession, ByteUtils.beginBuild().append(q).append(s)
+         //       .append(Integer.parseInt(sid)).append(WEB_SOCKET_MAP.size()).buildByteArr());
 
         message.clear();
     }

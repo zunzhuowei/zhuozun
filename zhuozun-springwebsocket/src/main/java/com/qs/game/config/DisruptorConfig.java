@@ -5,9 +5,11 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
+import com.qs.game.handler.spring.WebSocketSender;
 import com.qs.game.model.even.Event;
 import com.qs.game.model.even.EventEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -19,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description: https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started
  */
 @Slf4j
+@Component
 public class DisruptorConfig {
 
 
@@ -75,7 +78,7 @@ public class DisruptorConfig {
             Handler handler = Handler.getInstance(event, true);
             if (Objects.isNull(handler)) {
                 try {
-                    event.getSysWebSocket().closeWebSocket(sid);
+                    WebSocketSender.closeWebSocket(event.getSpringWebSocketSession());
                 } catch (IOException e) {
                     log.warn("MessageRouter route executeRouteMessage handler closeWebSocket 2", e.getMessage());
                     //e.printStackTrace();

@@ -1,11 +1,11 @@
 package com.qs.game.model.even;
 
-import com.qs.game.socket.SysWebSocket;
+import com.qs.game.handler.spring.SpringWebSocketSession;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.websocket.Session;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Created by zun.wei on 2018/11/21 13:47.
@@ -15,11 +15,15 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class Event implements Serializable {
 
-    @Deprecated
-    private Session session;
-
     private String sid;
 
-    private SysWebSocket sysWebSocket;
+    private SpringWebSocketSession springWebSocketSession;
+
+    public Event extractSid() {
+        if (Objects.nonNull(this.springWebSocketSession)) {
+            this.sid = this.springWebSocketSession.getSid();
+        }
+        return this;
+    }
 
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
+import javax.annotation.Resource;
+
 /**
  * Created by zun.wei on 2018/12/9.
  */
@@ -16,40 +18,46 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 @Component
 public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
 
+    @Resource
+    private SpringTextWebSocketHandler springTextWebSocketHandler;
 
     @Override
-    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         MessageRouter.route(new OnBinaryEvent().setByteBuffer(message.getPayload())
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_BYTE_MESSAGE);
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_BYTE_MESSAGE);
     }
 
     @Override //当建立连接之后
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         MessageRouter.route(new OnOpenEvent()
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_OPEN);
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_OPEN);
     }
 
     @Override
     protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
         MessageRouter.route(new OnPongEvent().setByteBuffer(message.getPayload())
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_PONE_MESSAGE);
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_PONE_MESSAGE);
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         MessageRouter.route(new OnErrorEvent().setError(exception)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_ERROR_MESSAGE);
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_ERROR_MESSAGE);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         MessageRouter.route(new OnCloseEvent().setReason(status.getReason())
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_CLOSE);
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_CLOSE);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        MessageRouter.route(new OnStrEvent().setMessage(message.getPayload())
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session)), EvenType.ON_STR_MESSAGE);
+        springTextWebSocketHandler.handleTextMessage(session, message);
     }
 }

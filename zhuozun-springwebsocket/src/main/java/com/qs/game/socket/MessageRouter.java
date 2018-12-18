@@ -1,10 +1,10 @@
 package com.qs.game.socket;
 
-import com.qs.game.config.DisruptorConfig;
 import com.qs.game.constant.EvenType;
 import com.qs.game.handler.Handler;
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
 import com.qs.game.model.even.Event;
-import com.qs.game.model.even.EventEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -15,7 +15,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static com.qs.game.config.SysConfig.*;
+import static com.qs.game.config.SysConfig.ROUTER_POOL_EXECUTOR;
+import static com.qs.game.config.SysConfig.SID;
 
 /**
  * Created by zun.wei on 2018/11/21 11:38.
@@ -30,12 +31,6 @@ public class MessageRouter implements Serializable {
 
     // 使用线程池的方式，提交消息到线程池执行。
     public static void route(Event event, EvenType evenType) {
-        SysWebSocket sysWebSocket = event.getSysWebSocket();
-        if (Objects.nonNull(sysWebSocket)) {
-            WebSocketSession webSocketSession = sysWebSocket.getWebSocketSession();
-            Map<String, Object> context = webSocketSession.getAttributes();
-            event.setSid(context.get(SID) + "");
-        }
         String sid = event.getSid();
 
         //DisruptorConfig.SocketMessageEventProducer producer = DisruptorConfig.getSocketMessageProducer();
@@ -50,7 +45,7 @@ public class MessageRouter implements Serializable {
                 } catch (Exception e) {
                     log.warn("MessageRouter route Exception 1 --::{}", e.getMessage());
                     try {
-                        event.getSysWebSocket().closeWebSocket(sid);
+                        WebSocketSender.closeWebSocket(event.getSpringWebSocketSession());
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -71,7 +66,7 @@ public class MessageRouter implements Serializable {
                 } catch (Exception e) {
                     log.warn("MessageRouter route Exception 2 --::{}", e.getMessage());
                     try {
-                        event.getSysWebSocket().closeWebSocket(sid);
+                        WebSocketSender.closeWebSocket(event.getSpringWebSocketSession());
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -87,7 +82,7 @@ public class MessageRouter implements Serializable {
         String sid = event.getSid();
         if (Objects.isNull(handler)) {
             try {
-                event.getSysWebSocket().closeWebSocket(sid);
+                WebSocketSender.closeWebSocket(event.getSpringWebSocketSession());
             } catch (IOException e) {
                 log.warn("MessageRouter route executeRouteMessage handler closeWebSocket", e.getMessage());
                 //e.printStackTrace();
