@@ -1,5 +1,7 @@
 package com.qs.game.handler;
 
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
 import com.qs.game.model.even.Event;
 import com.qs.game.model.even.OnStrEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,9 @@ public class OnStrEvenHandler implements EvenHandler {
         OnStrEvent onStrEven = (OnStrEvent) event;
         String sid = onStrEven.getSid();
         String message = onStrEven.getMessage();
+        SpringWebSocketSession springWebSocketSession = onStrEven.getSpringWebSocketSession();
+
+        WebSocketSender.closeWebSocket(springWebSocketSession);
         log.info("OnStrEvenHandler handler 收到来自窗口{}的信息:{}", sid, message);
     }
 

@@ -1,6 +1,8 @@
 package com.qs.game.handler;
 
 import com.qs.game.config.SysConfig;
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
 import com.qs.game.model.even.Event;
 import com.qs.game.model.even.OnErrorEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,9 @@ public class OnErrorEvenHandler implements EvenHandler {
         String sid = onErrorEven.getSid();
         log.error("OnErrorEvenHandler handler ---- 发生错误 sid:{}, message:{}", sid, error.getMessage());
         //error.printStackTrace();
-        SysConfig.WEB_SOCKET_MAP.remove(sid); //从set中删除
+        SpringWebSocketSession springWebSocketSession = onErrorEven.getSpringWebSocketSession();
+
+        WebSocketSender.closeWebSocket(springWebSocketSession);
     }
 
 }
