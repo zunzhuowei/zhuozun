@@ -97,7 +97,7 @@ public class WebSocketSender implements Serializable {
             springWebSocketSession.getWebSocketSession().close();
             String sid = springWebSocketSession.getSid();
             WEB_SOCKET_MAP.remove(sid);
-            SchedulingJob.heartBeats.remove(sid);
+            //SchedulingJob.heartBeats.remove(sid);
         }
     }
 

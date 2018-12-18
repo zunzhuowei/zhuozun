@@ -36,39 +36,21 @@ public class SchedulingJob {
      * 删除死链接
      */
     //cron = "0/5 * * * * *",
-    @Scheduled(fixedDelay = 3000)
-    public void webSocketServerHeartBeat() throws InterruptedException {
-        WEB_SOCKET_MAP.forEachValue(10L, springWebSocketSession ->
+    @Scheduled(fixedDelay = 10000)
+    public void webSocketServerHeartBeat() {
+        WEB_SOCKET_MAP.forEachValue(100L, springWebSocketSession ->
         {
-            // WebSocketSender.sendMessage(springWebSocketSession, new PingMessage());
-            heartBeats.add(springWebSocketSession.getSid());
-            //WebSocketSender.sendMessage(springWebSocketSession, "HB:" + springWebSocketSession.getSid() + ", online people:" + WEB_SOCKET_MAP.size());
+            WebSocketSession webSocketSession = springWebSocketSession.getWebSocketSession();
+            if (Objects.nonNull(webSocketSession) && !webSocketSession.isOpen()) {
+                try {
+                    WebSocketSender.closeWebSocket(springWebSocketSession);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         });
         log.info("now online people count : {}", WEB_SOCKET_MAP.size());
 
-        Thread.sleep(3000);
-        heartBeats.forEach(WEB_SOCKET_MAP::remove);
-        heartBeats.clear();
-
-        /*if (!heartBeats.isEmpty()) {
-            long nowTime = new Date().getTime();
-            heartBeats.entrySet().parallelStream()
-                    .filter(e -> nowTime - e.getValue() > ONE_SECOND * 3)
-                    .forEach(this::removeSession);
-        }*/
-
-    }
-
-    /**
-     * 移除session
-     *
-     * @param hb key : 游戏id；value ：客户端心跳时间戳
-     */
-    private void removeSession(Map.Entry<String, Long> hb) {
-        log.info("HeartBeatUtils deleteDeadChannels ---::{},{}", hb
-                , DateEnum.YYYY_MM_DD_HH_MM_SS.getDateFormat().format(new Date(hb.getValue())));
-        WEB_SOCKET_MAP.remove(hb.getKey()); // 移除session
-        heartBeats.remove(hb.getKey()); //移除心跳
     }
 
 }

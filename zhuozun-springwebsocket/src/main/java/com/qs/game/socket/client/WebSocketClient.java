@@ -84,7 +84,7 @@ public class WebSocketClient {
         for (; ; ) {
             //Thread.sleep(5000);
             for (int i = 0; i < webSocketClients.length; i++) {
-                //Thread.sleep(50);
+                Thread.sleep(10);
                 try {
                     if (Objects.isNull(webSocketClients[i])) {
                         //System.out.println("\"continue\" = " + "continue");
@@ -113,7 +113,7 @@ public class WebSocketClient {
                         break;
 
                     } else {
-                        System.out.println("sessions[i] = " + webSocketClients[i].session);
+                        //System.out.println("sessions[i] = " + webSocketClients[i].session);
                         //sessions[i].close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "is close"));
                     }
                 } catch (IOException e1) {
@@ -133,8 +133,9 @@ public class WebSocketClient {
      * 连接建立成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session) throws IOException {
         log.debug("连接建立成功调用的方法 ---::");
+        session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
     }
 
     /**
@@ -164,9 +165,9 @@ public class WebSocketClient {
      * @param session
      */
     @OnMessage
-    public void onMessage(PongMessage pongMessage, Session session) throws IOException {
-        System.out.println("pongMessage = " + pongMessage.getApplicationData());
-        this.session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
+    public void onMessage(PongMessage pongMessage, Session session) throws IOException, InterruptedException {
+        Thread.sleep(3000);
+        session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
     }
 
     /**
