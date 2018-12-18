@@ -1,6 +1,5 @@
 package com.qs.game.job;
 
-import com.qs.game.enum0.DateEnum;
 import com.qs.game.handler.spring.WebSocketSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -9,11 +8,7 @@ import org.springframework.web.socket.PingMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
@@ -40,12 +35,19 @@ public class SchedulingJob {
     public void webSocketServerHeartBeat() {
         WEB_SOCKET_MAP.forEachValue(100L, springWebSocketSession ->
         {
-            WebSocketSession webSocketSession = springWebSocketSession.getWebSocketSession();
-            if (Objects.nonNull(webSocketSession) && !webSocketSession.isOpen()) {
+            try {
+                WebSocketSession webSocketSession = springWebSocketSession.getWebSocketSession();
+                if (Objects.nonNull(webSocketSession) && !webSocketSession.isOpen()) {
+                    WebSocketSender.closeWebSocket(springWebSocketSession);
+                } else if (Objects.nonNull(webSocketSession)) {
+                    WebSocketSender.sendMessage(springWebSocketSession, new PingMessage());
+                }
+            } catch (IOException e) {
+                //e.printStackTrace();
                 try {
                     WebSocketSender.closeWebSocket(springWebSocketSession);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
