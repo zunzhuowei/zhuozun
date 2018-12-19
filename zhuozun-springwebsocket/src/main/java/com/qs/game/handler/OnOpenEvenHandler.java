@@ -22,7 +22,7 @@ public class OnOpenEvenHandler implements EvenHandler {
         SpringWebSocketSession springWebSocketSession = onOpenEven.getSpringWebSocketSession();
         String sid = onOpenEven.getSid();
         SysConfig.WEB_SOCKET_MAP.put(sid, springWebSocketSession);//加入 map 中
-        log.info("OnOpenEvenHandler handler sid:{} -- online people:{}", sid, SysConfig.WEB_SOCKET_MAP.size());
+        //log.info("OnOpenEvenHandler handler sid:{} -- online people:{}", sid, SysConfig.WEB_SOCKET_MAP.size());
 
     }
 

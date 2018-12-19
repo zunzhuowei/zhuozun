@@ -27,7 +27,7 @@ public class OnPongEvenHandler implements EvenHandler {
         OnPongEvent onPongEven = (OnPongEvent) event;
         String sid = onPongEven.getSid();
         SpringWebSocketSession springWebSocketSession = onPongEven.getSpringWebSocketSession();
-        log.info("pong from sid -------::" + sid);
+        //log.info("pong from sid -------::" + sid);
         //SchedulingJob.heartBeats.remove(sid);
         WebSocketSender.sendMessage(springWebSocketSession, new PongMessage());
     }
