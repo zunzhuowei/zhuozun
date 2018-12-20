@@ -17,4 +17,6 @@ public class OnCloseEvent extends Event {
 
     private String reason;
 
+    private int code;
+
 }

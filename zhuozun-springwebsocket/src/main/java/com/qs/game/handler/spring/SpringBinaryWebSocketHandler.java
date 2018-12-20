@@ -51,7 +51,7 @@ public class SpringBinaryWebSocketHandler extends BinaryWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        MessageRouter.route(new OnCloseEvent().setReason(status.getReason())
+        MessageRouter.route(new OnCloseEvent().setReason(status.getReason()).setCode(status.getCode())
                 .setSpringWebSocketSession(new SpringWebSocketSession(session))
                 .extractSid(), EvenType.ON_CLOSE);
     }

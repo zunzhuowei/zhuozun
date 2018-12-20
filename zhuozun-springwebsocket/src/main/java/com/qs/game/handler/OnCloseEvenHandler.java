@@ -22,7 +22,7 @@ public class OnCloseEvenHandler implements EvenHandler {
         OnCloseEvent onCloseEven = (OnCloseEvent) event;
         SpringWebSocketSession springWebSocketSession = onCloseEven.getSpringWebSocketSession();
         String sid = onCloseEven.getSid();
-        log.warn("OnCloseEvenHandler handler  sid:{},reason:{}", sid, onCloseEven.getReason());
+        log.warn("OnCloseEvenHandler handler  sid:{},reason:{},code:{}", sid, onCloseEven.getReason(), onCloseEven.getCode());
         WebSocketSender.closeWebSocket(springWebSocketSession);
 
     }

@@ -98,9 +98,12 @@ public class Collector implements Serializable {
     public Collector readLogFile() {
         File logFile = this.logFile.get();
         long len = logFile.length();
+        if (this.pointer == 0)
+            this.pointer = logFile.length();
+
         if (len < this.pointer) {
             System.out.println("Log file was reset. Restarting logging from start of file.");
-            this.pointer = 0;
+            this.pointer = logFile.length();
             return null;
         }
         StringBuilder result = null;
@@ -133,7 +136,6 @@ public class Collector implements Serializable {
         }
         this.logStr = Objects.isNull(result) ? null : result.toString();
         return this;
-        //TODO 读取文件的指针要持久化，防止丢失；
     }
 
     public void sendLog2Server() {
@@ -154,6 +156,16 @@ public class Collector implements Serializable {
                 }
                 ,0, execDelay, TimeUnit.MILLISECONDS);
 
+    }
+
+    public Session getSession() throws InterruptedException {
+        if (Objects.nonNull(this.session) && this.session.isOpen()) {
+            return this.session;
+        } else {
+            Thread.sleep(2000);
+            this.connectServer(1);
+        }
+        return this.session;
     }
 
 }

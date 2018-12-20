@@ -23,7 +23,7 @@ public class OnStrEvenHandler implements EvenHandler {
         String message = onStrEven.getMessage();
         SpringWebSocketSession springWebSocketSession = onStrEven.getSpringWebSocketSession();
 
-        WebSocketSender.closeWebSocket(springWebSocketSession);
+        //WebSocketSender.closeWebSocket(springWebSocketSession);
         log.info("OnStrEvenHandler handler 收到来自窗口{}的信息:{}", sid, message);
     }
 
