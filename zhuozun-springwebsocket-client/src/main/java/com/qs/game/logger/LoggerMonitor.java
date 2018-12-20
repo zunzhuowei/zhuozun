@@ -14,13 +14,47 @@ public class LoggerMonitor implements TailerListener {
 
     private static Collector collector;
 
+    private static String websocketUrl;
+
+    private static String deviceId = "10";
+
+    private static int sleepInterval = 1000;
+
+    private static int bufSize = 4096;
+
     public static void main(String[] args) {
-        String inputFile = "E:/data/file/mock.log";
-        int sleepInterval = 1000;
-        int bufSize = 4096;
+        if (args.length < 2) {
+            System.out.println("need args ! " +
+                    "arg0:filePath; " +
+                    "arg1:websocket Url; " +
+                    "arg2:deviceId; " +
+                    "arg3:sleepInterval; " +
+                    "arg4:bufSize;");
+            System.exit(-1);
+            return;
+        }
+
+        String inputFile = args[0];
+        websocketUrl = args[1];
+
+        if (args.length >= 3) {
+            deviceId = args[2];
+        }
+        if (args.length >= 4) {
+            sleepInterval = Integer.parseInt(args[3]);
+        }
+        if (args.length >= 5) {
+            bufSize = Integer.parseInt(args[4]);
+        }
+
+        System.out.println("inputFile = " + inputFile);
+        System.out.println("websocketUrl = " + websocketUrl);
+        System.out.println("deviceId = " + deviceId);
+        System.out.println("sleepInterval = " + sleepInterval);
+        System.out.println("bufSize = " + bufSize);
 
         collector = Collector.getCollector()
-                .buildWebSocket("ws://localhost:8600/websocket/", "10")
+                .buildWebSocket(websocketUrl, deviceId)
                 .connectServer(1);
 
         TailerListener tailerListener = new LoggerMonitor();
@@ -50,6 +84,15 @@ public class LoggerMonitor implements TailerListener {
             collector.getSession().getBasicRemote().sendText(line);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            try {
+                collector.getSession().close();
+            } catch (IOException | InterruptedException e1) {
+                e1.printStackTrace();
+            } finally {
+                collector = Collector.getCollector()
+                        .buildWebSocket(websocketUrl, deviceId)
+                        .connectServer(1);
+            }
         }
 
     }

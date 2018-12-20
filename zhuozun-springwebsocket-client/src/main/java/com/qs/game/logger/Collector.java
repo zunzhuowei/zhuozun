@@ -62,7 +62,8 @@ public class Collector implements Serializable {
         if (Objects.isNull(wsUrl) || Objects.isNull(deviceId)) throw new RuntimeException("wsUrl or deviceId is null");
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        String uri = wsUrl + deviceId;
+        String uri = wsUrl.endsWith("/") ? wsUrl + deviceId : wsUrl + "/" + deviceId;
+
         System.out.println("Connecting to " + uri
                 + ",try connect " + tryConnectTimes + " times");
         try {
