@@ -1,16 +1,3 @@
-#不能用localhost,否则启动报异常:Unresolved address
-#tcp监听的端口
-netty:
-  websocket:
-    host: 192.168.1.104
-    port: 9002
-  boss:
-    thread:
-      count: 2  # bossGroup的线程数
-  worker:
-    thread:
-      count: 2  # worker的线程数
-
 server:
   port: 8600 #https
   app-name: websocket-server
@@ -21,26 +8,37 @@ server:
     user:
       name: zhangsan
       password: 123
-  ssl:
-    http:
-      port: 8601 # http
-    key-store: wss.jks
-    key-store-type: JKS
-    key-password: netty123
+tomcat:
+  server:
+    MaxFileSize: 300MB
+    MaxRequestSize: 500MB
+    acceptorThreadCount: 100
+    compression: 'on'
+    connectionTimeout: 10000
+    maxConnections: 10000
+    maxSpareThreads: 50
+    maxThreads: 1000
+    minSpareThreads: 50
+    port: ${server.port}
+    protocol: org.apache.coyote.http11.Http11Nio2Protocol
+    redirectPort: 443
+#  ssl:
+#    http:
+#      port: 8601 # http
+#    key-store: wss.jks
+#    key-store-type: JKS
+#    key-password: netty123
 
 mybatis:
   config-location: classpath:mybatis/mybatis.cfg.xml        # mybatis配置文件所在路径
   type-aliases-package: com.qs.game.model    # 所有Entity别名类所在包
   mapper-locations:
   - classpath*:mybatis/mapper/**/*.xml                       # mapper映射文件
-
 spring:
   application:
     name: ${server.app-name}
-  freemarker:
-    suffix: .ftl
   redis:
-    database: 14
+    database: 6 # 14
     host: 192.168.1.128
     port: 6379
     password:
@@ -52,7 +50,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
     driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
-    url: jdbc:mysql://192.168.1.210:3306/zun_gd_majiang?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
+    url: jdbc:mysql://192.168.1.210:3306/happy_game?useSSL=false&useUnicode=true&characterEncoding=utf-8   # 数据库名称
     username: dev
     password: dev
     dbcp2:
@@ -63,20 +61,30 @@ spring:
       validation-query: select 1
       validation-query-timeout: 5000
       test-while-idle: false
+  data:
+    mongodb:
+      uri: mongodb://xxx:xxx@localhost:27017/position
+  thymeleaf:
+    cache: false
+    enabled: true
+    encoding: UTF-8
+    mode: HTML
+    suffix: .html
+    prefix: classpath:/templates/
 
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5
-  instance:
-    instance-id: ${server.app-name}-${server.port}
-    prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 10
-    health-check-url-path: /actuator/health
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://${server.discover.hostname}:${server.discover.port}/eureka/
+#    register-with-eureka: true
+#    fetch-registry: true
+#    registry-fetch-interval-seconds: 5
+#  instance:
+#    instance-id: ${server.app-name}-${server.port}
+#    prefer-ip-address: true
+#    lease-renewal-interval-in-seconds: 10
+#    health-check-url-path: /actuator/health
 
 # admin server 配置 允许访问权限
 management:

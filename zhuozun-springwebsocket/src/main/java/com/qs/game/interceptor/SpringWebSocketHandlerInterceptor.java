@@ -14,6 +14,8 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
+import static com.qs.game.config.SysConfig.SID;
+
 /**
  * Created by zun.wei on 2018/12/9.
  *  spring websocket 握手拦截器
@@ -40,7 +42,7 @@ public class SpringWebSocketHandlerInterceptor extends HttpSessionHandshakeInter
                 return false;
             }
             if (!isNum) return false;
-            attributes.put("sid", path);
+            attributes.put(SID, path);
         } else {
             return false;
         }

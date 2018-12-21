@@ -1,13 +1,17 @@
 package com.qs.game.handler;
 
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnBinaryEven;
-import com.qs.game.socket.SysWebSocket;
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnBinaryEvent;
+import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.
@@ -19,21 +23,21 @@ public class OnBinaryEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception{
-        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+    public void handler(Event event) throws Exception{
+        OnBinaryEvent onBinaryEven = (OnBinaryEvent) event;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         ByteBuffer dup = message.duplicate();
 
         String sid = onBinaryEven.getSid();
-        SysWebSocket sysWebSocket = onBinaryEven.getSysWebSocket();
+        SpringWebSocketSession springWebSocketSession = onBinaryEven.getSpringWebSocketSession();
 
         char q = DataUtils.getCharByBuffer(message);
         char s = DataUtils.getCharByBuffer(message);
 
-        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
-
-        System.out.println("q = " + q);
-        System.out.println("s = " + s);
+//        System.out.println("OnBinaryEvenHandler handler sid =========================== " + sid);
+//
+//        System.out.println("q = " + q);
+//        System.out.println("s = " + s);
 
         int cmd = DataUtils.getIntByBuffer(message);
         int strLen = DataUtils.getIntByBuffer(message);
@@ -43,13 +47,14 @@ public class OnBinaryEvenHandler implements EvenHandler {
         int telLen = DataUtils.getIntByBuffer(message);
         String tel = DataUtils.getStrByBuffer(message, telLen);
 
-        System.out.println("mid = " + mid);
-        System.out.println("p1 = " + p1);
-        System.out.println("cmd = " + cmd);
-        System.out.println("str = " + str);
-        System.out.println("tel = " + tel);
+//        System.out.println("mid = " + mid);
+//        System.out.println("p1 = " + p1);
+//        System.out.println("cmd = " + cmd);
+//        System.out.println("str = " + str);
+//        System.out.println("tel = " + tel);
 
-        sysWebSocket.sendMessage(dup);
+        WebSocketSender.sendMessage(springWebSocketSession, ByteUtils.beginBuild().append(q).append(s)
+                .append(Integer.parseInt(sid)).append(WEB_SOCKET_MAP.size()).buildByteArr());
 
         message.clear();
     }
@@ -57,8 +62,8 @@ public class OnBinaryEvenHandler implements EvenHandler {
     // web request
 
     /*@Override
-    public void handler(Even even) throws Exception{
-        OnBinaryEven onBinaryEven = (OnBinaryEven) even;
+    public void handler(Event even) throws Exception{
+        OnBinaryEvent onBinaryEven = (OnBinaryEvent) even;
         ByteBuffer message = onBinaryEven.getByteBuffer();
         ByteBuffer dup = message.duplicate();
 

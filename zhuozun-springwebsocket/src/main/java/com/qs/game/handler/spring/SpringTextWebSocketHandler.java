@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Map;
-
-import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
+import javax.annotation.Resource;
 
 /**
  * Created by zun.wei on 2018/12/9.
@@ -20,49 +18,46 @@ import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 @Component
 public class SpringTextWebSocketHandler extends TextWebSocketHandler {
 
+    @Resource
+    private SpringBinaryWebSocketHandler springBinaryWebSocketHandler;
+
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handleBinaryMessage attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnStrEven().setMessage(message.getPayload()).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_BYTE_MESSAGE);
+        MessageRouter.route(new OnStrEvent().setMessage(message.getPayload())
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_STR_MESSAGE);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler afterConnectionEstablished attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnOpenEven().setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_OPEN);
+        MessageRouter.route(new OnOpenEvent()
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_OPEN);
     }
 
     @Override
     protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handlePongMessage attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnPongEven().setByteBuffer(message.getPayload()).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_PONE_MESSAGE);
+        MessageRouter.route(new OnPongEvent().setByteBuffer(message.getPayload())
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_PONE_MESSAGE);
     }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler handleTransportError attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnErrorEven().setError(exception).setSid(sid)
-                .setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_ERROR_MESSAGE);
+        MessageRouter.route(new OnErrorEvent().setError(exception)
+                .setSpringWebSocketSession(new SpringWebSocketSession(session)), EvenType.ON_ERROR_MESSAGE);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        Map<String, Object> attrs = session.getAttributes();
-        log.info("SpringTextWebSocketHandler afterConnectionClosed attrs = {}", attrs);
-        String sid = attrs.get("sid") + "";
-        MessageRouter.route(new OnCloseEven().setReason(status.getReason())
-                .setSid(sid).setSysWebSocket(new SpringWebSocketSession().setWebSocketSession(session).setSid(sid)), EvenType.ON_CLOSE);
+        MessageRouter.route(new OnCloseEvent().setReason(status.getReason()).setCode(status.getCode())
+                .setSpringWebSocketSession(new SpringWebSocketSession(session))
+                .extractSid(), EvenType.ON_CLOSE);
+    }
+
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+        springBinaryWebSocketHandler.handleBinaryMessage(session, message);
     }
 
 }

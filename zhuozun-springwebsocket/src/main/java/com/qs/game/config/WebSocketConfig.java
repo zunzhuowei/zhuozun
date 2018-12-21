@@ -113,7 +113,8 @@ public class WebSocketConfig implements WebSocketConfigurer, WebServerFactoryCus
     // 如果不同两者path路径，则两者共存。
     @Override// (2) spring websocket config
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(springTextWebSocketHandler, WEBSOCKET_URI_PATH)
+        registry
+                //.addHandler(springTextWebSocketHandler, WEBSOCKET_URI_PATH)
                 .addHandler(springBinaryWebSocketHandler, WEBSOCKET_URI_PATH)
                 .addInterceptors(new SpringWebSocketHandlerInterceptor())
                 .setAllowedOrigins("*");
