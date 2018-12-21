@@ -62,7 +62,7 @@ public class SysConfig implements Serializable {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
         public Thread newThread(Runnable r) {
-            return new Thread(r, "AdvacnedAsyncTask #" + mCount.getAndIncrement());
+            return new Thread(r, "MSG Thread #" + mCount.getAndIncrement());
         }
     };
 
