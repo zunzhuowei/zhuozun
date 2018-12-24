@@ -73,6 +73,39 @@ public enum ServerEnumGit {
             "/E/qs_game_cfg_files/test/happybeard/acti/spring-applicationContext.xml"
     ),
 
+    // 斗地主测试服 web 后台
+    TEST_SERVER_WEB_MINI_DDZ(
+            "qs-web",
+            "miniddzweb.war",
+            new String[]{"testWebServer"},
+            false,
+            "/wwwroot/java/tomcat-happy/",
+            "/E/qs_game_cfg_files/test/miniddz/web/*.properties",
+            "/E/qs_game_cfg_files/test/miniddz/web/spring-applicationContext.xml"
+    ),
+
+    // 斗地主测试服 app 后台
+    TEST_SERVER_APP_MINI_DDZ(
+            "qs-app",
+            "miniddzapp.war",
+            new String[]{"testWebServer"},
+            false,
+            "/wwwroot/java/tomcat-happy/",
+            "/E/qs_game_cfg_files/test/miniddz/app/*.properties",
+            "/E/qs_game_cfg_files/test/miniddz/app/spring-applicationContext.xml"
+    ),
+
+    // 斗地主测试服 acti 后台
+    TEST_SERVER_ACTI_MINI_DDZ(
+            "qs-activity-center",
+            "miniddzacti.war",
+            new String[]{"testWebServer"},
+            false,
+            "/wwwroot/java/tomcat-happy/",
+            "/E/qs_game_cfg_files/test/miniddz/acti/*.properties",
+            "/E/qs_game_cfg_files/test/miniddz/acti/spring-applicationContext.xml"
+    ),
+
 
 
     //////////////////////////////  online  //////////////////////////////////////////////////////
