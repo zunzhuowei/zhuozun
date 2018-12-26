@@ -177,6 +177,39 @@ public enum ServerEnumGit {
             "/E/qs_game_cfg_files/online/happybeard/acti/*.properties",
             "/E/qs_game_cfg_files/online/happybeard/acti/spring-applicationContext.xml"
     ),
+
+    // 斗地主正式服 web 后台
+    ONLINE_SERVER_WEB_MINI_DDZ(
+            "qs-web",
+            "miniddzweb.war",
+            new String[]{"qsBeardWeb"},
+            false,
+            "/wwwroot/java/tomcat-happy/",
+            "/E/qs_game_cfg_files/online/miniddz/web/*.properties",
+            "/E/qs_game_cfg_files/online/miniddz/web/spring-applicationContext.xml"
+    ),
+
+    // 斗地主正式服 app 后台
+    ONLINE_SERVER_APP_MINI_DDZ(
+            "qs-app",
+            "miniddzapp.war",
+            new String[]{"miniBeardApp01", "miniBeardApp02", "miniBeardApp03"},
+            false,
+            "/wwwroot/java/tomcat-gold/",
+            "/E/qs_game_cfg_files/online/miniddz/app/*.properties",
+            "/E/qs_game_cfg_files/online/miniddz/app/spring-applicationContext.xml"
+    ),
+
+    // 斗地主正式服 acti 后台
+    ONLINE_SERVER_ACTI_MINI_DDZ(
+            "qs-activity-center",
+            "miniddzacti.war",
+            new String[]{"miniBeardApp01", "miniBeardApp02", "miniBeardApp03"},
+            false,
+            "/wwwroot/java/tomcat-gold/",
+            "/E/qs_game_cfg_files/online/miniddz/acti/*.properties",
+            "/E/qs_game_cfg_files/online/miniddz/acti/spring-applicationContext.xml"
+    ),
     ;
 
 
