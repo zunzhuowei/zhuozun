@@ -1,0 +1,5 @@
+option java_outer_classname = "HelloProtoBuf";
+
+message Hello {
+    required string name = 1;
+}
