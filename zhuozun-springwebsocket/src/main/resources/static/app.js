@@ -2,7 +2,7 @@ var socket;
 if (typeof(WebSocket) === undefined) {
     console.log("您的浏览器不支持WebSocket");
 } else {
-    socket = new WebSocket("ws://localhost:8600/websocket2/33");
+    socket = new WebSocket("ws://localhost:8600/websocket/33");
 
     socket.binaryType = 'arraybuffer';
 
