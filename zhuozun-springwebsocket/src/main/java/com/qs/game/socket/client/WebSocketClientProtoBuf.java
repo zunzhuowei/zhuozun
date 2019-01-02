@@ -3,6 +3,8 @@ package com.qs.game.socket.client;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.qs.game.socket.TextEncoder;
 import com.qs.game.socket.client.msg.HelloProtoBuf;
+import com.qs.game.socket.client.msg.LoginProto;
+import com.qs.game.socket.client.msg.LoginRespBuf;
 import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import org.apache.juli.logging.Log;
@@ -12,13 +14,10 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by zun.wei on 2018/11/19 16:26.
@@ -59,13 +58,15 @@ public class WebSocketClientProtoBuf {
         return true;
     }
 
-    // protoc  --java_out=. msg.proto
+    // protoc  --java_out=. Hello.proto
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         WebSocketClientProtoBuf wSocketTest = new WebSocketClientProtoBuf(String.valueOf(0));
         wSocketTest.start(0);
 
         // test protoBuf
-        webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf()), true);
+        //webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf()), true);
+        webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf2()), true);
+        Thread.sleep(5000);
     }
 
     private static byte[] getProtoBuf() throws InvalidProtocolBufferException {
@@ -82,6 +83,24 @@ public class WebSocketClientProtoBuf {
         //| id | protobuf message |
         //-------------------------
         return ByteUtils.beginBuild().append((short)0).append(buf).buildByteArr();
+    }
+
+    private static byte[] getProtoBuf2() throws InvalidProtocolBufferException {
+        LoginProto.Login.Builder builder = LoginProto.Login.newBuilder();
+        builder.setMid(111);
+        builder.setSCode((int) new Date().getTime());
+        builder.setSKey("0111-aa-xxx-ddd");
+        LoginProto.Login login = builder.build();
+        byte[] buf = login.toByteArray();
+
+        // test parse buf
+        LoginProto.Login parseLogin = LoginProto.Login.parseFrom(buf);
+        System.out.println("parseLogin = " + parseLogin);
+
+        //-------------------------
+        //| id | protobuf message |
+        //-------------------------
+        return ByteUtils.beginBuild().append((short)1).append(buf).buildByteArr();
     }
 
     @OnMessage
@@ -111,12 +130,12 @@ public class WebSocketClientProtoBuf {
      *  接收服务端 二进制格式请求数据
      */
     @OnMessage
-    public void onMessage(ByteBuffer message, Session session) {
-        char q = DataUtils.getCharByBuffer(message);
-        char s = DataUtils.getCharByBuffer(message);
-        int sid = DataUtils.getIntByBuffer(message);
-        int online = DataUtils.getIntByBuffer(message);
-        System.out.println("q s sid online = " + q + "," + s + "," + sid + "," + online);
+    public void onMessage(ByteBuffer message, Session session) throws InvalidProtocolBufferException {
+        short q0 = DataUtils.getShortByBuffer(message);
+        System.out.println("q0 = " + q0);
+        LoginRespBuf.LoginResp loginResp = LoginRespBuf.LoginResp.parseFrom(message);
+        System.out.println("loginResp = " + loginResp);
+
         message.clear();
     }
 

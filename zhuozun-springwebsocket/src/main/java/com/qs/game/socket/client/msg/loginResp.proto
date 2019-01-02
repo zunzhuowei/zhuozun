@@ -1,0 +1,9 @@
+syntax = "proto2";
+option java_outer_classname = "LoginRespBuf";
+package com.qs.game.socket.client.msg;
+
+
+message LoginResp {
+    required bool su = 1;
+    required int32  exp = 2;
+}

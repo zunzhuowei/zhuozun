@@ -1,0 +1,8 @@
+//option java_package = "com.qs.game.socket.client.msg";
+option java_outer_classname = "LoginProto";
+
+message Login {
+    required string sKey = 1;
+    required int32  sCode = 2;
+    required int32  mid = 3;
+}
