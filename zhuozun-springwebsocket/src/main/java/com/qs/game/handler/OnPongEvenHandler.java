@@ -1,9 +1,17 @@
 package com.qs.game.handler;
 
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnPongEven;
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.handler.spring.WebSocketSender;
+import com.qs.game.job.SchedulingJob;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnPongEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.PongMessage;
+
+import javax.annotation.Resource;
+import java.nio.ByteBuffer;
+import java.util.Date;
 
 /**
  * Created by zun.wei on 2018/11/21 14:07.
@@ -15,10 +23,13 @@ public class OnPongEvenHandler implements EvenHandler {
 
 
     @Override
-    public void handler(Even even) throws Exception {
-        OnPongEven onPongEven = (OnPongEven) even;
+    public void handler(Event event) throws Exception {
+        OnPongEvent onPongEven = (OnPongEvent) event;
         String sid = onPongEven.getSid();
-        log.info("pong from sid -------::" + sid);
+        SpringWebSocketSession springWebSocketSession = onPongEven.getSpringWebSocketSession();
+        //log.info("pong from sid -------::" + sid);
+        //SchedulingJob.heartBeats.remove(sid);
+        WebSocketSender.sendMessage(springWebSocketSession, new PongMessage());
     }
 
 }

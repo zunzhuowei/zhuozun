@@ -1,9 +1,9 @@
 package com.qs.game.handler;
 
 import com.qs.game.constant.CMD;
-import com.qs.game.model.even.Even;
-import com.qs.game.model.even.OnBinaryEven;
-import com.qs.game.model.even.OnStrEven;
+import com.qs.game.handler.spring.SpringWebSocketSession;
+import com.qs.game.model.even.Event;
+import com.qs.game.model.even.OnBinaryEvent;
 import com.qs.game.utils.DataUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.qs.game.config.SysConfig.WEB_SOCKET_MAP;
 
 /**
  * Created by zun.wei on 2018/11/22 11:35.
@@ -32,17 +34,32 @@ public class Handler implements EvenHandler {
 
     /**
      * 获取消息操作类
-     * @param even 消息时间
+     * @param event 消息时间
      * @param withCustomProtocol 是否校验协议头
      * @return 消息操作类
      */
-    public static Handler getInstance(Even even, boolean withCustomProtocol) {
+    public static Handler getInstance(Event event, boolean withCustomProtocol) {
         if (withCustomProtocol) {
-            OnBinaryEven onBinaryEven = even instanceof OnBinaryEven ? ((OnBinaryEven) even) : null;
+            OnBinaryEvent onBinaryEven = event instanceof OnBinaryEvent ? ((OnBinaryEvent) event) : null;
             if (Objects.nonNull(onBinaryEven)) {
                 ByteBuffer byteBuffer = onBinaryEven.getByteBuffer();
                 if (Objects.isNull(byteBuffer)) return null;
                 ByteBuffer message = byteBuffer.duplicate();
+
+                //TODO check connect sid
+                String sid = onBinaryEven.getSid();
+                if (!StringUtils.isNumeric(sid)) {
+                    log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
+                    return null;
+                }
+
+
+                // check socket
+                SpringWebSocketSession springWebSocketSession = WEB_SOCKET_MAP.get(sid);
+                if (Objects.isNull(springWebSocketSession)) {
+                    log.warn("Handler withCustomProtocol springWebSocketSession is null", sid);
+                    return null;
+                }
 
                 // check protocol length
                 int packHeadLen = message.array().length;
@@ -67,24 +84,18 @@ public class Handler implements EvenHandler {
                     return null;
                 }
 
-                //TODO check connect sid
-                String sid = onBinaryEven.getSid();
-                if (!StringUtils.isNumeric(sid)) {
-                    log.warn("Handler withCustomProtocol sid :{} is not numeric", sid);
-                    return null;
-                }
 
                 message.clear();
             }
         }
 
-        //OnStrEven onStrEven = even instanceof OnStrEven ? ((OnStrEven) even) : null;
+        //OnStrEvent onStrEven = event instanceof OnStrEvent ? ((OnStrEvent) event) : null;
 
 
-        //OnCloseEven onCloseEven = even instanceof OnCloseEven ? ((OnCloseEven) even) : null;
-        //OnErrorEven onErrorEven = even instanceof OnErrorEven ? ((OnErrorEven) even) : null;
-        //OnOpenEven onOpenEven = even instanceof OnOpenEven ? ((OnOpenEven) even) : null;
-        //OnPongEven onPongEven = even instanceof OnPongEven ? ((OnPongEven) even) : null;
+        //OnCloseEvent onCloseEven = event instanceof OnCloseEvent ? ((OnCloseEvent) event) : null;
+        //OnErrorEvent onErrorEven = event instanceof OnErrorEvent ? ((OnErrorEvent) event) : null;
+        //OnOpenEvent onOpenEven = event instanceof OnOpenEvent ? ((OnOpenEvent) event) : null;
+        //OnPongEvent onPongEven = event instanceof OnPongEvent ? ((OnPongEvent) event) : null;
 
         return instantce;
     }
@@ -132,7 +143,7 @@ public class Handler implements EvenHandler {
     }
 
     @Override
-    public void handler(Even even) throws Exception {
+    public void handler(Event event) throws Exception {
 
     }
 

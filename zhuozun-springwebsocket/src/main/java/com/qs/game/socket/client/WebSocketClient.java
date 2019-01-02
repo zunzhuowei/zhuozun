@@ -3,15 +3,24 @@ package com.qs.game.socket.client;
 import com.qs.game.socket.TextEncoder;
 import com.qs.game.model.communication.UserTest;
 import com.qs.game.utils.ByteUtils;
+import com.qs.game.utils.DataUtils;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+import org.springframework.web.socket.PingMessage;
+import org.springframework.web.socket.WebSocketMessage;
 
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by zun.wei on 2018/11/19 16:26.
@@ -22,6 +31,9 @@ public class WebSocketClient {
 
     private static Log log = LogFactory.getLog(WebSocketClient.class);
 
+    private static final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService exec2 = Executors.newScheduledThreadPool(20);
+
     private String deviceId;
 
     private Session session;
@@ -30,21 +42,22 @@ public class WebSocketClient {
     }
 
     private static final List<Session> list = new LinkedList<Session>();
+    private static final WebSocketClient[] webSocketClients = new WebSocketClient[20000];
+    private static final AtomicInteger mCount = new AtomicInteger(1);
 
     public WebSocketClient(String deviceId) {
         this.deviceId = deviceId;
     }
 
-    protected boolean start(int choose) {
+    protected boolean start(int c) {//tomcat 1145;nginx
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         String uri = "ws://localhost:8600/websocket/" + deviceId;
-        if (choose == 0) uri = "ws://localhost:8600/websocket2/" + deviceId;
         //String uri = "ws://192.168.1.27:8006/" + deviceId;
         System.out.println("Connecting to " + uri);
         try {
             session = container.connectToServer(WebSocketClient.class, URI.create(uri));
-            System.out.println("count: " + deviceId);
-            list.add(session);
+            webSocketClients[c] = this;
+            //list.add(session);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -52,23 +65,34 @@ public class WebSocketClient {
         return true;
     }
 
-    public static void main(String[] args) throws IOException {
-        for (int i = 1; i < 20000; i++) {
-            WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(i));
-            int ii = i % 2;
-            if (!wSocketTest.start(ii)) {
-                System.out.println("测试结束。");
-                break;
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+
+        int count = 2000;
+        for (int i = 0; i < count; i++)
+        {
+            final int c = mCount.getAndIncrement();
+            if (c < count)
+            {
+                exec2.execute(() ->
+                {
+                    WebSocketClient wSocketTest = new WebSocketClient(String.valueOf(c));
+                    wSocketTest.start(c);
+                });
             }
         }
 
         for (; ; ) {
-            list.forEach(e -> {
+            //Thread.sleep(5000);
+            for (int i = 0; i < webSocketClients.length; i++) {
+                Thread.sleep(10);
                 try {
-                    Thread.sleep(1);
-                    boolean isOpen = e.isOpen();
-                    if (isOpen) {
+                    if (Objects.isNull(webSocketClients[i])) {
+                        //System.out.println("\"continue\" = " + "continue");
+                        continue;
+                    }
 
+                    boolean isOpen = webSocketClients[i].session.isOpen();
+                    if (isOpen) {
                         String msg = "abc";
                         int len = msg.length();
 
@@ -83,12 +107,19 @@ public class WebSocketClient {
                                 .append(tel.length()).append(tel)
                                 .buildByteArr();
 
-                        e.getBasicRemote().sendBinary(ByteBuffer.wrap(connent));
+                        webSocketClients[i].session.getBasicRemote().sendBinary(ByteBuffer.wrap(connent), true);
+                        //webSocketClients[i].session.getBasicRemote().sendPing(ByteBuffer.allocate(0));
+                        //webSocketClients[i].session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
+                        break;
+
+                    } else {
+                        //System.out.println("sessions[i] = " + webSocketClients[i].session);
+                        //sessions[i].close(new CloseReason(CloseReason.CloseCodes.NO_STATUS_CODE, "is close"));
                     }
-                } catch (IOException | InterruptedException e1) {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-            });
+            }
         }
     }
 
@@ -102,8 +133,9 @@ public class WebSocketClient {
      * 连接建立成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session) throws IOException {
         log.debug("连接建立成功调用的方法 ---::");
+        session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
     }
 
     /**
@@ -119,10 +151,12 @@ public class WebSocketClient {
      */
     @OnMessage
     public void onMessage(ByteBuffer message, Session session) {
-        byte[] msgs = message.array();
-        log.debug("WebSocketClient onMessage msgs -------::" + new String(msgs));
+        char q = DataUtils.getCharByBuffer(message);
+        char s = DataUtils.getCharByBuffer(message);
+        int sid = DataUtils.getIntByBuffer(message);
+        int online = DataUtils.getIntByBuffer(message);
+        System.out.println("q s sid online = " + q + "," + s + "," + sid + "," + online);
         message.clear();
-        log.debug("接收服务端 二进制格式请求数据 -----------");
     }
 
     /**
@@ -131,8 +165,9 @@ public class WebSocketClient {
      * @param session
      */
     @OnMessage
-    public void onMessage(PongMessage pongMessage, Session session) {
-        System.out.println("pongMessage = " + pongMessage);
+    public void onMessage(PongMessage pongMessage, Session session) throws IOException, InterruptedException {
+        Thread.sleep(3000);
+        session.getBasicRemote().sendPong(ByteBuffer.allocate(0));
     }
 
     /**
