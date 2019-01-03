@@ -44,9 +44,12 @@ if (typeof(WebSocket) === undefined) {
         // string param value
         byte.push(telStr);
 
+        // 大端字节序
+        useDataViewSendData();
 
+        // 小端字节序
         var blob = new Blob(byte.data(), {type: "application/octet-binary"}); //后端收到低位在前，高位在后
-        socket.send(blob);
+        //socket.send(blob);
 
     };
     //获得消息事件
@@ -65,6 +68,56 @@ if (typeof(WebSocket) === undefined) {
     };
     //socket.connect();
     //socket.disconnect();
+
+
+    //////////// use data view
+    function useDataViewSendData() {
+        var buf = new ArrayBuffer(1024);
+        var dv = new DataView(buf);
+        var position = 0;
+
+        var en = new TextEncoder();
+
+        dv.setUint16(position, en.encode("Q"), false); position += 2;
+        dv.setUint16(position, en.encode("S"), false); position += 2;
+
+        // cmd
+        dv.setUint32(position, 1002, false); position += 4;
+
+        // str
+        var str = en.encode("我爱天安门");
+
+        // str len
+        dv.setUint32(position, str.length, false); position += 4;
+
+        for (let i = 0; i < str.length; i++) {
+            // str value
+            dv.setUint8(position, str[i]);
+            position ++;
+        }
+
+        // int param
+        dv.setUint32(position, 111, false); position += 4;
+
+        // char param
+        dv.setUint16(position, en.encode("A"), false); position += 2;
+
+        // string param
+        var telStr = en.encode("13456102345");
+        // string len
+        dv.setUint32(position, telStr.length, false); position += 4;
+
+        for (let i = 0; i < telStr.length; i++) {
+            // str value
+            dv.setUint8(position, telStr[i]);
+            position ++;
+        }
+
+        var buffer = dv.buffer.slice(0,position);
+
+        socket.send(buffer);
+    }
+
 
     function ByteArray(){
         this.list=[];
