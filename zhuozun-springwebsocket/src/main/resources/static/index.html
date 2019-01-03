@@ -75,22 +75,23 @@
     var wsmessage;
     var buffer;
     protobuf.load("/protos/hello.proto", function (err, root) {
-        debugger
         if (err) throw err;
         WSMessage = root.lookupType("msg.Hello");
         wsmessage = WSMessage.create({name: "font end"});//.encode(new TextEncoder().encode("0"))
         buffer = WSMessage.encode(wsmessage).finish();
 
-        var byte = new ByteArray();
-        var buf = new ArrayBuffer(2);
-        new DataView(buf).setUint16(0, 0, false /* 设置值时使用大端字节序 */);
+        var buf = new ArrayBuffer(1024);
+        var dv = new DataView(buf);
+        var position = 2;
 
-        var id = new Int16Array(buf);
+        /* 设置值时使用大端字节序 */
+        dv.setUint16(0, 0, false);
+        for (let i = 0; i < buffer.length; i++) {
+            dv.setUint8(i + 2, buffer[i]);
+            position ++;
+        }
 
-        byte.push(id);
-        byte.push(buffer);
-
-        buffer = byte.data();
+        buffer = dv.buffer.slice(0,position);
     });
 </script>
 
