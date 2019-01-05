@@ -26,19 +26,19 @@ public class DataUtils implements Serializable {
 
     public static byte[] shortToBytes(short x, boolean... isLowHigh) {
         if (isLowHigh.length > 0 && isLowHigh[0])
-            return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(x).array();
+            return ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(x).array();
         return ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putShort(x).array();
     }
 
     public static byte[] charToBytes(char x, boolean... isLowHigh) {
         if (isLowHigh.length > 0 && isLowHigh[0])
-            return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(x).array();
+            return ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putChar(x).array();
         return ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN).putChar(x).array();
     }
 
     public static byte[] byteToBytes(byte x, boolean... isLowHigh) {
         if (isLowHigh.length > 0 && isLowHigh[0])
-            return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(x).array();
+            return ByteBuffer.allocate(1).order(ByteOrder.LITTLE_ENDIAN).put(x).array();
         return ByteBuffer.allocate(1).order(ByteOrder.BIG_ENDIAN).put(x).array();
     }
 
