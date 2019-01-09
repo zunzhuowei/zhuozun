@@ -43,9 +43,6 @@ public class DataUtils implements Serializable {
     }
 
 
-
-
-
     public static long bytesToLong(byte[] bytes, boolean... isLowHigh) {
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.put(bytes, 0, bytes.length);
@@ -99,10 +96,6 @@ public class DataUtils implements Serializable {
     }
 
 
-
-
-
-
     public static long getLongByBuffer(ByteBuffer byteBuffer, boolean... isLowHigh) {
         ByteBuffer buffer = ByteBuffer.allocate(8);
         byte[] arr = byteBuffer.array();
@@ -115,6 +108,20 @@ public class DataUtils implements Serializable {
         }
         buffer.flip();//need flip
         byteBuffer.position(arrOff + 8);
+        return buffer.getLong();
+    }
+
+    public static long getLongByBuffer(ByteBuffer byteBuffer, int offset, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, 8);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + 8);
         return buffer.getLong();
     }
 
@@ -133,6 +140,20 @@ public class DataUtils implements Serializable {
         return buffer.getInt();
     }
 
+    public static int getIntByBuffer(ByteBuffer byteBuffer, int offset, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, 4);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + 4);
+        return buffer.getInt();
+    }
+
     public static short getShortByBuffer(ByteBuffer byteBuffer, boolean... isLowHigh) {
         ByteBuffer buffer = ByteBuffer.allocate(2);
         byte[] arr = byteBuffer.array();
@@ -145,6 +166,20 @@ public class DataUtils implements Serializable {
         }
         buffer.flip();//need flip
         byteBuffer.position(arrOff + 2);
+        return buffer.getShort();
+    }
+
+    public static short getShortByBuffer(ByteBuffer byteBuffer, int offset, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, 2);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + 2);
         return buffer.getShort();
     }
 
@@ -163,6 +198,20 @@ public class DataUtils implements Serializable {
         return buffer.getChar();
     }
 
+    public static char getCharByBuffer(ByteBuffer byteBuffer, int offset, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, 2);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + 2);
+        return buffer.getChar();
+    }
+
     public static byte getByteByBuffer(ByteBuffer byteBuffer, boolean... isLowHigh) {
         ByteBuffer buffer = ByteBuffer.allocate(1);
         byte[] arr = byteBuffer.array();
@@ -178,6 +227,20 @@ public class DataUtils implements Serializable {
         return buffer.get();
     }
 
+    public static byte getByteByBuffer(ByteBuffer byteBuffer, int offset, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(1);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, 1);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + 1);
+        return buffer.get();
+    }
+
     public static String getStrByBuffer(ByteBuffer byteBuffer, int strLen, boolean... isLowHigh) {
         ByteBuffer buffer = ByteBuffer.allocate(strLen);
         byte[] arr = byteBuffer.array();
@@ -190,6 +253,20 @@ public class DataUtils implements Serializable {
         }
         buffer.flip();//need flip
         byteBuffer.position(arrOff + strLen);
+        return new String(buffer.array());
+    }
+
+    public static String getStrByBuffer(ByteBuffer byteBuffer, int offset, int strLen, boolean... isLowHigh) {
+        ByteBuffer buffer = ByteBuffer.allocate(strLen);
+        byte[] arr = byteBuffer.array();
+        buffer.put(arr, offset, strLen);
+        if (isLowHigh.length > 0 && isLowHigh[0]) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);//低位在前
+        } else {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        }
+        buffer.flip();//need flip
+        byteBuffer.position(offset + strLen);
         return new String(buffer.array());
     }
 
