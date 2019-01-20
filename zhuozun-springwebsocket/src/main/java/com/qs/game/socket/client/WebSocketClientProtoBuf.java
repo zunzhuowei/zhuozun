@@ -2,10 +2,7 @@ package com.qs.game.socket.client;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.qs.game.socket.TextEncoder;
-import com.qs.game.socket.client.msg.HelloProtoBuf;
-import com.qs.game.socket.client.msg.LoginProto;
-import com.qs.game.socket.client.msg.LoginRespBuf;
-import com.qs.game.socket.client.msg.PowerReqProto;
+import com.qs.game.socket.client.msg.*;
 import com.qs.game.utils.ByteUtils;
 import com.qs.game.utils.DataUtils;
 import org.apache.juli.logging.Log;
@@ -47,7 +44,7 @@ public class WebSocketClientProtoBuf {
     protected boolean start(int c) {//tomcat 1145;nginx
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         //String uri = "ws://127.0.0.1:3654";
-        String uri = "ws://127.0.0.1:8600";
+        String uri = "ws://192.168.113.1:8600";
         System.out.println("Connecting to " + uri);
         try {
             session = container.connectToServer(WebSocketClientProtoBuf.class, URI.create(uri));
@@ -68,7 +65,8 @@ public class WebSocketClientProtoBuf {
         // test protoBuf
         //webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf()), true);
         //webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf2()), true);
-        webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf3()), true);
+        //webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf3()), true);
+        webSocketClients[0].session.getBasicRemote().sendBinary(ByteBuffer.wrap(getProtoBuf4()), true);
         Thread.sleep(5000);
     }
 
@@ -117,6 +115,25 @@ public class WebSocketClientProtoBuf {
 
         // test parse buf
         PowerReqProto.PowerReqProtocol powerReqProtocol =  PowerReqProto.PowerReqProtocol.parseFrom(buf);
+        System.out.println("powerReqProtocol = " + powerReqProtocol);
+
+        //-------------------------
+        //| id | protobuf message |
+        //-------------------------
+        return ByteUtils.beginBuild().append(buf).buildByteArr();
+    }
+
+    private static byte[] getProtoBuf4() throws InvalidProtocolBufferException {
+        SysReqProto.SysReqProtocol.Builder builder = SysReqProto.SysReqProtocol.newBuilder();
+        builder.setFromId(111 + "");
+        builder.setType(1);
+        builder.setReqMsg("websocket client");
+
+        SysReqProto.SysReqProtocol reqProtocol = builder.build();
+        byte[] buf = reqProtocol.toByteArray();
+
+        // test parse buf
+        SysReqProto.SysReqProtocol powerReqProtocol =  SysReqProto.SysReqProtocol.parseFrom(buf);
         System.out.println("powerReqProtocol = " + powerReqProtocol);
 
         //-------------------------
