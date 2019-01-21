@@ -233,6 +233,10 @@ public class ByteUtils implements Serializable {
         return this.setConnent(byteMerger(this.getConnent(), shortToByteArray(number)));
     }
 
+    public ByteUtils append(byte number) {
+        return this.setConnent(byteMerger(this.getConnent(), new byte[]{number}));
+    }
+
     public ByteUtils append(char chars) {
         return this.setConnent(byteMerger(this.getConnent(), charToByte(chars)));
     }

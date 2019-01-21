@@ -147,15 +147,17 @@ public class Global {
         ChannelFuture future = null;
 
         if (Objects.nonNull(context)) {
-            Channel channel = context.channel();
-            if (Objects.nonNull(channel) && channel.isActive()) {
-                future = channel.writeAndFlush(message).addListener(
-                        (ChannelFutureListener) channelFuture -> {
-                        boolean su = channelFuture.isSuccess();
-                        if (!su) {
-                            reTrySendMsg(channelFuture, message, 5);
-                        }
-                });
+            synchronized (sessionRepo.get(key)) {
+                Channel channel = context.channel();
+                if (Objects.nonNull(channel) && channel.isActive()) {
+                    future = channel.writeAndFlush(message).addListener(
+                            (ChannelFutureListener) channelFuture -> {
+                            boolean su = channelFuture.isSuccess();
+                            if (!su) {
+                                reTrySendMsg(channelFuture, message, 5);
+                            }
+                    });
+                }
             }
         }
         return Objects.nonNull(future) && future.isSuccess();
