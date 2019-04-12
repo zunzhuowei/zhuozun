@@ -26,7 +26,7 @@ public class JWTUtils {
      * token 过期时间: 10天
      */
     public static final String SECRET = "q1rhhQW%GxX6sYu6BZ1Q";
-    public static final int calendarField = Calendar.DATE;
+    //public static final int calendarField = Calendar.DATE;
     public static final int calendarInterval = 10;
 
     private static final String USER_ID = "userId";
@@ -74,7 +74,7 @@ public class JWTUtils {
         Date iatDate = new Date();
         // expire time
         Calendar nowTime = Calendar.getInstance();
-        nowTime.add(calendarField, calendarInterval);
+        nowTime.add(Calendar.DATE, calendarInterval);
         Date expiresDate = nowTime.getTime();
 
         // build token
