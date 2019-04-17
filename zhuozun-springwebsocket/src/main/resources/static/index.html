@@ -7,6 +7,7 @@
     <link href="/main.css" rel="stylesheet">
     <script src="/js/jquery-3.3.1.min.js" type="application/javascript"></script>
     <script src="/app.js" type="application/javascript"></script>
+    <script src="/js/protobuf.js"></script>
 </head>
 <body>
 <noscript>
@@ -67,4 +68,82 @@
     // socket3 = new WebSocket("ws://localhost:8600/websocket/123");
     // socket4 = new WebSocket("ws://localhost:8600/websocket/5345");
     // socket5 = new WebSocket("ws://localhost:8600/websocket/345435");
+</script>
+
+<script type="text/javascript">
+    var WSMessage;
+    var wsmessage;
+    var buffer;
+    protobuf.load("/protos/hello.proto", function (err, root) {
+        if (err) throw err;
+        WSMessage = root.lookupType("msg.Hello");
+        wsmessage = WSMessage.create({name: "font end"});//.encode(new TextEncoder().encode("0"))
+        buffer = WSMessage.encode(wsmessage).finish();
+
+        var buf = new ArrayBuffer(1024);
+        var dv = new DataView(buf);
+        var position = 2;
+
+        /* 设置值时使用大端字节序 */
+        dv.setUint16(0, 0, false);
+        for (let i = 0; i < buffer.length; i++) {
+            dv.setUint8(i + 2, buffer[i]);
+            position ++;
+        }
+
+        buffer = dv.buffer.slice(0,position);
+    });
+</script>
+
+<script type="text/javascript">
+    var wsUri = "ws://127.0.0.1:3654";
+    var output;
+    function init() {
+        output = document.getElementById("conversation");
+        testWebSocket();
+    }
+    function testWebSocket() {
+        websocket = new WebSocket(wsUri);
+        websocket.onopen = function (evt) {
+            onOpen(evt)
+        };
+        websocket.onclose = function (evt) {
+            onClose(evt)
+        };
+        websocket.onmessage = function (evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function (evt) {
+            onError(evt)
+        };
+    }
+    function onOpen(evt) {
+        writeToScreen("CONNECTED");
+        doSend(buffer);
+    }
+    function onClose(evt) {
+        writeToScreen("DISCONNECTED");
+    }
+    function onMessage(evt) {
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(evt.data);
+        reader.onload = function (e) {
+            var buf = new Uint8Array(reader.result);
+            writeToScreen('<span style="color: blue;">RESPONSE: ' + WSMessage.decode(buf).name + '</span>');
+        }
+    }
+    function onError(evt) {
+        writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+    }
+    function doSend(message) {
+        writeToScreen("SENT: " + wsmessage.name);
+        websocket.send(buffer);
+    }
+    function writeToScreen(message) {
+        var pre = document.createElement("p");
+        pre.style.wordWrap = "break-word";
+        pre.innerHTML = message;
+        output.appendChild(pre);
+    }
+    window.addEventListener("load", init, false);
 </script>

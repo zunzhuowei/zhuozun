@@ -76,6 +76,11 @@ public class Handler implements EvenHandler {
                     return null;
                 }
 
+                if (packHeadLen == 4) {
+                    log.info("Handler withCustomProtocol {} heart beat {},{}", sid, q, s);
+                    return instantce;
+                }
+
                 // check protocol package command
                 int cmd = DataUtils.getIntByBuffer(message);
                 boolean b = CMD.existCmd(cmd);

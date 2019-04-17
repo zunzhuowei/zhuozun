@@ -17,13 +17,17 @@ public class ShellTest4Git {
     @Test
     public void deployWar() throws IOException {
         // 选择要发布的应用
-        ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_WEB_HAPPY_GAME);
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_WEB_HAPPY_GAME);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_ACTI_HAPPY_GAME);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_APP_HAPPY_GAME);
 
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_WEB_HAPPY_BEARD);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_ACTI_HAPPY_BEARD);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_APP_HAPPY_BEARD);
+
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_WEB_MINI_DDZ);
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_ACTI_MINI_DDZ);
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.TEST_SERVER_APP_MINI_DDZ);
 
 
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_WEB_HAPPY_GAME);
@@ -33,6 +37,10 @@ public class ShellTest4Git {
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_WEB_HAPPY_BEARD);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_ACTI_HAPPY_BEARD);
         //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_APP_HAPPY_BEARD);
+
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_WEB_MINI_DDZ);
+        ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_ACTI_MINI_DDZ);
+        //ServerEnumGit serverEnumGit = ServerEnumGit.getServerEnumGit(ServerEnumGit.ONLINE_SERVER_APP_MINI_DDZ);
 
         File file = new File("temp.txt");
         PrintStream ps = new PrintStream(new FileOutputStream(file));

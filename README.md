@@ -1,7 +1,8 @@
-## zhuozun
+## zhuozun 简介
   此项目基于spring boot 构建的 spring could 微服务架构的系统，目前包含了eureka发现服务、config配置服务
   、监控系统admin、其他服务会根据业余时间不定时更新添加。
-  
+
+### 目前有哪些模块、功能？  
   该项目整合了redis memcached 两种nosql数据库，以及关系型数据库mysql；
   整合了redis基于发布订阅的轻量级消息队列；
   整合了mybatis 以及其代码生成工具；
@@ -48,6 +49,12 @@ zhuozun
 ├── zhuozun-gateway-server -- zuul服务网关
 |
 ├── zhuozun-kafka-provider -- kafka服务提供
+|
+├── zhuozun-springwebsocket -- 基于spring封装的websocket协议日志收集服务器
+|
+├── zhuozun-springwebsocket-client -- 基于websocket协议日志收集客户端
+|
+├── zhuozun-websocket-server -- 基于netty封装的websocket协议的合成类小游戏服务器
 ``` 
 
 ### 涉及到的编程语言及技术框架
@@ -81,31 +88,36 @@ Maven | 项目构建管理  | [http://maven.apache.org/](http://maven.apache.org
 
 - kafka     kafka_2.11-1.0.1
 
+- netty     4.1.28.Final
+
 ### 环境搭建
 
-> 开发环境
+#### 开发环境
 
 - 1、虚拟机（或本机）安装Jdk8、Mysql并**启动相关服务**，使用默认配置默认端口即可
 - 2、克隆源代码到本地并打开，**推荐使用IntelliJ IDEA**
 
-> 准备工作
+#### 准备工作
 
-- 创建数据库，导入zhuozun-dao项目中的*_init.sql
+- 1、创建数据库，导入zhuozun-dao项目中的*_init.sql
 
-- 修改各服务中的对应的配置信息（mysql、redis、memcached）
+- 2、修改各服务中的对应的配置信息（mysql、redis、memcached）
 
-> 启动服务
+#### 启动服务
 
-- 启动服务有两种方式：
+#### 启动服务有两种方式：
 
 - 1、执行spring boot main方法
 
 - 2、执行maven打包命令 mvn clean install -Dmaven.test.skip=true ,jar包会被打到target目录下，进入该目录，执行 java -jar zhuozun-xxxxx-xxxx.jar --spring.profiles.active=dev
 
-> 启动顺序
+#### 启动顺序
 
 - 优先启动zhuozun-discoverer,zhuozun-config-server（如果你需要远程配置中心，不需要可以不起）。其他服务顺序随意
 
 ### 结束语
-> 该项目为本人在工作学习中对spring cloud微服务架构的应用实践积累，能力有限，
-有什么不对的地方希望大家不吝赐教。
+* ~~该项目为本人在工作学习中对spring cloud微服务架构的应用实践积累~~
+**本来该项目仅仅是用于学习spring cloud用而已，后面由于工作环境原因，所以加了一些工作相关的应用进去，
+同样这也是对知识的好奇与探索**
+* 有什么不对的地方希望大家不吝赐教。
+
