@@ -1,3 +1,4 @@
+[TOC]
 ## zhuozun 简介
   此项目基于spring boot 构建的 spring could 微服务架构的系统，目前包含了eureka发现服务、config配置服务
   、监控系统admin、其他服务会根据业余时间不定时更新添加。
@@ -8,7 +9,7 @@
   整合了mybatis 以及其代码生成工具；
   整合了Hystrix 接口熔断器...等等；
   包含了全局异常处理、httpclient 连接池整合、跨域资源请求处理等。
-  
+
 ### 项目结构
 
 ``` java
@@ -55,7 +56,7 @@ zhuozun
 ├── zhuozun-springwebsocket-client -- 基于websocket协议日志收集客户端
 |
 ├── zhuozun-websocket-server -- 基于netty封装的websocket协议的合成类小游戏服务器
-``` 
+```
 
 ### 涉及到的编程语言及技术框架
 技术 | 说明 | 官网
@@ -72,10 +73,10 @@ Log4J | 日志组件  | [http://logging.apache.org/log4j/1.2/](http://logging.ap
 Swagger2 | 接口测试框架  | [http://swagger.io/](http://swagger.io/)
 Maven | 项目构建管理  | [http://maven.apache.org/](http://maven.apache.org/)
 
-#### 编程语言
+### 编程语言
 - java 1.8.0_161
 
-#### 主要技术框架及选型
+### 主要技术框架及选型
 - redis     4.0.8
 
 - memcached     1.4.4
@@ -103,7 +104,7 @@ Maven | 项目构建管理  | [http://maven.apache.org/](http://maven.apache.org
 
 - 2、修改各服务中的对应的配置信息（mysql、redis、memcached）
 
-#### 启动服务
+### 启动服务
 
 #### 启动服务有两种方式：
 
