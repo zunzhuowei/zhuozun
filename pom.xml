@@ -31,6 +31,7 @@
         <module>zhuozun-websocket-server</module>
         <module>zhuozun-springwebsocket</module>
         <module>zhuozun-springwebsocket-client</module>
+        <module>zhuozun-shell</module>
     </modules>
 
 

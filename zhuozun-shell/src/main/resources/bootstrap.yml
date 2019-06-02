@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: zhuozun-shell
+
+server:
+  port: 7066
+  servlet:
+    context-path: /
+
