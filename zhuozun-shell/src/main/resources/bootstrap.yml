@@ -4,8 +4,10 @@ spring:
   application:
     name: zhuozun-shell
 
-server:
-  port: 7066
-  servlet:
-    context-path: /
+#
+#server:
+#  port: 7066
+#  servlet:
+#    context-path: /
+
 
