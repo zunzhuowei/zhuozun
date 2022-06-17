@@ -49,7 +49,7 @@
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <swagger2.version>2.9.2</swagger2.version>
         <junit.version>4.12</junit.version>
-        <fastjson.version>1.2.49</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <springboot.admin.version>2.0.1</springboot.admin.version>
         <spring.cloud.version>2.0.1.RELEASE</spring.cloud.version>
     </properties>
